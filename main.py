@@ -1,6 +1,6 @@
 import argparse
 
-from downloader import download_all_workflows_and_actions
+from downloader import download_all_workflows_and_actions, download_org_workflows_and_actions
 from indexer import index_downloaded_workflows_and_actions
 from config import Config
 
@@ -11,28 +11,58 @@ def main() -> None:
     )
 
     subparsers = parser.add_subparsers(dest="command", help="sub-command help")
+    
 
-    # Download action
     download_parser = subparsers.add_parser(
-        "download", help="Download public Github Actions workflows"
+        "download", help="Download public/enterprise Github Actions workflows"
     )
-    # TODO: It can be optional eventually.
-    download_parser.add_argument(
+
+    download_sub_parser = download_parser.add_subparsers(
+        dest="download_command"
+    )
+
+    public_download_parser = download_sub_parser.add_parser(
+        "public", help="Public Github Actions"
+    )
+
+    org_download_parser = download_sub_parser.add_parser(
+        "org", help="Organization Github Actions"
+    )
+
+    public_download_parser.add_argument(
         "--token",
         required=True,
         help="GITHUB_TOKEN to download data from Github API (Needed for effective rate-limiting)",
     )
-    download_parser.add_argument(
+    public_download_parser.add_argument(
         "--output",
         "-o",
         default="data",
         help="Output directory to download the workflows",
     )
-    download_parser.add_argument(
+    
+    public_download_parser.add_argument(
         "--max-stars", help="Maximum number of stars for a repository"
     )
-    download_parser.add_argument(
+    public_download_parser.add_argument(
         "--min-stars", default=1000, help="Minimum number of stars for a repository"
+    )
+
+    org_download_parser.add_argument(
+        "--org_name",
+        required=True,
+        help="Organization name to download the workflows",
+    )
+    org_download_parser.add_argument(
+        "--token",
+        required=True,
+        help="GITHUB_TOKEN to download data from Github API (Needed for effective rate-limiting)",
+    )
+    org_download_parser.add_argument(
+        "--output",
+        "-o",
+        default="data",
+        help="Output directory to download the workflows",
     )
 
     # Index action
@@ -76,16 +106,21 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if not args.command:
-        parser.print_help()
-        return
-
-    if args.command == "download":
-        Config.load_downloader_config(args)
-        download_all_workflows_and_actions()
-    elif args.command == "index":
-        Config.load_indexer_config(args)
-        index_downloaded_workflows_and_actions()
+    command_functions = {
+        "download": {
+            "public": download_all_workflows_and_actions,
+            "org": download_org_workflows_and_actions,
+        },
+        "index": index_downloaded_workflows_and_actions,
+    }
+    
+    if args.command in command_functions:
+        if args.command == "download":
+            Config.load_downloader_config(vars(args))
+            command_functions[args.command][args.download_command]()
+        elif args.command == "index":
+                Config.load_indexer_config(vars(args))
+                command_functions[args.command]()
     else:
         parser.print_help()
 

@@ -34,10 +34,11 @@ class Config:
 
     @staticmethod
     def load_downloader_config(args):
-        Config.github_token = args.token
-        Config.output_data_dir = args.output
-        Config.min_stars = args.min_stars
-        Config.max_stars = args.max_stars
+        Config.github_token = args.get("token")
+        Config.output_data_dir = args.get("output")
+        Config.min_stars = args.get("min_stars")
+        Config.max_stars = args.get("max_stars")
+        Config.org_name = args.get("org_name")
 
         Config.load_data_dir_paths(Config.output_data_dir)
 
@@ -51,12 +52,12 @@ class Config:
 
     @staticmethod
     def load_indexer_config(args):
-        Config.input_data_dir = args.input
-        Config.neo4j_uri = args.neo4j_uri
-        Config.neo4j_username = args.neo4j_user
-        Config.neo4j_password = args.neo4j_pass
-        Config.num_workers = args.threads
-        Config.clean = args.clean
+        Config.input_data_dir = args.get("input")
+        Config.neo4j_uri = args.get("neo4j_uri")
+        Config.neo4j_username = args.get("neo4j_user")
+        Config.neo4j_password = args.get("neo4j_pass")
+        Config.num_workers = args.get("threads")
+        Config.clean = args.get("clean")
 
         Config.load_data_dir_paths(Config.input_data_dir)
 
