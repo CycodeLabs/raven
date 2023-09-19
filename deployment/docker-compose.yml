@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  neo4j:
+    image: neo4j:5.12
+    container_name: raven-neo4j
+    environment:
+      NEO4J_AUTH: neo4j/123456789 # Change 'password' to your desired Neo4j password
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+
+  redis:
+    image: redis:7.2.1
+    container_name: raven-redis
+    ports:
+      - "6379:6379"
