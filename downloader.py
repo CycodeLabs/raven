@@ -3,6 +3,7 @@ from typing import Optional
 
 from config import Config
 from gh_api import (
+    get_organization_repository_generator,
     get_repository_generator,
     get_repository_workflows,
     get_repository_composite_action,
@@ -14,6 +15,25 @@ from utils import (
     save_action_or_reusable_workflow,
     parse_uses_string,
 )
+
+
+def download_org_workflows_and_actions() -> None:
+    """Iterating all organization repositories through Github API.
+
+    For each repository we enumerating the .github/workflows directory,
+    and downloading all the workflows.
+    In addition if the repository contains action.yml file, it means it is a composite action,
+    so we download it as well.
+
+    For each such workflow we also scan if it uses additional external actions.
+    If so, we download these as well.
+
+    We are trying to cache the downloads as much as we can to reduce redundant download attempts.
+    """
+    repositories = get_organization_repository_generator(Config.org_name)
+
+    for repository in repositories:
+        download_workflows_and_actions(repository.get('full_name'))
 
 
 def download_all_workflows_and_actions() -> None:
