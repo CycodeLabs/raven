@@ -56,7 +56,6 @@ class Config:
         Config.org_name = args.get("org_name")
 
         Config.load_redis_config(args)
-        Config.clean_redis = args.clean_redis
         
         # Config.load_data_dir_paths(Config.output_data_dir)
 
@@ -75,7 +74,7 @@ class Config:
         Config.neo4j_username = args.get("neo4j_user")
         Config.neo4j_password = args.get("neo4j_pass")
         Config.num_workers = args.get("threads")
-        Config.clean = args.get("clean_neo4j")
+        Config.clean_neo4j = args.get("clean_neo4j")
 
         Config.load_redis_config(args)
 
@@ -99,8 +98,10 @@ class Config:
 
     @staticmethod
     def load_redis_config(args):
-        Config.redis_host = args.redis_host
-        Config.redis_port = args.redis_port
+        Config.redis_host = args.get("redis_host")
+        Config.redis_port = args.get("redis_port")
+        Config.clean_redis = args.get("clean_redis")
+
         Config.redis_sets_db = 0
         Config.redis_workflows_db = 1
         Config.redis_actions_db = 2

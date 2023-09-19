@@ -184,7 +184,7 @@ def parse_uses_string(
 
 
 def get_obj_from_uses_string(
-    uses_string: str, relative_repo_full_name: Optional[str], object_type: Union['Workflow', 'CompositeAction']
+    uses_string: str, relative_repo_full_name: Optional[str]
 ) -> Optional[GraphObject]:
 
     """The uses string can point to many places, and could be found in several places,

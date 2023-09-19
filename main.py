@@ -17,6 +17,14 @@ def main() -> None:
     # Add redis arguments
     redis_parser.add_argument("--redis-host", help="Redis host, default localhost", default="localhost")
     redis_parser.add_argument("--redis-port", help="Redis port, default 6379", default=6379)
+    redis_parser.add_argument(
+        "--clean-redis",
+        "-cr",
+        action="store_const",
+        default=False,
+        const=True,
+        help="Whether to clean cache in the redis",
+    )
 
     download_parser_options = argparse.ArgumentParser(add_help=False)
     download_parser_options.add_argument(
@@ -32,19 +40,21 @@ def main() -> None:
     )
 
     download_parser = subparsers.add_parser(
-        "download", parents=[download_parser_options, redis_parser], help="Download workflows into Redis database"
+        "download", help="Download workflows into Redis database"
     )
 
     download_sub_parser = download_parser.add_subparsers(
-        dest="download_command"
+        dest="download_command",
     )
 
     crawl_download_parser = download_sub_parser.add_parser(
-        "crawl", help="Crawl Public GitHub repositories"
+        "crawl", help="Crawl Public GitHub repositories",
+        parents=[download_parser_options, redis_parser]
     )
 
     org_download_parser = download_sub_parser.add_parser(
-        "org", help="Scan specific GitHub organization"
+        "org", help="Scan specific GitHub organization",
+        parents=[download_parser_options, redis_parser]
     )
     
     crawl_download_parser.add_argument(
@@ -52,14 +62,6 @@ def main() -> None:
     )
     crawl_download_parser.add_argument(
         "--min-stars", default=1000, help="Minimum number of stars for a repository"
-    )
-    download_parser.add_argument(
-        "--clean-redis",
-        "-cr",
-        action="store_const",
-        default=False,
-        const=True,
-        help="Whether to clean cache in the redis",
     )
 
     org_download_parser.add_argument(
@@ -70,7 +72,7 @@ def main() -> None:
 
     # Index action
     index_parser = subparsers.add_parser(
-        "index", parents=[redis_parser, redis_parser], help="Index the download workflows into Neo4j database"
+        "index", parents=[redis_parser], help="Index the download workflows into Neo4j database"
     )
     index_parser.add_argument(
         "--input",

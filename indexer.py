@@ -26,6 +26,7 @@ def index_downloaded_workflows_and_actions() -> None:
     if Config.clean_neo4j:
         clean_index()
 
+
     index_downloaded_actions()
     index_downloaded_workflows()
 
