@@ -53,6 +53,14 @@ def main() -> None:
     crawl_download_parser.add_argument(
         "--min-stars", default=1000, help="Minimum number of stars for a repository"
     )
+    download_parser.add_argument(
+        "--clean-redis",
+        "-cr",
+        action="store_const",
+        default=False,
+        const=True,
+        help="Whether to clean cache in the redis",
+    )
 
     org_download_parser.add_argument(
         "--org-name",
@@ -91,8 +99,8 @@ def main() -> None:
         "--threads", "-t", type=int, default=1, help="Number of threads"
     )
     index_parser.add_argument(
-        "--clean",
-        "-c",
+        "--clean-neo4j",
+        "-cn",
         action="store_const",
         default=False,
         const=True,

@@ -4,12 +4,6 @@ from cache import Cache
 
 
 class Config:
-    # Redis Config
-    redis_host: str = None
-    redis_port: int = None
-    redis_db: int = None
-    
-
     # Downloader Config
     github_token: str = None
     min_stars: int = None
@@ -22,12 +16,20 @@ class Config:
     neo4j_username: str = None
     neo4j_password: str = None
     num_workers: int = None
-    clean: bool = None
+    clean_neo4j: bool = None
     graph: GraphDb = None
     workflow_index_cache: Cache = None
     action_index_cache: Cache = None
     workflow_download_cache: Cache = None
     action_download_cache: Cache = None
+
+    # Redis Config
+    redis_host: str = None
+    redis_port: int = None
+    redis_sets_db: int = None
+    redis_workflows_db: int = None
+    redis_actions_db: int = None
+    clean_redis: bool = None
 
     # Paths to store/load data
     data_dir: str = None
@@ -37,8 +39,8 @@ class Config:
     action_download_history_path: str = None
     workflow_index_history_path: str = None
     action_index_history_path: str = None
-    workflow_data_hash: str = None
-    action_data_hash: str = None
+    # workflow_data_hash: str = None
+    # action_data_hash: str = None
     workflow_download_history_set: str = None
     action_download_history_set: str = None
     workflow_index_history_set: str = None
@@ -72,7 +74,7 @@ class Config:
         Config.neo4j_username = args.get("neo4j_user")
         Config.neo4j_password = args.get("neo4j_pass")
         Config.num_workers = args.get("threads")
-        Config.clean = args.get("clean")
+        Config.clean = args.get("clean_neo4j")
 
         Config.load_redis_config(args)
 
@@ -80,10 +82,10 @@ class Config:
 
         # Cache/history that is used to optimize indexing.
         Config.workflow_index_cache = Cache(
-            fpath=Config.workflow_index_history_path, clean_cache=Config.clean
+            fpath=Config.workflow_index_history_path, clean_cache=Config.clean_neo4j
         )
         Config.action_index_cache = Cache(
-            fpath=Config.action_index_history_path, clean_cache=Config.clean
+            fpath=Config.action_index_history_path, clean_cache=Config.clean_neo4j
         )
 
         # Initializing the neo4j graph connection
@@ -98,11 +100,14 @@ class Config:
     def load_redis_config(args):
         Config.redis_host = args.redis_host
         Config.redis_port = args.redis_port
-        Config.redis_db = args.redis_db
+        Config.redis_sets_db = 0
+        Config.redis_workflows_db = 1
+        Config.redis_actions_db = 2
+        Config.clean_redis = args.clean_redis
 
         # Redis keys
-        Config.workflow_data_hash = "workflows"
-        Config.action_data_hash = "actions"
+        # Config.workflow_data_hash = "workflows"
+        # Config.action_data_hash = "actions"
         Config.workflow_download_history_set = "workflow_download_history"
         Config.action_download_history_set = "action_download_history"
         Config.workflow_index_history_set =  "workflow_index_history"

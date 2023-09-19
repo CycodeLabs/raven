@@ -28,6 +28,10 @@ def convert_dict_to_list(d: Union[Dict, str]) -> List:
         return [d]
 
 
+def convert_workflow_to_unix_path(repo_full_name: str, workflow_name: str) -> str:
+    return f"{repo_full_name}/.github/workflows/{workflow_name}"
+
+
 def find_workflow_path_by_name(repo_full_name: str, workflow_name: str) -> str:
     """Tries to find workflow in specified repo,
     with the given workflow name
