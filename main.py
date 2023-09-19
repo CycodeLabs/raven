@@ -11,6 +11,13 @@ def main() -> None:
     )
 
     subparsers = parser.add_subparsers(dest="command", help="sub-command help")
+
+    redis_parser = argparse.ArgumentParser(add_help=False)
+    
+    # Add redis arguments
+    redis_parser.add_argument("--redis-host", help="Redis host, default localhost", default="localhost")
+    redis_parser.add_argument("--redis-port", help="Redis port, default 6379", default=6379)
+
     download_parser_options = argparse.ArgumentParser(add_help=False)
     download_parser_options.add_argument(
         "--token",
@@ -25,7 +32,7 @@ def main() -> None:
     )
 
     download_parser = subparsers.add_parser(
-        "download", parents=[download_parser_options], help="Download workflows into Redis database"
+        "download", parents=[download_parser_options, redis_parser], help="Download workflows into Redis database"
     )
 
     download_sub_parser = download_parser.add_subparsers(
@@ -55,7 +62,7 @@ def main() -> None:
 
     # Index action
     index_parser = subparsers.add_parser(
-        "index", help="Index the download workflows into Neo4j database"
+        "index", parents=[redis_parser, redis_parser], help="Index the download workflows into Neo4j database"
     )
     index_parser.add_argument(
         "--input",
