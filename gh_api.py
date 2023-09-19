@@ -2,7 +2,7 @@ import os
 import urllib
 from requests import get
 from typing import Dict, Any, Optional, Iterator, Optional
-
+from http import HTTPStatus
 from config import Config
 
 """
@@ -22,6 +22,10 @@ REPOSITORY_SEARCH_URL = (
     BASE_URL
     + "/search/repositories?q={query}&sort=stars&order=desc&per_page=100&page={page}"
 )
+ORGANIZATION_REPOSITORY_URL = (
+    BASE_URL
+    + "/orgs/{organization_name}/repos"
+)
 CONTENTS_URL = BASE_URL + "/repos/{repo_path}/contents/{file_path}"
 
 REPOSITORY_QUERY_MIN = "stars:>={min_stars}"
@@ -31,6 +35,31 @@ headers = {
     "Accept": "application/vnd.github+json",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.42",
 }
+
+def get_organization_repository_generator(organization_name: str) -> list[dict]:
+    """
+    Returns a list of all repositories for the specified organization.
+    The objects look like this:
+    {
+        "id": 000000000,
+        "node_id": "R_...",
+        "name": "example",
+        "full_name": "example/example",
+        "private": true,
+        ...
+    }
+    """
+    headers["Authorization"] = f"Token {Config.github_token}"
+    
+    r = get(
+        ORGANIZATION_REPOSITORY_URL.format(organization_name=organization_name),
+        headers=headers,
+    )
+
+    if r.status_code != HTTPStatus.OK:
+        raise Exception(f"status code: {r.status_code}. Response: {r.text}")
+    
+    return r.json()
 
 
 def get_repository_generator(min_stars: int, max_stars: Optional[int]) -> Iterator[str]:
