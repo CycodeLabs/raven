@@ -56,7 +56,8 @@ class Config:
         Config.org_name = args.get("org_name")
 
         Config.load_redis_config(args)
-
+        Config.clean_redis = args.clean_redis
+        
         # Config.load_data_dir_paths(Config.output_data_dir)
 
         # Cache/history that is used to optimize indexing.
@@ -103,7 +104,6 @@ class Config:
         Config.redis_sets_db = 0
         Config.redis_workflows_db = 1
         Config.redis_actions_db = 2
-        Config.clean_redis = args.clean_redis
 
         # Redis keys
         # Config.workflow_data_hash = "workflows"

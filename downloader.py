@@ -122,14 +122,21 @@ def download_action_or_reusable_workflow(
             )
             return
 
+        # If already scanned action
         if sets_db.exists_in_set(Config.action_download_history_set, full_path):
             return
-
+        # If already scanned workflow - Have to check workflow db because only it contains the full workflow path.
+        with RedisConnection(Config.redis_workflows_db) as workflows_db:
+            if workflows_db.get_string(full_path) is not None:
+                return
+    
         if path_in_repo.endswith((".yml", ".yaml")):
             # indicates a reusable workflow
+            is_workflow = True
             url = get_repository_reusable_workflow(repo_full_name, path_in_repo)
         else:
             # indicates an action
+            is_workflow = False
             url = get_repository_composite_action(repo_full_name, path_in_repo)
 
         if url is None:
@@ -155,10 +162,15 @@ def download_action_or_reusable_workflow(
                 uses_string=new_uses_string, current_repo_full_path=repo_full_name
             )
 
-        sets_db.insert_to_set(Config.action_download_history_set, full_path)
-        with RedisConnection(Config.redis_actions_db) as actions_db:
-            actions_db.insert_to_string(full_path, resp.text)
-    
+        if is_workflow:
+            sets_db.insert_to_set(Config.workflow_download_history_set, full_path)
+            with RedisConnection(Config.redis_workflows_db) as workflows_db:
+                workflows_db.insert_to_string(full_path, resp.text)
+        else:
+            sets_db.insert_to_set(Config.action_download_history_set, full_path)
+            with RedisConnection(Config.redis_actions_db) as workflows_db:
+                workflows_db.insert_to_string(full_path, resp.text)
+        
 
 def flush_db(db_number) -> None:
 # TODO: Move to utils

@@ -46,3 +46,6 @@ class GraphDb(object):
             4) Step
         """
         return list(self.graph.nodes.match(node_type))
+
+    def clean_graph(self):
+        self.graph.delete_all()

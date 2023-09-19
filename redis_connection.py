@@ -64,3 +64,5 @@ class RedisConnection:
     def flush_db(self) -> None:
         self.redis_client.flushdb()
     
+    def get_all_keys(self) -> list:
+        return self.redis_client.keys()

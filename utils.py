@@ -7,7 +7,8 @@ from typing import List, Optional, Tuple, Dict, Union
 from py2neo.ogm import GraphObject
 from py2neo.data import Node
 
-import config
+from redis_connection import RedisConnection
+from config import Config
 
 
 def save_file(fpath: str, content: str):
@@ -38,9 +39,9 @@ def find_workflow_path_by_name(repo_full_name: str, workflow_name: str) -> str:
 
     Used to create connection based on "workflow_run" trigger (which gives workflow name)
     """
-    for fname in os.listdir(config.Config.workflow_data_path):
+    for fname in os.listdir(Config.workflow_data_path):
         if get_repo_full_name_from_fname(fname) == repo_full_name:
-            fpath = os.path.join(config.Config.workflow_data_path, fname)
+            fpath = os.path.join(Config.workflow_data_path, fname)
             with open(fpath, "r") as f:
                 data = f.read()
 
@@ -89,7 +90,8 @@ def get_repo_full_name_from_fpath(fpath: str) -> str:
     data/workflows/slsa-framework|slsa-github-generator|.github|workflows|builder_go_slsa3.yml ->
     slsa-framework/slsa-github-generator
     """
-    return get_repo_full_name_from_fname(os.path.basename(fpath))
+    return '/'.join(fpath.split('/')[:2])
+
 
 
 def find_uses_strings(workflow_content: str) -> List[str]:
@@ -119,17 +121,17 @@ def convert_action_or_reusable_workflow_path_to_file_path(full_path: str) -> str
     fname = full_path.replace("/", "|")
     if full_path.endswith((".yml", ".yaml")):
         # Reference to a workflow (including reusable workflow)
-        return os.path.join(config.Config.workflow_data_path, fname)
+        return os.path.join(Config.workflow_data_path, fname)
     else:
         # Reference to an action
         fname = fname + "|action.yml"
-        return os.path.join(config.Config.action_data_path, fname)
+        return os.path.join(Config.action_data_path, fname)
 
 
 def convert_workflow_to_file_path(repo_full_name: str, workflow_name: str) -> str:
     fname = f"{repo_full_name}|.github|workflows|{workflow_name}"
     fname = fname.replace("/", "|")
-    fpath = os.path.join(config.Config.workflow_data_path, fname)
+    fpath = os.path.join(Config.workflow_data_path, fname)
     return fpath
 
 
@@ -182,54 +184,60 @@ def parse_uses_string(
 
 
 def get_obj_from_uses_string(
-    uses_string: str, relative_repo_full_name: Optional[str]
+    uses_string: str, relative_repo_full_name: Optional[str], object_type: Union['Workflow', 'CompositeAction']
 ) -> Optional[GraphObject]:
+
     """The uses string can point to many places, and could be found in several places,
     so we decided to exclude it from the main logic.
 
     It could appear in both composite actions and in workflows (or reusable workflows which have same syntax)
     """
+    # Lazy import to avoid circular imports
+    import workflow
+    import composite_action
+    
     _, _, full_path = parse_uses_string(
         uses_string=uses_string, relative_repo_full_name=relative_repo_full_name
     )
-    if full_path is None:
-        print(f"[-] Failed to index {full_path}. Continuing.")
+    if relative_repo_full_name is None:
+        print(f"[-] Failed to index {relative_repo_full_name}. Continuing.")
         return None
-
-    fpath = convert_action_or_reusable_workflow_path_to_file_path(full_path)
-
-    if fpath.startswith(config.Config.workflow_data_path):
+    # fpath = convert_action_or_reusable_workflow_path_to_file_path(full_path)
+    item_path =  full_path
+    
+    if item_path.endswith((".yml", ".yaml")):
         # Reusable workflow
-        import workflow
         import indexer
 
-        w = workflow.Workflow(None, fpath)
-        obj = config.Config.graph.get_object(w)
+        w = workflow.Workflow(None, item_path)
+        obj = Config.graph.get_object(w)
         if not obj:
-            if not os.path.exists(fpath):
-                print(
-                    f"[-] Failed to index reusable workflow {full_path}. Creating stub node."
-                )
-                config.Config.graph.push_object(w)
-                obj = w
-            else:
-                indexer.index_workflow_file(fpath)
-                obj = config.Config.graph.get_object(w)
+            with RedisConnection(Config.redis_workflows_db) as workflows_db:
+                if workflows_db.get_string(item_path) is None:
+                    import ipdb;ipdb.set_trace()
+                    print(
+                        f"[-] Failed to index reusable workflow {full_path}. Creating stub node."
+                    )
+                    Config.graph.push_object(w)
+                    obj = w
+                else:
+                    indexer.index_workflow_file(item_path)
+                    obj = Config.graph.get_object(w)
+    
     else:
-        # CompositeAction
-        import composite_action
         import indexer
 
-        ca = composite_action.CompositeAction(None, fpath)
-        obj = config.Config.graph.get_object(ca)
+        ca = composite_action.CompositeAction(None, item_path)
+        obj = Config.graph.get_object(ca)
         if not obj:
-            if not os.path.exists(fpath):
-                print(f"[-] Failed to index action {full_path}. Creating stub node.")
-                config.Config.graph.push_object(ca)
-                obj = ca
-            else:
-                indexer.index_action_file(fpath)
-                obj = config.Config.graph.get_object(ca)
+            with RedisConnection(Config.redis_actions_db) as actions_db:
+                if actions_db.get_string(item_path) is None:
+                    print(f"[-] Failed to index action {full_path}. Creating stub node.")
+                    Config.graph.push_object(ca)
+                    obj = ca
+                else:
+                    indexer.index_action_file(item_path)
+                    obj = Config.graph.get_object(ca)
     return obj
 
 
@@ -238,10 +246,10 @@ def find_or_index_workflow(fpath: str) -> GraphObject:
     import indexer
 
     w = workflow.Workflow(None, fpath)
-    obj = config.Config.graph.get_object(w)
+    obj = Config.graph.get_object(w)
     if not obj:
         indexer.index_workflow_file(fpath)
-        obj = config.Config.graph.get_object(w)
+        obj = Config.graph.get_object(w)
 
     return obj
 
@@ -250,4 +258,4 @@ def get_all(node_type: str) -> list[Node]:
     """
     Returns all node_type nodes in the graph.
     """
-    return config.Config.graph.get_all(node_type)
+    return Config.graph.get_all(node_type)
