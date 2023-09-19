@@ -4,6 +4,20 @@ We are indexing all popular (based on stars) repositories on GitHub, their workf
 Once indexed, the data could be queries effectively to find vulnerabilities and missing best practices.
 All vulnerable GitHub Actions found here are documented here: https://docs.google.com/spreadsheets/d/1OGGDFWHGBRwIa60d-XtOsLUq7PQavdj_IK2EWd4vmjY
 
+
+## Setup
+
+Clone Raven repository.
+``` bash
+git clone https://github.com/CycodeLabs/Raven.git
+cd Raven
+```
+
+Build and run `neo4j` && `redis` containers.
+``` bash
+make setup
+```
+
 ## Usage
 
 The tool contains two main functionalities, `download` and `index`.
