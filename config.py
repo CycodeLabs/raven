@@ -4,6 +4,12 @@ from cache import Cache
 
 
 class Config:
+    # Redis Config
+    redis_host: str = None
+    redis_port: int = None
+    redis_db: int = None
+    
+
     # Downloader Config
     github_token: str = None
     min_stars: int = None
@@ -31,6 +37,13 @@ class Config:
     action_download_history_path: str = None
     workflow_index_history_path: str = None
     action_index_history_path: str = None
+    workflow_data_hash: str = None
+    action_data_hash: str = None
+    workflow_download_history_set: str = None
+    action_download_history_set: str = None
+    workflow_index_history_set: str = None
+    action_index_history_set: str = None
+
 
     @staticmethod
     def load_downloader_config(args):
@@ -40,7 +53,9 @@ class Config:
         Config.max_stars = args.get("max_stars")
         Config.org_name = args.get("org_name")
 
-        Config.load_data_dir_paths(Config.output_data_dir)
+        Config.load_redis_config(args)
+
+        # Config.load_data_dir_paths(Config.output_data_dir)
 
         # Cache/history that is used to optimize indexing.
         Config.workflow_download_cache = Cache(
@@ -59,7 +74,9 @@ class Config:
         Config.num_workers = args.get("threads")
         Config.clean = args.get("clean")
 
-        Config.load_data_dir_paths(Config.input_data_dir)
+        Config.load_redis_config(args)
+
+        # Config.load_data_dir_paths(Config.input_data_dir)
 
         # Cache/history that is used to optimize indexing.
         Config.workflow_index_cache = Cache(
@@ -75,6 +92,21 @@ class Config:
             user=Config.neo4j_username,
             password=Config.neo4j_password,
         )
+    
+
+    @staticmethod
+    def load_redis_config(args):
+        Config.redis_host = args.redis_host
+        Config.redis_port = args.redis_port
+        Config.redis_db = args.redis_db
+
+        # Redis keys
+        Config.workflow_data_hash = "workflows"
+        Config.action_data_hash = "actions"
+        Config.workflow_download_history_set = "workflow_download_history"
+        Config.action_download_history_set = "action_download_history"
+        Config.workflow_index_history_set =  "workflow_index_history"
+        Config.action_index_history_set = "action_index_history"
 
     @staticmethod
     def load_default_index_config() -> None:
