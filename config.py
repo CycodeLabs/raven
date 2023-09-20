@@ -126,6 +126,16 @@ class Config:
         )
 
     @staticmethod
+    def load_default_redis_config() -> None:
+        Config.redis_host = "localhost"
+        Config.redis_port = "6379"
+
+        Config.redis_sets_db = 0
+        Config.redis_workflows_db = 1
+        Config.redis_actions_db = 2
+
+
+    @staticmethod
     def load_data_dir_paths(input_data_dir: str):
         data_dir = input_data_dir
 

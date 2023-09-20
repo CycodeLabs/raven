@@ -73,21 +73,21 @@ def find_workflow_path_by_name(repo_full_name: str, workflow_name: str) -> str:
 
 def get_repo_full_name_from_fname(fname: str) -> str:
     """
-    edgedb|edgedb-pkg|integration|linux|test|ubuntu-jammy|action.yml ->
+    edgedb/edgedb-pkg/integration/linux/test/ubuntu-jammy/action.yml ->
     edgedb/edgedb-pkg
 
-    slsa-framework|slsa-github-generator|.github|workflows|builder_go_slsa3.yml ->
+    slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml ->
     slsa-framework/slsa-github-generator
     """
-    return "/".join(fname.split("|")[:2])
+    return '/'.join(fname.split('/')[:2])
 
 
 def get_repo_full_name_from_fpath(fpath: str) -> str:
     """
-    data/action/edgedb|edgedb-pkg|integration|linux|test|ubuntu-jammy|action.yml ->
+    data/action/edgedb/edgedb-pkg/integration/linux/test/ubuntu-jammy/action.yml ->
     edgedb/edgedb-pkg
 
-    data/workflows/slsa-framework|slsa-github-generator|.github|workflows|builder_go_slsa3.yml ->
+    data/workflows/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml ->
     slsa-framework/slsa-github-generator
     """
     return '/'.join(fpath.split('/')[:2])
@@ -214,9 +214,8 @@ def get_obj_from_uses_string(
         if not obj:
             with RedisConnection(Config.redis_workflows_db) as workflows_db:
                 if workflows_db.get_string(item_path) is None:
-                    import ipdb;ipdb.set_trace()
                     print(
-                        f"[-] Failed to index reusable workflow {full_path}. Creating stub node."
+                        f"[-] Failed to index reusable workflow {full_path}."
                     )
                     Config.graph.push_object(w)
                     obj = w

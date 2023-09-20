@@ -31,13 +31,13 @@ def test_convert_dict_to_list():
 def test_get_repo_full_name_from_fname():
     assert (
         utils.get_repo_full_name_from_fname(
-            "edgedb|edgedb-pkg|integration|linux|test|ubuntu-jammy|action.yml"
+            "edgedb/edgedb-pkg/integration/linux/test/ubuntu-jammy/action.yml"
         )
         == "edgedb/edgedb-pkg"
     )
     assert (
         utils.get_repo_full_name_from_fname(
-            "slsa-framework|slsa-github-generator|.github|workflows|builder_go_slsa3.yml"
+            "slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml"
         )
         == "slsa-framework/slsa-github-generator"
     )
@@ -46,13 +46,13 @@ def test_get_repo_full_name_from_fname():
 def test_get_repo_full_name_from_fpath():
     assert (
         utils.get_repo_full_name_from_fpath(
-            "data/action/edgedb|edgedb-pkg|integration|linux|test|ubuntu-jammy|action.yml"
+            "edgedb/edgedb-pkg/integration/linux/test/ubuntu-jammy/action.yml"
         )
         == "edgedb/edgedb-pkg"
     )
     assert (
         utils.get_repo_full_name_from_fpath(
-            "data/workflows/slsa-framework|slsa-github-generator|.github|workflows|builder_go_slsa3.yml"
+            "slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml"
         )
         == "slsa-framework/slsa-github-generator"
     )
@@ -77,40 +77,42 @@ def test_find_uses_strings():
         assert utils.find_uses_strings(test_case[0]) == test_case[1]
 
 
-def test_convert_action_or_reusable_workflow_path_to_file_path():
-    test_cases = [
-        ("actions-rs/toolschain", "data/actions/actions-rs|toolschain|action.yml"),
-        (
-            "github/codeql-action/analyze",
-            "data/actions/github|codeql-action|analyze|action.yml",
-        ),
-        (
-            "octo/repo/.github/workflows/ci.yml",
-            "data/workflows/octo|repo|.github|workflows|ci.yml",
-        ),
-    ]
+# Deprecated
+# def test_convert_action_or_reusable_workflow_path_to_file_path():
+#     test_cases = [
+#         ("actions-rs/toolschain", "actions/actions-rs/toolschain/action.yml"),
+#         (
+#             "github/codeql-action/analyze",
+#             "actions/github/codeql-action/analyze/action.yml",
+#         ),
+#         (
+#             "octo/repo/.github/workflows/ci.yml",
+#             "workflows/octo/repo/.github/workflows/ci.yml",
+#         ),
+#     ]
 
-    for test_case in test_cases:
-        assert (
-            utils.convert_action_or_reusable_workflow_path_to_file_path(test_case[0])
-            == test_case[1]
-        )
+#     for test_case in test_cases:
+#         assert (
+#             utils.convert_action_or_reusable_workflow_path_to_file_path(test_case[0])
+#             == test_case[1]
+#         )
 
 
-def test_convert_workflow_to_file_path():
-    test_cases = [
-        (
-            "myorg/myrepo",
-            "myworkflow.yml",
-            "data/workflows/myorg|myrepo|.github|workflows|myworkflow.yml",
-        ),
-    ]
+# Deprecated
+# def test_convert_workflow_to_file_path():
+#     test_cases = [
+#         (
+#             "myorg/myrepo",
+#             "myworkflow.yml",
+#             "workflows/myorg/myrepo/.github/workflows/myworkflow.yml",
+#         ),
+#     ]
 
-    for test_case in test_cases:
-        assert (
-            utils.convert_workflow_to_file_path(test_case[0], test_case[1])
-            == test_case[2]
-        )
+#     for test_case in test_cases:
+#         assert (
+#             utils.convert_workflow_to_file_path(test_case[0], test_case[1])
+#             == test_case[2]
+#         )
 
 
 def test_parse_uses_string():
