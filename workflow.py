@@ -56,7 +56,7 @@ class Step(GraphObject):
             obj = get_obj_from_uses_string(
                 uses_string=s.uses,
                 relative_repo_full_name=get_repo_full_name_from_fpath(s.path),
-                object_type=Workflow
+                #object_type=Workflow
             )
             if obj:
                 import composite_action
@@ -102,7 +102,7 @@ class Job(GraphObject):
             obj = get_obj_from_uses_string(
                 uses_string=j.uses,
                 relative_repo_full_name=get_repo_full_name_from_fpath(j.path),
-                object_type=Workflow
+                #object_type=Workflow
             )
             if obj:
                 import composite_action

@@ -52,8 +52,7 @@ class CompositeActionStep(GraphObject):
             obj = get_obj_from_uses_string(
                 uses_string=s.uses, 
                 relative_repo_full_name=(s.path),
-                object_type=CompositeAction
-
+                #object_type=CompositeAction
             )
             if obj:
                 if isinstance(obj, CompositeAction):
