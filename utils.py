@@ -5,6 +5,7 @@ import yaml
 from typing import List, Optional, Tuple, Dict, Union
 
 from py2neo.ogm import GraphObject
+from py2neo.data import Node
 
 import config
 
@@ -239,3 +240,10 @@ def find_or_index_workflow(fpath: str) -> GraphObject:
         obj = config.Config.graph.get_object(w)
 
     return obj
+
+
+def get_all(node_type: str) -> list[Node]:
+    """
+    Returns all node_type nodes in the graph.
+    """
+    return config.Config.graph.get_all(node_type)

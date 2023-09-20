@@ -1,5 +1,6 @@
 from py2neo import Graph
 from py2neo.ogm import GraphObject
+from py2neo.data import Node
 from typing import Tuple, Optional
 
 
@@ -34,3 +35,14 @@ class GraphDb(object):
             return obj, False
         else:
             return matched_obj.first(), True
+        
+    def get_all(self, node_type: str) -> list[Node]:
+        """
+        Returns all nodeTypes nodes in the graph.
+        NodeType:
+            1) Job
+            2) CompositeAction
+            3) Workflow
+            4) Step
+        """
+        return list(self.graph.nodes.match(node_type))
