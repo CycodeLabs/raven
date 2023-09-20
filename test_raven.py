@@ -33,14 +33,6 @@ def test_all_steps() -> None:
     assert indexed_steps == 8
 
 
-tests = [
-    test_all_workflows,
-    test_all_jobs,
-    test_all_composite_actions,
-    test_all_steps
-]
-
-
 def test():
     Config.load_default_index_config()
     for test in tests:
@@ -48,4 +40,10 @@ def test():
 
 
 if __name__ == "__main__":
+    tests = [
+        test_all_workflows,
+        test_all_jobs,
+        test_all_composite_actions,
+        test_all_steps
+    ]
     test()
