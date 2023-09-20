@@ -126,4 +126,6 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-         exceptions.catch_exit()
+         pass
+    finally:
+        exceptions.catch_exit()
