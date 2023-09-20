@@ -2,15 +2,19 @@ from py2neo import Graph
 from py2neo.ogm import GraphObject
 from py2neo.data import Node
 from typing import Tuple, Optional
+from exceptions import catch_neo_exception
 
 
 class GraphDb(object):
+    @catch_neo_exception
     def __init__(self, uri, user, password):
         self.graph = Graph(uri, auth=(user, password))
 
+    @catch_neo_exception
     def push_object(self, obj: GraphObject):
         self.graph.merge(obj)
 
+    @catch_neo_exception
     def get_object(self, obj: GraphObject) -> Optional[GraphObject]:
         """Tries to find an object in the graph.
         Returns None if wasn't found.
@@ -21,6 +25,7 @@ class GraphDb(object):
         else:
             return matched_obj.first()
 
+    @catch_neo_exception
     def get_or_create(self, obj: GraphObject) -> Tuple[GraphObject, bool]:
         """Tries to find a similar object using given object _id.
         If found one, returns it, together with True value.
@@ -35,7 +40,8 @@ class GraphDb(object):
             return obj, False
         else:
             return matched_obj.first(), True
-        
+    
+    @catch_neo_exception
     def get_all(self, node_type: str) -> list[Node]:
         """
         Returns all nodeTypes nodes in the graph.
@@ -47,5 +53,6 @@ class GraphDb(object):
         """
         return list(self.graph.nodes.match(node_type))
 
+    @catch_neo_exception
     def clean_graph(self):
         self.graph.delete_all()
