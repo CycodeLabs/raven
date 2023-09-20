@@ -75,7 +75,7 @@ def main() -> None:
     )
     index_parser.add_argument(
         "--neo4j-pass",
-        default="test",
+        default="123456789",
         help="Neo4j password",
     )
     # Currently there are issues in multi-threading

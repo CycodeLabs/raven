@@ -1,0 +1,54 @@
+name: Test PR
+
+
+on: [pull_request]
+
+
+jobs:
+  test_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Containers
+        run: make setup
+
+      - name: Check Containers
+        run: |
+          docker run --rm --network host jwilder/dockerize@sha256:5712c481002a606fffa99a44526fbff2cd1c7f94ca34489f7b0d6bbaeeff4aa4 \
+            -wait tcp://localhost:7474 -timeout 10s
+
+          # Wait for Redis
+          docker run --rm --network host jwilder/dockerize@sha256:5712c481002a606fffa99a44526fbff2cd1c7f94ca34489f7b0d6bbaeeff4aa4 \
+            -wait tcp://localhost:6379 -timeout 10s
+
+  test_raven:
+    runs-on: ubuntu-latest
+    needs: test_build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Containers
+        run: make setup
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+      
+      - name: Create virtual environment
+        run: python -m venv .venv
+
+      - name: Activate virtual environment
+        run: source .venv/bin/activate
+
+      - name: Install requirements
+        run: pip install -r requirements.txt
+
+      - name: Test Organization
+        run: |
+          python main.py download --token ${{ secrets.GITHUB_TOKEN }} org --org-name RavenDemo
+          python main.py index
+          make test

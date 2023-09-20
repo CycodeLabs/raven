@@ -77,6 +77,17 @@ class Config:
         )
 
     @staticmethod
+    def load_default_index_config() -> None:
+        Config.neo4j_uri = "neo4j://localhost:7687"
+        Config.neo4j_username = "neo4j"
+        Config.neo4j_password = "123456789"
+        Config.graph = GraphDb(
+            uri=Config.neo4j_uri,
+            user=Config.neo4j_username,
+            password=Config.neo4j_password,
+        )
+
+    @staticmethod
     def load_data_dir_paths(input_data_dir: str):
         data_dir = input_data_dir
 
