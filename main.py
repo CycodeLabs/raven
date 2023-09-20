@@ -125,7 +125,8 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except KeyboardInterrupt:
-         pass
-    finally:
         exceptions.catch_exit()
+    except KeyboardInterrupt:
+         exceptions.catch_exit()
+    except Exception as e:
+        print(f"Exception: {e}")
