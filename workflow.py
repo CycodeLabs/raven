@@ -56,6 +56,7 @@ class Step(GraphObject):
             obj = get_obj_from_uses_string(
                 uses_string=s.uses,
                 relative_repo_full_name=get_repo_full_name_from_fpath(s.path),
+                #object_type=Workflow
             )
             if obj:
                 import composite_action
@@ -96,12 +97,12 @@ class Job(GraphObject):
     @staticmethod
     def from_dict(d) -> "Job":
         j = Job(_id=d["_id"], name=d["name"], path=d["path"])
-
         if "uses" in d:
             j.uses = d["uses"]
             obj = get_obj_from_uses_string(
                 uses_string=j.uses,
                 relative_repo_full_name=get_repo_full_name_from_fpath(j.path),
+                #object_type=Workflow
             )
             if obj:
                 import composite_action

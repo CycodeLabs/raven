@@ -49,6 +49,6 @@ jobs:
 
       - name: Test Organization
         run: |
-          python main.py download --token ${{ secrets.GITHUB_TOKEN }} org --org-name RavenDemo
+          python main.py download org --token ${{ secrets.GITHUB_TOKEN }} --org-name RavenDemo
           python main.py index
           make test

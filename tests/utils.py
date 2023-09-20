@@ -20,6 +20,7 @@ class GraphDbMock(object):
 
 
 def load_test_config():
+    Config.load_default_redis_config()
     Config.input_data_dir = "data"
     Config.graph = GraphDbMock()
     Config.workflow_data_path = os.path.join(Config.input_data_dir, "workflows")

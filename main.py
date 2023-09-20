@@ -11,6 +11,21 @@ def main() -> None:
     )
 
     subparsers = parser.add_subparsers(dest="command", help="sub-command help")
+
+    redis_parser = argparse.ArgumentParser(add_help=False)
+    
+    # Add redis arguments
+    redis_parser.add_argument("--redis-host", help="Redis host, default localhost", default="localhost")
+    redis_parser.add_argument("--redis-port", help="Redis port, default 6379", default=6379)
+    redis_parser.add_argument(
+        "--clean-redis",
+        "-cr",
+        action="store_const",
+        default=False,
+        const=True,
+        help="Whether to clean cache in the redis",
+    )
+
     download_parser_options = argparse.ArgumentParser(add_help=False)
     download_parser_options.add_argument(
         "--token",
@@ -25,19 +40,21 @@ def main() -> None:
     )
 
     download_parser = subparsers.add_parser(
-        "download", parents=[download_parser_options], help="Download workflows into Redis database"
+        "download", help="Download workflows into Redis database"
     )
 
     download_sub_parser = download_parser.add_subparsers(
-        dest="download_command"
+        dest="download_command",
     )
 
     crawl_download_parser = download_sub_parser.add_parser(
-        "crawl", help="Crawl Public GitHub repositories"
+        "crawl", help="Crawl Public GitHub repositories",
+        parents=[download_parser_options, redis_parser]
     )
 
     org_download_parser = download_sub_parser.add_parser(
-        "org", help="Scan specific GitHub organization"
+        "org", help="Scan specific GitHub organization",
+        parents=[download_parser_options, redis_parser]
     )
     
     crawl_download_parser.add_argument(
@@ -55,7 +72,7 @@ def main() -> None:
 
     # Index action
     index_parser = subparsers.add_parser(
-        "index", help="Index the download workflows into Neo4j database"
+        "index", parents=[redis_parser], help="Index the download workflows into Neo4j database"
     )
     index_parser.add_argument(
         "--input",
@@ -84,8 +101,8 @@ def main() -> None:
         "--threads", "-t", type=int, default=1, help="Number of threads"
     )
     index_parser.add_argument(
-        "--clean",
-        "-c",
+        "--clean-neo4j",
+        "-cn",
         action="store_const",
         default=False,
         const=True,

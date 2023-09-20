@@ -72,7 +72,7 @@ def test_job_from_dict_uses():
         },
         "secrets": "inherit",
         "_id": "f796b4c01ecb6021e6a30ec7466ab11a",
-        "path": "data/workflows/vercel|next.js|.github|workflows|build_and_test.yml",
+        "path": "vercel/next.js/.github/workflows/build_and_test.yml",
     }
 
     job = workflow.Job.from_dict(job_d)
@@ -93,7 +93,7 @@ def test_step_from_dict_uses():
         "uses": "electron/github-app-auth-action@cc6751b3b5e4edc5b9a4ad0a021ac455653b6dc8",
         "with": {"creds": "${{ secrets.ISSUE_TRIAGE_GH_APP_CREDS }}"},
         "_id": "9a42f7bb6c8e5be00c1d36d54ac7bdb6",
-        "path": "data/workflows/electron|electron|.github|workflows|issue-commented.yml",
+        "path": "data/workflows/electron/electron/.github/workflows/issue-commented.yml",
     }
 
     step = workflow.Step.from_dict(step_d)

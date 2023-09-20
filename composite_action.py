@@ -50,7 +50,9 @@ class CompositeActionStep(GraphObject):
         elif "uses" in d:
             s.uses = d["uses"]
             obj = get_obj_from_uses_string(
-                s.uses, get_repo_full_name_from_fpath(s.path)
+                uses_string=s.uses, 
+                relative_repo_full_name=(s.path),
+                #object_type=CompositeAction
             )
             if obj:
                 if isinstance(obj, CompositeAction):
