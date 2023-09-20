@@ -3,6 +3,7 @@ import argparse
 from downloader import download_all_workflows_and_actions, download_org_workflows_and_actions
 from indexer import index_downloaded_workflows_and_actions
 from config import Config
+import exceptions
 
 
 def main() -> None:
@@ -31,12 +32,6 @@ def main() -> None:
         "--token",
         required=True,
         help="GITHUB_TOKEN to download data from Github API (Needed for effective rate-limiting)",
-    )
-    download_parser_options.add_argument(
-        "--output",
-        "-o",
-        default="data",
-        help="Output directory to download the workflows",
     )
 
     download_parser = subparsers.add_parser(
@@ -75,30 +70,24 @@ def main() -> None:
         "index", parents=[redis_parser], help="Index the download workflows into Neo4j database"
     )
     index_parser.add_argument(
-        "--input",
-        "-i",
-        default="data",
-        help="Input directory with the downloaded workflows",
-    )
-    index_parser.add_argument(
         "--neo4j-uri",
         default="neo4j://localhost:7687",
-        help="Neo4j URI endpoint",
+        help="Neo4j URI endpoint, default: neo4j://localhost:7687",
     )
     index_parser.add_argument(
         "--neo4j-user",
         default="neo4j",
-        help="Neo4j username",
+        help="Neo4j username, default: neo4j",
     )
     index_parser.add_argument(
         "--neo4j-pass",
         default="123456789",
-        help="Neo4j password",
+        help="Neo4j password, default: 123456789",
     )
     # Currently there are issues in multi-threading
     # (especially regarding composite actions/reusable workflows)
     index_parser.add_argument(
-        "--threads", "-t", type=int, default=1, help="Number of threads"
+        "--threads", "-t", type=int, default=1, help="Number of threads, default: 1"
     )
     index_parser.add_argument(
         "--clean-neo4j",
@@ -134,4 +123,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+         exceptions.catch_exit()
