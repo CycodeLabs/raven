@@ -9,7 +9,7 @@ class Client(object):
     def send_message(self, channel_id, message):
         try:
             self.client.chat_postMessage(channel=channel_id, text=message)
-            print(f"Report send successfully")
+            print(f"[x] Report send successfully")
 
         except SlackApiError as e:
-            print(f"Failed to send report: {e.response['error']}")
+            print(f"[x] Failed to send report: {e.response['error']}")

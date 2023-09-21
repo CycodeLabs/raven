@@ -109,7 +109,7 @@ def main() -> None:
     # Index action
     index_parser = subparsers.add_parser(
         "index",
-        parents=[redis_parser],
+        parents=[redis_parser, neo4j_parser],
         help="Index the download workflows into Neo4j database",
     )
     index_parser.add_argument(
