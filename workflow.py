@@ -2,16 +2,29 @@ from typing import Optional, Dict, Any
 from hashlib import md5
 
 from py2neo.ogm import GraphObject, RelatedTo, RelatedFrom, Property
-
-import config
+from config import Config
 from utils import (
     get_dependencies_in_code,
-    get_obj_from_uses_string,
-    get_repo_full_name_from_fpath,
+    get_repo_name_from_path,
     convert_dict_to_list,
-    find_workflow_path_by_name,
-    find_or_index_workflow,
+    find_workflow_by_name,
 )
+from dependency import UsesString, UsesStringType
+
+
+def get_or_create_workflow(path: str) -> "Workflow":
+    """Used when need to create relations with another workflow.
+    If workflow wasn't indexed yet, we create a stub node,
+    that will be enriched eventually.
+    """
+    w = Workflow(None, path)
+    obj = Config.graph.get_object(w)
+    if not obj:
+        # This is a legitimate behavior.
+        # Once the workflow will be indexed, the node will be enriched.
+        Config.graph.push_object(w)
+        obj = w
+    return obj
 
 
 class StepCodeDependency(GraphObject):
@@ -53,18 +66,17 @@ class Step(GraphObject):
                 s.using_param.add(param)
         elif "uses" in d:
             s.uses = d["uses"]
-            obj = get_obj_from_uses_string(
-                uses_string=s.uses,
-                relative_repo_full_name=get_repo_full_name_from_fpath(s.path),
-                #object_type=Workflow
-            )
-            if obj:
+            # Uses string is quite complex, and may reference to several types of nodes.
+            # In the case of steps, it may only reference actions (and not reusable workflows).
+            uses_string_obj = UsesString.analyze(uses_string=s.uses)
+            if uses_string_obj.type == UsesStringType.ACTION:
+                # Avoiding circular imports.
                 import composite_action
 
-                if isinstance(obj, composite_action.CompositeAction):
-                    s.action.add(obj)
-                elif isinstance(obj, Workflow):
-                    s.reusable_workflow.add(obj)
+                obj = composite_action.get_or_create_composite_action(
+                    uses_string_obj.get_full_path(s.path)
+                )
+                s.action.add(obj)
 
             if "with" in d:
                 s.with_prop = convert_dict_to_list(d["with"])
@@ -99,18 +111,12 @@ class Job(GraphObject):
         j = Job(_id=d["_id"], name=d["name"], path=d["path"])
         if "uses" in d:
             j.uses = d["uses"]
-            obj = get_obj_from_uses_string(
-                uses_string=j.uses,
-                relative_repo_full_name=get_repo_full_name_from_fpath(j.path),
-                #object_type=Workflow
-            )
-            if obj:
-                import composite_action
-
-                if isinstance(obj, composite_action.CompositeAction):
-                    raise Exception("[-] Job can't have a composite action dependency.")
-                elif isinstance(obj, Workflow):
-                    j.reusable_workflow.add(obj)
+            # Uses string is quite complex, and may reference to several types of nodes.
+            # In the case of jobs, it may only reference reusable workflows.
+            uses_string_obj = UsesString.analyze(uses_string=j.uses)
+            if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
+                obj = get_or_create_workflow(uses_string_obj.get_full_path(j.path))
+                j.reusable_workflow.add(obj)
 
             if "with" in d:
                 j.with_prop = convert_dict_to_list(d["with"])
@@ -169,20 +175,22 @@ class Workflow(GraphObject):
             # When we meet it, we want to create a special relation from the triggering workflow,
             # to the triggered one.
             # There are cases where the triggering workflow wasn't loaded yet.
-            # So we load it.
+            # In that case we creating a stub node for it,
+            # and once we'll meet it, we'll enrich it.
             if "workflow_run" in d["on"]:
                 workflow_run = d["on"]["workflow_run"]
                 triggering_workflows = workflow_run["workflows"]
                 types = workflow_run["types"]
                 for workflow_name in triggering_workflows:
-                    repo = get_repo_full_name_from_fpath(w.path)
-                    w_path = find_workflow_path_by_name(repo, workflow_name)
+                    repo = get_repo_name_from_path(w.path)
+                    w_path = find_workflow_by_name(repo, workflow_name)
                     if w_path is None:
-                        raise Exception(
-                            f"Didn't found triggering workflow. name: '{workflow_name}' repo: '{repo}' fpath: '{w.path}'"
+                        print(
+                            f"[-] Couldn't find the triggering workflow '{workflow_name}' in repository '{repo}'"
                         )
-                    w_triggering = find_or_index_workflow(w_path)
-                    w.triggered_by.add(w_triggering, types=types)
+                    else:
+                        w_triggering = get_or_create_workflow(w_path)
+                        w.triggered_by.add(w_triggering, types=types)
 
         w.trigger = trigger
 
@@ -190,6 +198,8 @@ class Workflow(GraphObject):
             w.permissions = convert_dict_to_list(d["permissions"])
 
         for job_name, job in d["jobs"].items():
+            if not isinstance(job, dict):
+                raise Exception("Invalid job structure.")
             job["_id"] = md5(f"{w._id}_{job_name}".encode()).hexdigest()
             job["path"] = w.path
             job["name"] = job_name

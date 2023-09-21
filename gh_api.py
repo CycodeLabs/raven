@@ -22,10 +22,7 @@ REPOSITORY_SEARCH_URL = (
     BASE_URL
     + "/search/repositories?q={query}&sort=stars&order=desc&per_page=100&page={page}"
 )
-ORGANIZATION_REPOSITORY_URL = (
-    BASE_URL
-    + "/orgs/{organization_name}/repos"
-)
+ORGANIZATION_REPOSITORY_URL = BASE_URL + "/orgs/{organization_name}/repos"
 CONTENTS_URL = BASE_URL + "/repos/{repo_path}/contents/{file_path}"
 
 REPOSITORY_QUERY_MIN = "stars:>={min_stars}"
@@ -35,6 +32,7 @@ headers = {
     "Accept": "application/vnd.github+json",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.42",
 }
+
 
 def get_organization_repository_generator(organization_name: str) -> list[dict]:
     """
@@ -50,7 +48,7 @@ def get_organization_repository_generator(organization_name: str) -> list[dict]:
     }
     """
     headers["Authorization"] = f"Token {Config.github_token}"
-    
+
     r = get(
         ORGANIZATION_REPOSITORY_URL.format(organization_name=organization_name),
         headers=headers,
@@ -58,7 +56,7 @@ def get_organization_repository_generator(organization_name: str) -> list[dict]:
 
     if r.status_code != HTTPStatus.OK:
         raise Exception(f"status code: {r.status_code}. Response: {r.text}")
-    
+
     return r.json()
 
 
@@ -67,8 +65,6 @@ def get_repository_generator(min_stars: int, max_stars: Optional[int]) -> Iterat
 
     # In addition, to make wider queries, we going to change the query after each 10 pages.
     # Because our query only do stars count, we can just narrow the stars, and keep querying.
-
-    # TODO: take care of rate-limiting depletion
     last_star_count = 0
     while True:
         more_results = False
@@ -96,7 +92,6 @@ def get_repository_generator(min_stars: int, max_stars: Optional[int]) -> Iterat
 
         if not more_results:
             # Recieved no results. can quit.
-            # TODO: May reached here due to rate-limiting depletion.
             break
         else:
             max_stars = last_star_count + 1
@@ -115,7 +110,7 @@ def get_repository_search(query: str, page: int = 1) -> Dict[str, Any]:
     return r.json()["items"]
 
 
-def get_repository_workflows(repo_path: str) -> Dict[str, str]:
+def get_repository_workflows(repo: str) -> Dict[str, str]:
     """Returns list of workflows for the specified repository.
     Returns a dictionary that maps workflow file name, to its donwloadable URL.
 
@@ -128,9 +123,7 @@ def get_repository_workflows(repo_path: str) -> Dict[str, str]:
     headers["Authorization"] = f"Token {Config.github_token}"
 
     file_path = ".github/workflows"
-    r = get(
-        CONTENTS_URL.format(repo_path=repo_path, file_path=file_path), headers=headers
-    )
+    r = get(CONTENTS_URL.format(repo_path=repo, file_path=file_path), headers=headers)
     if r.status_code == 404:
         return {}
     if r.status_code == 403 and int(r.headers["X-RateLimit-Remaining"]) == 0:
@@ -141,7 +134,7 @@ def get_repository_workflows(repo_path: str) -> Dict[str, str]:
             f"[*] Ratelimit for for contents API depleted. Sleeping {time_to_sleep} seconds"
         )
         time.sleep(time_to_sleep)
-        return get_repository_workflows(repo_path)
+        return get_repository_workflows(repo)
     if r.status_code != 200:
         raise Exception(f"status code: {r.status_code}. Response: {r.text}")
 
@@ -160,7 +153,7 @@ def get_repository_workflows(repo_path: str) -> Dict[str, str]:
     return workflows
 
 
-def get_repository_composite_action(repo_path: str, path_in_repo: str = ".") -> str:
+def get_repository_composite_action(path: str) -> str:
     """Returns downloadble URL for a composite action in the specific path.
 
     receives 'path_in_repo' relative path to the repository root to where search the action.yml.
@@ -168,12 +161,16 @@ def get_repository_composite_action(repo_path: str, path_in_repo: str = ".") -> 
 
     Raises exception if network error occured.
     """
+    path_splitted = path.split("/")
+    repo = "/".join(path_splitted[:2])
+    relative_path = "/".join(path_splitted[2:])
+
     headers["Authorization"] = f"Token {Config.github_token}"
 
     for suffix in ["action.yml", "action.yaml"]:
-        file_path = os.path.join(path_in_repo, suffix)
+        file_path = os.path.join(relative_path, suffix)
         r = get(
-            CONTENTS_URL.format(repo_path=repo_path, file_path=file_path),
+            CONTENTS_URL.format(repo_path=repo, file_path=file_path),
             headers=headers,
         )
         if r.status_code == 404:
@@ -185,18 +182,19 @@ def get_repository_composite_action(repo_path: str, path_in_repo: str = ".") -> 
         return r.json()["download_url"]
 
 
-def get_repository_reusable_workflow(repo_path: str, path_in_repo: str = ".") -> str:
+def get_repository_reusable_workflow(path: str) -> str:
     """Returns downlodable URL for a reusable workflows in the specific path.
-
-    receives 'path_in_repo' relative path to the repository root to where search the workflow.
-    The path should end with .yml or .yaml.
 
     Raises exception if network error occured.
     """
+    path_splitted = path.split("/")
+    repo = "/".join(path_splitted[:2])
+    relative_path = "/".join(path_splitted[2:])
+
     headers["Authorization"] = f"Token {Config.github_token}"
 
     r = get(
-        CONTENTS_URL.format(repo_path=repo_path, file_path=path_in_repo),
+        CONTENTS_URL.format(repo_path=repo, file_path=relative_path),
         headers=headers,
     )
     if r.status_code == 404:
