@@ -5,6 +5,7 @@ from downloader import (
     download_org_workflows_and_actions,
 )
 from indexer import index_downloaded_workflows_and_actions
+from reporter.report import generate
 from config import Config
 import logger
 
@@ -32,6 +33,30 @@ def main() -> None:
         default=False,
         const=True,
         help="Whether to clean cache in the redis",
+    )
+
+    neo4j_parser = argparse.ArgumentParser(add_help=False)
+    neo4j_parser.add_argument(
+        "--neo4j-uri",
+        default="neo4j://localhost:7687",
+        help="Neo4j URI endpoint, default: neo4j://localhost:7687",
+    )
+    neo4j_parser.add_argument(
+        "--neo4j-user",
+        default="neo4j",
+        help="Neo4j username, default: neo4j",
+    )
+    neo4j_parser.add_argument(
+        "--neo4j-pass",
+        default="123456789",
+        help="Neo4j password, default: 123456789",
+    )
+    neo4j_parser.add_argument(
+        "--clean-neo4j",
+        action="store_const",
+        default=False,
+        const=True,
+        help="Whether to clean cache, and index from scratch",
     )
 
     download_parser_options = argparse.ArgumentParser(add_help=False)
@@ -88,39 +113,40 @@ def main() -> None:
         help="Index the download workflows into Neo4j database",
     )
     index_parser.add_argument(
-        "--neo4j-uri",
-        default="neo4j://localhost:7687",
-        help="Neo4j URI endpoint, default: neo4j://localhost:7687",
-    )
-    index_parser.add_argument(
-        "--neo4j-user",
-        default="neo4j",
-        help="Neo4j username, default: neo4j",
-    )
-    index_parser.add_argument(
-        "--neo4j-pass",
-        default="123456789",
-        help="Neo4j password, default: 123456789",
-    )
-    index_parser.add_argument(
         "--debug",
         action="store_const",
         default=False,
         const=True,
         help="Whether to print debug statements",
     )
-    # Currently there are issues in multi-threading
-    # (especially regarding composite actions/reusable workflows)
     index_parser.add_argument(
         "--threads", "-t", type=int, default=1, help="Number of threads, default: 1"
     )
-    index_parser.add_argument(
-        "--clean-neo4j",
-        "-cn",
+
+    report_parser = subparsers.add_parser(
+        "report",
+        parents=[redis_parser, neo4j_parser],
+        help="Generate report from indexed Actions",
+    )
+    report_parser.add_argument(
+        "--slack",
+        "-s",
         action="store_const",
         default=False,
         const=True,
-        help="Whether to clean cache, and index from scratch",
+        help="Send report to slack channel",
+    )
+    report_parser.add_argument(
+        "--slack-token",
+        "-st",
+        default="",
+        help="Send report to slack channel",
+    )
+    report_parser.add_argument(
+        "--channel-id",
+        "-ci",
+        default="",
+        help="Send report to slack channel",
     )
 
     args = parser.parse_args()
@@ -131,6 +157,7 @@ def main() -> None:
             "org": download_org_workflows_and_actions,
         },
         "index": index_downloaded_workflows_and_actions,
+        "report": generate,
     }
 
     if args.command in command_functions:
@@ -142,6 +169,9 @@ def main() -> None:
                 download_parser.print_help()
         elif args.command == "index":
             Config.load_indexer_config(vars(args))
+            command_functions[args.command]()
+        elif args.command == "report":
+            Config.load_reporter_config(vars(args))
             command_functions[args.command]()
     else:
         parser.print_help()

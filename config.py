@@ -97,6 +97,14 @@ class Config:
         )
 
     @staticmethod
+    def load_reporter_config(args):
+        Config.slack = args.get("slack")
+        Config.slack_token = args.get("slack_token")
+        Config.channel_id = args.get("channel_id")
+
+        Config.load_indexer_config(args)
+
+    @staticmethod
     def load_redis_config(args):
         Config.redis_host = args.get("redis_host")
         Config.redis_port = args.get("redis_port")

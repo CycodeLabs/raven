@@ -25,7 +25,7 @@ def index_downloaded_workflows_and_actions() -> None:
 
     index_downloaded_actions()
     index_downloaded_workflows()
-
+    
 
 def index_downloaded_actions() -> None:
     with RedisConnection(Config.redis_actions_db) as actions_db:

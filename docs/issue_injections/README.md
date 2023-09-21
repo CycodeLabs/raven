@@ -66,8 +66,8 @@ Threat actors can exploit this by injecting malicious payloads into the issue ti
 
 ## Detections
 
-### Issue + Run Command Injection
-This detection identifies workflows triggered by events like issue comments, issues, or pull request targets that depend on specific GitHub event-related data.
+### Issue + Command Injection
+This detection identifies workflows triggered by events like issue comments, issues that depend on specific GitHub issue-related data.
 ``` cypher
 MATCH (w:Workflow)-[*]->(d:StepCodeDependency)
 WHERE
