@@ -95,6 +95,9 @@ For authenticated users, the next rate limiting applies:
 - Understand whether `actions/github-script` has an interesting threat landscape
 - Bettering modeling of dictionary params, such as `with`.
 
-## Queries
+## Knowledge Base
 
-- [Injections](/docs/injections/README.md)
+- [Issue Injections](/docs/issue_injections/README.md)
+- [Pull Request Injections](/docs/pull_request_injections/README.md)
+- [Workflow Run Injections](/docs/workflow_run_injections/README.md)
+- [CodeSee Injections](/docs/codesee_injections/README.md)
