@@ -5,7 +5,6 @@ from config import Config
 
 
 class RedisConnection:
-
     def __init__(self, redis_db):
         self.redis_client = None
         self.redis_host = Config.redis_host
@@ -14,7 +13,9 @@ class RedisConnection:
 
     def __enter__(self) -> RedisConnection:
         try:
-            self.redis_client = redis.Redis(host=self.redis_host, port=self.redis_port, db=self.redis_db)
+            self.redis_client = redis.Redis(
+                host=self.redis_host, port=self.redis_port, db=self.redis_db
+            )
         except Exception as err:
             print(f"Failed to connect to Redis: {err}")
 
@@ -35,7 +36,7 @@ class RedisConnection:
             self.redis_client.set(key, value)
         except redis.exceptions.ResponseError as e:
             print(f"Failed to set value: {e}")
-    
+
     def get_string(self, key: str) -> str:
         return self.redis_client.get(key)
 
@@ -50,18 +51,18 @@ class RedisConnection:
 
     def exists_in_set(self, set: str, value: str) -> bool:
         return bool(self.redis_client.sismember(set, value))
-    
+
     def get_set_length(self, set: str) -> int:
         return self.redis_client.scard(set)
-    
+
     def get_set_values(self, set: str) -> set:
         return self.redis_client.smembers(set)
-    
+
     def delete_key(self, key: str) -> None:
         self.redis_client.delete(key)
-    
+
     def flush_db(self) -> None:
         self.redis_client.flushdb()
-    
+
     def get_all_keys(self) -> list:
         return self.redis_client.keys()

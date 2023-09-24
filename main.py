@@ -1,6 +1,9 @@
 import argparse
 
-from downloader import download_all_workflows_and_actions, download_org_workflows_and_actions
+from downloader import (
+    download_all_workflows_and_actions,
+    download_org_workflows_and_actions,
+)
 from indexer import index_downloaded_workflows_and_actions
 from config import Config
 import exceptions
@@ -14,10 +17,14 @@ def main() -> None:
     subparsers = parser.add_subparsers(dest="command", help="sub-command help")
 
     redis_parser = argparse.ArgumentParser(add_help=False)
-    
+
     # Add redis arguments
-    redis_parser.add_argument("--redis-host", help="Redis host, default localhost", default="localhost")
-    redis_parser.add_argument("--redis-port", help="Redis port, default 6379", default=6379)
+    redis_parser.add_argument(
+        "--redis-host", help="Redis host, default localhost", default="localhost"
+    )
+    redis_parser.add_argument(
+        "--redis-port", help="Redis port, default 6379", default=6379
+    )
     redis_parser.add_argument(
         "--clean-redis",
         "-cr",
@@ -43,15 +50,17 @@ def main() -> None:
     )
 
     crawl_download_parser = download_sub_parser.add_parser(
-        "crawl", help="Crawl Public GitHub repositories",
-        parents=[download_parser_options, redis_parser]
+        "crawl",
+        help="Crawl Public GitHub repositories",
+        parents=[download_parser_options, redis_parser],
     )
 
     org_download_parser = download_sub_parser.add_parser(
-        "org", help="Scan specific GitHub organization",
-        parents=[download_parser_options, redis_parser]
+        "org",
+        help="Scan specific GitHub organization",
+        parents=[download_parser_options, redis_parser],
     )
-    
+
     crawl_download_parser.add_argument(
         "--max-stars", help="Maximum number of stars for a repository"
     )
@@ -67,7 +76,9 @@ def main() -> None:
 
     # Index action
     index_parser = subparsers.add_parser(
-        "index", parents=[redis_parser], help="Index the download workflows into Neo4j database"
+        "index",
+        parents=[redis_parser],
+        help="Index the download workflows into Neo4j database",
     )
     index_parser.add_argument(
         "--neo4j-uri",
@@ -107,17 +118,17 @@ def main() -> None:
         },
         "index": index_downloaded_workflows_and_actions,
     }
-    
+
     if args.command in command_functions:
         if args.command == "download":
             if args.download_command:
                 Config.load_downloader_config(vars(args))
                 command_functions[args.command][args.download_command]()
             else:
-                 download_parser.print_help()
+                download_parser.print_help()
         elif args.command == "index":
-                Config.load_indexer_config(vars(args))
-                command_functions[args.command]()
+            Config.load_indexer_config(vars(args))
+            command_functions[args.command]()
     else:
         parser.print_help()
 
@@ -127,6 +138,6 @@ if __name__ == "__main__":
         main()
         exceptions.catch_exit()
     except KeyboardInterrupt:
-         exceptions.catch_exit()
+        exceptions.catch_exit()
     except Exception as e:
         print(f"Exception: {e}")

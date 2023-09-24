@@ -53,7 +53,7 @@ def get_organization_repository_generator(organization_name: str) -> list[dict]:
         ORGANIZATION_REPOSITORY_URL.format(organization_name=organization_name),
         headers=headers,
     )
-
+    print(len(r.json()))
     if r.status_code != HTTPStatus.OK:
         raise Exception(f"status code: {r.status_code}. Response: {r.text}")
 

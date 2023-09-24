@@ -20,7 +20,7 @@ class GraphDb(object):
             return None
         else:
             return matched_obj.first()
-    
+
     def get_or_create(self, obj: GraphObject) -> Tuple[GraphObject, bool]:
         """Tries to find a similar object using given object _id.
         If found one, returns it, together with True value.
@@ -35,7 +35,7 @@ class GraphDb(object):
             return obj, False
         else:
             return matched_obj.first(), True
-    
+
     def get_all(self, node_type: str) -> list[Node]:
         """
         Returns all nodeTypes nodes in the graph.

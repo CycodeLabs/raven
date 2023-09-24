@@ -46,7 +46,6 @@ class Config:
     workflow_index_history_set: str = None
     action_index_history_set: str = None
 
-
     @staticmethod
     def load_downloader_config(args):
         Config.github_token = args.get("token")
@@ -56,7 +55,7 @@ class Config:
         Config.org_name = args.get("org_name")
 
         Config.load_redis_config(args)
-        
+
         # Config.load_data_dir_paths(Config.output_data_dir)
 
         # Cache/history that is used to optimize indexing.
@@ -94,7 +93,6 @@ class Config:
             user=Config.neo4j_username,
             password=Config.neo4j_password,
         )
-    
 
     @staticmethod
     def load_redis_config(args):
@@ -111,7 +109,7 @@ class Config:
         # Config.action_data_hash = "actions"
         Config.workflow_download_history_set = "workflow_download_history"
         Config.action_download_history_set = "action_download_history"
-        Config.workflow_index_history_set =  "workflow_index_history"
+        Config.workflow_index_history_set = "workflow_index_history"
         Config.action_index_history_set = "action_index_history"
 
     @staticmethod
@@ -133,7 +131,6 @@ class Config:
         Config.redis_sets_db = 0
         Config.redis_workflows_db = 1
         Config.redis_actions_db = 2
-
 
     @staticmethod
     def load_data_dir_paths(input_data_dir: str):

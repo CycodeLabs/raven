@@ -228,6 +228,6 @@ def test_composite_action_step_from_dict_using():
         "update-environment:${{ inputs.update-environment }}",
     ]
     # Check if step.action should be == 0 or 1
-    #assert len(step.action) == 0
+    # assert len(step.action) == 0
     assert len(step.reusable_workflow) == 0
     assert len(step.using_param) == 0
