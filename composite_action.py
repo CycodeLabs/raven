@@ -4,12 +4,27 @@ from hashlib import md5
 from py2neo.ogm import GraphObject, RelatedTo, Property
 
 import workflow
+from config import Config
 from utils import (
     get_dependencies_in_code,
-    get_obj_from_uses_string,
-    get_repo_full_name_from_fpath,
     convert_dict_to_list,
 )
+from dependency import UsesString, UsesStringType
+
+
+def get_or_create_composite_action(path: str) -> "CompositeAction":
+    """Used when need to create relations with another action.
+    If action wasn't indexed yet, we create a stub node,
+    that will be enriched eventually.
+    """
+    ca = CompositeAction(None, path)
+    obj = Config.graph.get_object(ca)
+    if not obj:
+        # This is a legitimate behavior.
+        # Once the action will be indexed, the node will be enriched.
+        Config.graph.push_object(ca)
+        obj = ca
+    return obj
 
 
 class CompositeActionStep(GraphObject):
@@ -49,16 +64,14 @@ class CompositeActionStep(GraphObject):
                 s.shell = d["shell"]
         elif "uses" in d:
             s.uses = d["uses"]
-            obj = get_obj_from_uses_string(
-                uses_string=s.uses, 
-                relative_repo_full_name=(s.path),
-                #object_type=CompositeAction
-            )
-            if obj:
-                if isinstance(obj, CompositeAction):
-                    s.action.add(obj)
-                elif isinstance(obj, workflow.Workflow):
-                    s.reusable_workflow.add(obj)
+            # Uses string is quite complex, and may reference to several types of nodes.
+            # In the case of action steps, it may only reference actions (and not reusable workflows).
+            uses_string_obj = UsesString.analyze(uses_string=s.uses)
+            if uses_string_obj.type == UsesStringType.ACTION:
+                obj = get_or_create_composite_action(
+                    uses_string_obj.get_full_path(s.path)
+                )
+                s.action.add(obj)
 
             if "with" in d:
                 s.with_prop = convert_dict_to_list(d["with"])

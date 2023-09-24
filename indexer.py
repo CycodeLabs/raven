@@ -1,8 +1,4 @@
 import io
-import os
-from traceback import print_exc
-
-import concurrent.futures
 
 import yaml
 from yaml.constructor import Constructor
@@ -22,56 +18,32 @@ Constructor.add_constructor("tag:yaml.org,2002:bool", add_bool)
 
 
 def index_downloaded_workflows_and_actions() -> None:
-    
     if Config.clean_neo4j:
         clean_index()
-
 
     index_downloaded_actions()
     index_downloaded_workflows()
 
 
 def index_downloaded_actions() -> None:
-    # with concurrent.futures.ProcessPoolExecutor(
-    #     max_workers=Config.num_workers
-    # ) as executor:
-    #     futures = []
-    #     for fname in os.listdir(Config.action_data_path):
-    #         fpath = os.path.join(Config.action_data_path, fname)
-    #         futures.append(executor.submit(index_action_file, fpath))
-
-    #     num_results = len(futures)
-    #     for k, _ in enumerate(concurrent.futures.as_completed(futures)):
-    #         print(f"[*] Indexing actions. {k+1}/{num_results}", end="\r")
     with RedisConnection(Config.redis_actions_db) as actions_db:
         actions = [a.decode() for a in actions_db.get_all_keys()]
         for action in actions:
             index_action_file(action)
             print(
-                f"[*] Indexing actions. {actions.index(action) + 1}/{len(actions)}", end="\r"
+                f"[*] Indexing actions. {actions.index(action) + 1}/{len(actions)}",
+                end="\r",
             )
 
 
 def index_downloaded_workflows() -> None:
-    # with concurrent.futures.ProcessPoolExecutor(
-    #     max_workers=Config.num_workers
-    # ) as executor:
-    #     futures = []
-    #     for fname in os.listdir(Config.workflow_data_path):
-    #         # fpath = os.path.join(Config.workflow_data_path, fname)
-    #         fpath = fname
-    #         futures.append(executor.submit(index_workflow_file, fpath))
-
-    #     num_results = len(futures)
-    #     for k, _ in enumerate(concurrent.futures.as_completed(futures)):
-    #         print(f"[*] Indexing workflows. {k+1}/{num_results}", end="\r")
-
     with RedisConnection(Config.redis_workflows_db) as workflows_db:
-        workflows = [w.decode() for w in workflows_db.get_all_keys()] 
+        workflows = [w.decode() for w in workflows_db.get_all_keys()]
         for workflow in workflows:
             index_workflow_file(workflow)
             print(
-                f"[*] Indexing workflows. {workflows.index(workflow) + 1}/{len(workflows)}", end="\r"
+                f"[*] Indexing workflows. {workflows.index(workflow) + 1}/{len(workflows)}",
+                end="\r",
             )
 
 
@@ -84,7 +56,6 @@ def index_action_file(action: str) -> None:
             with RedisConnection(Config.redis_actions_db) as actions_db:
                 content = actions_db.get_string(action).decode()
 
-
             # PyYAML has issues with tabs.
             content = content.replace("\t", "  ")
 
@@ -94,7 +65,7 @@ def index_action_file(action: str) -> None:
                 try:
                     obj = yaml.load(f, yaml.loader.Loader)
                 except yaml.scanner.ScannerError as e:
-                    print(f"[-] Failed loading: {action}. Exception: {e}. Skipping")
+                    print(f"[-] Failed loading: {action}. Exception: {e}. Skipping...")
                     return
 
             # Could happen if the YAML is empty.
@@ -102,8 +73,9 @@ def index_action_file(action: str) -> None:
                 return
 
             if isinstance(obj, str):
-                # Treat it as a symlink
-                # TODO
+                # TODO: This is a symlink. We should handle it.
+                # Only examples at the moment are for https://github.com/edgedb/edgedb-pkg
+                # E.g., https://github.com/edgedb/edgedb-pkg/blob/master/integration/linux/build/centos-8/action.yml
                 print(f"[-] Symlink detected: {content}. Skipping...")
                 return
 
@@ -113,7 +85,6 @@ def index_action_file(action: str) -> None:
             sets_db.insert_to_set(Config.action_index_history_set, action)
     except Exception as e:
         print(f"[-] Error while indexing {action}. {e}")
-        print_exc()
 
 
 def index_workflow_file(workflow: str) -> None:
@@ -134,7 +105,9 @@ def index_workflow_file(workflow: str) -> None:
                 try:
                     obj = yaml.load(f, yaml.loader.Loader)
                 except yaml.scanner.ScannerError as e:
-                    print(f"[-] Failed loading: {workflow}. Exception: {e}. Skipping")
+                    print(
+                        f"[-] Failed loading: {workflow}. Exception: {e}. Skipping..."
+                    )
                     return
 
             # Could happen if the YAML is empty.
@@ -142,17 +115,19 @@ def index_workflow_file(workflow: str) -> None:
                 return
 
             if isinstance(obj, str):
-                # Treat it as a symlink
-                # TODO
+                # TODO: This is a symlink. We should handle it.
+                # Only examples at the moment are for https://github.com/edgedb/edgedb-pkg
+                # E.g., https://github.com/edgedb/edgedb-pkg/blob/master/integration/linux/build/centos-8/action.yml
                 print(f"[-] Symlink detected: {content}. Skipping...")
                 return
+
             obj["path"] = workflow
+
             Config.graph.push_object(Workflow.from_dict(obj))
             sets_db.insert_to_set(Config.workflow_index_history_set, workflow)
-    
+
     except Exception as e:
         print(f"[-] Error while indexing {workflow}. {e}")
-        print_exc()
 
 
 def clean_index() -> None:
