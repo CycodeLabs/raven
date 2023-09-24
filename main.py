@@ -6,7 +6,7 @@ from downloader import (
 )
 from indexer import index_downloaded_workflows_and_actions
 from config import Config
-import exceptions
+import logger
 
 
 def main() -> None:
@@ -39,6 +39,13 @@ def main() -> None:
         "--token",
         required=True,
         help="GITHUB_TOKEN to download data from Github API (Needed for effective rate-limiting)",
+    )
+    download_parser_options.add_argument(
+        "--debug",
+        action="store_const",
+        default=False,
+        const=True,
+        help="Whether to print debug statements",
     )
 
     download_parser = subparsers.add_parser(
@@ -95,6 +102,13 @@ def main() -> None:
         default="123456789",
         help="Neo4j password, default: 123456789",
     )
+    index_parser.add_argument(
+        "--debug",
+        action="store_const",
+        default=False,
+        const=True,
+        help="Whether to print debug statements",
+    )
     # Currently there are issues in multi-threading
     # (especially regarding composite actions/reusable workflows)
     index_parser.add_argument(
@@ -136,8 +150,8 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-        exceptions.catch_exit()
+        logger.catch_exit()
     except KeyboardInterrupt:
-        exceptions.catch_exit()
+        logger.catch_exit()
     except Exception as e:
-        print(f"Exception: {e}")
+        logger.error(e)

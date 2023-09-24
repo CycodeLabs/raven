@@ -4,6 +4,7 @@ from requests import get
 from typing import Dict, Any, Optional, Iterator, Optional
 from http import HTTPStatus
 from config import Config
+import logger
 
 """
 Current rate limiting:
@@ -75,7 +76,7 @@ def get_repository_generator(min_stars: int, max_stars: Optional[int]) -> Iterat
                 query = REPOSITORY_QUERY_MIN_MAX.format(
                     min_stars=min_stars, max_stars=max_stars
                 )
-            print(f"[*] Querying repository page: {page}, Query: {query}")
+            logger.debug(f"[*] Querying repository page: {page}, Query: {query}")
             repos = get_repository_search(
                 query=query,
                 page=page,
@@ -84,7 +85,7 @@ def get_repository_generator(min_stars: int, max_stars: Optional[int]) -> Iterat
                 more_results = True
                 for repo in repos:
                     last_star_count = int(repo["stargazers_count"])
-                    print(
+                    logger.debug(
                         f"[+] About to download repository: {repo['full_name']}, Stars: {last_star_count}"
                     )
                     yield repo["full_name"]
@@ -130,7 +131,7 @@ def get_repository_workflows(repo: str) -> Dict[str, str]:
         import time
 
         time_to_sleep = int(r.headers["X-RateLimit-Reset"]) - time.time() + 1
-        print(
+        logger.error(
             f"[*] Ratelimit for for contents API depleted. Sleeping {time_to_sleep} seconds"
         )
         time.sleep(time_to_sleep)

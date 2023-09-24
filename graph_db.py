@@ -2,6 +2,7 @@ from py2neo import Graph
 from py2neo.ogm import GraphObject
 from py2neo.data import Node
 from typing import Tuple, Optional
+import logger
 
 
 class GraphDb(object):
@@ -28,7 +29,7 @@ class GraphDb(object):
         """
         matched_obj = obj.__class__.match(self.graph, obj._id)
         if not matched_obj.exists():
-            print(
+            logger.warning(
                 f"WARNING: We didn't found object {obj._id} of type {obj.__class__.__name__}, so we created it."
             )
             self.graph.push(obj)

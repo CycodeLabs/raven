@@ -10,6 +10,7 @@ from utils import (
     find_workflow_by_name,
 )
 from dependency import UsesString, UsesStringType
+import logger
 
 
 def get_or_create_workflow(path: str) -> "Workflow":
@@ -185,7 +186,7 @@ class Workflow(GraphObject):
                     repo = get_repo_name_from_path(w.path)
                     w_path = find_workflow_by_name(repo, workflow_name)
                     if w_path is None:
-                        print(
+                        logger.debug(
                             f"[-] Couldn't find the triggering workflow '{workflow_name}' in repository '{repo}'"
                         )
                     else:

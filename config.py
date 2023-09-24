@@ -48,6 +48,7 @@ class Config:
 
     @staticmethod
     def load_downloader_config(args):
+        Config.debug = args.get("debug")
         Config.github_token = args.get("token")
         Config.output_data_dir = args.get("output")
         Config.min_stars = args.get("min_stars")
@@ -68,6 +69,7 @@ class Config:
 
     @staticmethod
     def load_indexer_config(args):
+        Config.debug = args.get("debug")
         Config.input_data_dir = args.get("input")
         Config.neo4j_uri = args.get("neo4j_uri")
         Config.neo4j_username = args.get("neo4j_user")
