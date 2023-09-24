@@ -1,10 +1,18 @@
 name: Test PR
 
-
 on: [pull_request]
 
-
 jobs:
+  python-style:
+    name: Style-check and lint Python files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: python3 -m pip install black flake8
+      - name: Black
+        run: python3 -m black --diff --check .
+
   test_raven:
     runs-on: ubuntu-latest
     steps:
@@ -29,7 +37,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
-      
+
       - name: Create virtual environment
         run: python -m venv .venv
 
