@@ -53,7 +53,7 @@ class Config:
         Config.output_data_dir = args.get("output")
         Config.min_stars = args.get("min_stars")
         Config.max_stars = args.get("max_stars")
-        Config.org_name = args.get("org_name")
+        Config.organization_name = args.get("org_name")
 
         Config.load_redis_config(args)
 

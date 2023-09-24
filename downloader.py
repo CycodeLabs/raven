@@ -3,7 +3,6 @@ from requests import get
 from config import Config
 from redis_connection import RedisConnection
 from gh_api import (
-    get_organization_repository_generator,
     get_repository_generator,
     get_repository_workflows,
     get_repository_composite_action,
@@ -27,10 +26,17 @@ def download_org_workflows_and_actions() -> None:
 
     We are trying to cache the downloads as much as we can to reduce redundant download attempts.
     """
-    repositories = get_organization_repository_generator(Config.org_name)
+    logger.debug("[+] Starting repository iterator")
+    generator = get_repository_generator(organization_name=Config.organization_name)
 
-    for repository in repositories:
-        download_workflows_and_actions(repository.get("full_name"))
+    # Clean redis
+    if Config.clean_redis:
+        flush_db(Config.redis_sets_db)
+        flush_db(Config.redis_actions_db)
+        flush_db(Config.redis_workflows_db)
+
+    for repo in generator:
+        download_workflows_and_actions(repo)
 
 
 def download_all_workflows_and_actions() -> None:

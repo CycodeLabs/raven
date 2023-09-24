@@ -23,7 +23,9 @@ REPOSITORY_SEARCH_URL = (
     BASE_URL
     + "/search/repositories?q={query}&sort=stars&order=desc&per_page=100&page={page}"
 )
-ORGANIZATION_REPOSITORY_URL = BASE_URL + "/orgs/{organization_name}/repos"
+ORGANIZATION_REPOSITORY_URL = (
+    BASE_URL + "/orgs/{organization_name}/repos?per_page=100&page={page}"
+)
 CONTENTS_URL = BASE_URL + "/repos/{repo_path}/contents/{file_path}"
 
 REPOSITORY_QUERY_MIN = "stars:>={min_stars}"
@@ -35,7 +37,7 @@ headers = {
 }
 
 
-def get_organization_repository_generator(organization_name: str) -> list[dict]:
+def get_organization_repository(organization_name: str, page: int) -> list[dict]:
     """
     Returns a list of all repositories for the specified organization.
     The objects look like this:
@@ -49,19 +51,25 @@ def get_organization_repository_generator(organization_name: str) -> list[dict]:
     }
     """
     headers["Authorization"] = f"Token {Config.github_token}"
-
+    # while True:
     r = get(
-        ORGANIZATION_REPOSITORY_URL.format(organization_name=organization_name),
+        ORGANIZATION_REPOSITORY_URL.format(
+            organization_name=organization_name, page=page
+        ),
         headers=headers,
     )
-    print(len(r.json()))
     if r.status_code != HTTPStatus.OK:
+        logger.error(f"[-] Failed fetching repositories for {organization_name}")
         raise Exception(f"status code: {r.status_code}. Response: {r.text}")
 
     return r.json()
 
 
-def get_repository_generator(min_stars: int, max_stars: Optional[int]) -> Iterator[str]:
+def get_repository_generator(
+    min_stars: Optional[int] = 0,
+    max_stars: Optional[int] = 0,
+    organization_name: Optional[str] = "",
+) -> Iterator[str]:
     # Github allows only querying up to 1000 results, means 10 pages.
 
     # In addition, to make wider queries, we going to change the query after each 10 pages.
@@ -70,17 +78,25 @@ def get_repository_generator(min_stars: int, max_stars: Optional[int]) -> Iterat
     while True:
         more_results = False
         for page in range(1, 11):
-            if not max_stars:
-                query = REPOSITORY_QUERY_MIN.format(min_stars=min_stars)
-            else:
-                query = REPOSITORY_QUERY_MIN_MAX.format(
-                    min_stars=min_stars, max_stars=max_stars
+            logger.debug(f"[*] Querying page: {page}")
+            if organization_name:
+                repos = get_organization_repository(
+                    organization_name=organization_name, page=page
                 )
-            logger.debug(f"[*] Querying repository page: {page}, Query: {query}")
-            repos = get_repository_search(
-                query=query,
-                page=page,
-            )
+
+            else:
+                if not max_stars:
+                    query = REPOSITORY_QUERY_MIN.format(min_stars=min_stars)
+                else:
+                    query = REPOSITORY_QUERY_MIN_MAX.format(
+                        min_stars=min_stars, max_stars=max_stars
+                    )
+
+                repos = get_repository_search(
+                    query=query,
+                    page=page,
+                )
+
             if repos:
                 more_results = True
                 for repo in repos:
@@ -89,6 +105,10 @@ def get_repository_generator(min_stars: int, max_stars: Optional[int]) -> Iterat
                         f"[+] About to download repository: {repo['full_name']}, Stars: {last_star_count}"
                     )
                     yield repo["full_name"]
+            else:
+                more_results = False
+                break
+
             page += 1
 
         if not more_results:
