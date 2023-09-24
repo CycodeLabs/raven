@@ -4,3 +4,5 @@ argparse==1.4.0
 py2neo==2021.2.3
 pytest==7.4.2
 redis==5.0.0
+loguru==0.7.2
+tqdm==4.66.1

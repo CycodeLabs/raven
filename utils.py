@@ -8,6 +8,7 @@ from py2neo.data import Node
 
 from redis_connection import RedisConnection
 from config import Config
+import logger
 
 
 def get_dependencies_in_code(code: str) -> List[str]:
@@ -48,7 +49,7 @@ def find_workflow_by_name(repo: str, workflow_name: str) -> str:
                     try:
                         obj = yaml.load(f, yaml.loader.Loader)
                     except yaml.scanner.ScannerError as e:
-                        print(
+                        logger.error(
                             f"[-] Failed loading: {workflow}. Exception: {e}. Skipping..."
                         )
                         return

@@ -11,6 +11,7 @@ from gh_api import (
 )
 from utils import find_uses_strings, convert_workflow_to_unix_path
 from dependency import UsesString, UsesStringType
+import logger
 
 
 def download_org_workflows_and_actions() -> None:
@@ -46,7 +47,7 @@ def download_all_workflows_and_actions() -> None:
     We are trying to cache the downloads as much as we can to reduce redundant download attempts.
     """
 
-    print("[+] Starting repository iterator")
+    logger.debug("[+] Starting repository iterator")
     generator = get_repository_generator(Config.min_stars, Config.max_stars)
 
     # Clean redis
@@ -68,14 +69,14 @@ def download_workflows_and_actions(repo: str) -> None:
     """
     with RedisConnection(Config.redis_sets_db) as sets_db:
         if sets_db.exists_in_set(Config.workflow_download_history_set, repo):
-            print("[!] Already downloaded")
+            logger.debug("[!] Already downloaded")
             return
 
         workflows = get_repository_workflows(repo)
-        print(f"[+] Found {len(workflows)} workflows for {repo}")
+        logger.debug(f"[+] Found {len(workflows)} workflows for {repo}")
 
         for name, url in workflows.items():
-            print(f"[+] Fetching {name}")
+            logger.debug(f"[+] Fetching {name}")
             resp = get(url, timeout=10)
             if resp.status_code != 200:
                 raise Exception(
@@ -121,8 +122,9 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             return
 
         if url is None:
-            print(
-                f"[-] Couldn't download the action.yml for the dependent action referenced by '{uses_string}' (Maybe runs a local action that was checked out previously? Maybe the action is executed through a Dockerfile?)"
+            # Maybe runs a local action that was checked out previously? Maybe the action is executed through a Dockerfile?
+            logger.error(
+                f"[-] Couldn't download the action.yml for the dependent action referenced by '{uses_string}'"
             )
             return
 
