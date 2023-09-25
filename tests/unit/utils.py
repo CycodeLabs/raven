@@ -1,4 +1,3 @@
-import os
 from config import Config
 from typing import Tuple, Optional
 
@@ -19,9 +18,5 @@ class GraphDbMock(object):
         return None, True
 
 
-def load_test_config():
-    Config.load_default_redis_config()
-    Config.input_data_dir = "data"
+def load_test_config() -> None:
     Config.graph = GraphDbMock()
-    Config.workflow_data_path = os.path.join(Config.input_data_dir, "workflows")
-    Config.action_data_path = os.path.join(Config.input_data_dir, "actions")

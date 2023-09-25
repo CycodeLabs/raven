@@ -17,7 +17,7 @@ def test_job_from_dict_steps():
             },
         ],
         "_id": "6347a06af34cc01c884c110fd9db8964",
-        "path": "data/workflows/electron|electron|.github|workflows|issue-commented.yml",
+        "path": "electron/electron/.github/workflows/issue-commented.yml",
     }
 
     job = workflow.Job.from_dict(job_d)
@@ -51,7 +51,7 @@ def test_workflow_from_dict():
                 ],
             }
         },
-        "path": "data/workflows/twbs|bootstrap|.github|workflows|release-notes.yml",
+        "path": "twbs/bootstrap/.github/workflows/release-notes.yml",
     }
 
     wf = workflow.Workflow.from_dict(workflow_d)
@@ -93,7 +93,7 @@ def test_step_from_dict_uses():
         "uses": "electron/github-app-auth-action@cc6751b3b5e4edc5b9a4ad0a021ac455653b6dc8",
         "with": {"creds": "${{ secrets.ISSUE_TRIAGE_GH_APP_CREDS }}"},
         "_id": "9a42f7bb6c8e5be00c1d36d54ac7bdb6",
-        "path": "data/workflows/electron/electron/.github/workflows/issue-commented.yml",
+        "path": "electron/electron/.github/workflows/issue-commented.yml",
     }
 
     step = workflow.Step.from_dict(step_d)
@@ -112,7 +112,7 @@ def test_step_from_dict_run():
         "name": "Autolabel based on affected areas",
         "run": "echo ${{ github.event.issue.body }}",
         "_id": "1386cfbaf5513e27c090 133287e01fe",
-        "path": "data/workflows/vercel|next.js|.github|workflows|issue_validator.yml",
+        "path": "vercel/next.js/.github/workflows/issue_validator.yml",
     }
 
     step = workflow.Step.from_dict(step_d)
