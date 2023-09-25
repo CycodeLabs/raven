@@ -8,7 +8,11 @@ from gh_api import (
     get_repository_composite_action,
     get_repository_reusable_workflow,
 )
-from utils import find_uses_strings, convert_workflow_to_unix_path
+from utils import (
+    find_uses_strings,
+    convert_workflow_to_unix_path,
+    get_repo_name_from_path,
+)
 from dependency import UsesString, UsesStringType
 import logger
 
@@ -140,14 +144,17 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
 
         # We look for dependant external actions.
         uses_strings = find_uses_strings(resp.text)
+        new_repo = get_repo_name_from_path(full_path)
 
         for new_uses_string in uses_strings:
             # Some infinite loop I met in several repositories
-            new_full_path = UsesString.analyze(new_uses_string).get_full_path(repo)
+            new_full_path = UsesString.analyze(new_uses_string).get_full_path(new_repo)
             if new_full_path == full_path:
                 continue
 
-            download_action_or_reusable_workflow(uses_string=new_uses_string, repo=repo)
+            download_action_or_reusable_workflow(
+                uses_string=new_uses_string, repo=new_repo
+            )
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
             sets_db.insert_to_set(Config.workflow_download_history_set, full_path)
