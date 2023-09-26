@@ -19,36 +19,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build Containers
-        run: make setup
-
-      - name: Check Containers
-        run: |
-          docker run --rm --network host jwilder/dockerize@sha256:5712c481002a606fffa99a44526fbff2cd1c7f94ca34489f7b0d6bbaeeff4aa4 \
-            -wait tcp://localhost:7474 -timeout 10s
-
-          docker run --rm --network host jwilder/dockerize@sha256:5712c481002a606fffa99a44526fbff2cd1c7f94ca34489f7b0d6bbaeeff4aa4 \
-            -wait tcp://localhost:7687 -timeout 10s
-
-          docker run --rm --network host jwilder/dockerize@sha256:5712c481002a606fffa99a44526fbff2cd1c7f94ca34489f7b0d6bbaeeff4aa4 \
-            -wait tcp://localhost:6379 -timeout 10s
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-
-      - name: Create virtual environment
-        run: python -m venv .venv
-
-      - name: Activate virtual environment
-        run: source .venv/bin/activate
-
-      - name: Install requirements
-        run: pip install -r requirements.txt
-
       - name: Test Organization
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python main.py download org --token ${{ secrets.GITHUB_TOKEN }} --org-name RavenDemo
-          python main.py index
-          make test
+          make test-build

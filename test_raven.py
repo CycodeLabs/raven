@@ -1,5 +1,9 @@
 import utils
 from config import Config
+from downloader import download_org_workflows_and_actions
+from indexer import index_downloaded_workflows_and_actions
+import pytest
+import logger
 
 
 def get_nodes(node_type: str) -> (int, list):
@@ -51,17 +55,27 @@ def test_all_steps() -> None:
     assert indexed_steps == 8
 
 
+def init_env():
+    Config.load_testing_config()
+    download_org_workflows_and_actions()
+    index_downloaded_workflows_and_actions()
+
+
 def test():
-    Config.load_default_index_config()
-    for test in tests:
-        test()
-
-
-if __name__ == "__main__":
+    logger.info("[x] Starting Integration testing")
+    init_env()
     tests = [
         test_all_workflows,
         test_all_jobs,
         test_all_composite_actions,
         test_all_steps,
     ]
+
+    for test in tests:
+        test()
+
+    pytest.main(["-v", "tests/unit"])
+
+
+if __name__ == "__main__":
     test()

@@ -30,7 +30,7 @@ def download_org_workflows_and_actions() -> None:
 
     We are trying to cache the downloads as much as we can to reduce redundant download attempts.
     """
-    logger.debug("[+] Starting repository iterator")
+    logger.info("[+] Starting repository iterator")
     generator = get_repository_generator(organization_name=Config.organization_name)
 
     # Clean redis
@@ -57,7 +57,7 @@ def download_all_workflows_and_actions() -> None:
     We are trying to cache the downloads as much as we can to reduce redundant download attempts.
     """
 
-    logger.debug("[+] Starting repository iterator")
+    logger.info("[+] Starting repository iterator")
     generator = get_repository_generator(Config.min_stars, Config.max_stars)
 
     # Clean redis

@@ -1,6 +1,7 @@
 import os
 from graph_db import GraphDb
 from cache import Cache
+from os import getenv
 
 
 class Config:
@@ -123,14 +124,23 @@ class Config:
         Config.action_index_history_set = "action_index_history"
 
     @staticmethod
-    def load_default_index_config() -> None:
-        Config.neo4j_uri = "neo4j://localhost:7687"
-        Config.neo4j_username = "neo4j"
-        Config.neo4j_password = "123456789"
-        Config.graph = GraphDb(
-            uri=Config.neo4j_uri,
-            user=Config.neo4j_username,
-            password=Config.neo4j_password,
+    def load_testing_config() -> None:
+        Config.load_downloader_config(
+            {"debug": False, "token": getenv("GITHUB_TOKEN"), "org_name": "RavenDemo"}
+        )
+
+        Config.load_indexer_config(
+            {
+                "debug": False,
+                "redis_host": "raven-redis-test",
+                "redis_port": 6379,
+                "clean_redis": False,
+                "neo4j_uri": "neo4j://raven-neo4j-test:7687",
+                "neo4j_user": "neo4j",
+                "neo4j_pass": "123456789",
+                "threads": 1,
+                "clean_neo4j": False,
+            }
         )
 
     @staticmethod

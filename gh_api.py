@@ -78,7 +78,7 @@ def get_repository_generator(
     while True:
         more_results = False
         for page in range(1, 11):
-            logger.debug(f"[*] Querying page: {page}")
+            logger.info(f"[*] Querying page: {page}")
             if organization_name:
                 repos = get_organization_repository(
                     organization_name=organization_name, page=page

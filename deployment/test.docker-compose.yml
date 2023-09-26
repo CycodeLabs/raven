@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  neo4j-test:
+    image: neo4j:5.12
+    container_name: raven-neo4j-test
+    environment:
+      NEO4J_AUTH: neo4j/123456789 # Change 'password' to your desired Neo4j password
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:7474"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-test:
+    image: redis:7.2.1
+    container_name: raven-redis-test
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  raven-test:
+    build:
+      dockerfile: ./deployment/test.dockerfile
+      context: ..
+    depends_on:
+      neo4j-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    environment:
+      - GITHUB_TOKEN=$GITHUB_TOKEN
+    container_name: raven-engine-test
