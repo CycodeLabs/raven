@@ -1,5 +1,5 @@
 import composite_action
-from tests.utils import load_test_config
+from tests.unit.utils import load_test_config
 
 load_test_config()
 

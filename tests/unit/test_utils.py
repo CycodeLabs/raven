@@ -1,4 +1,4 @@
-from tests.utils import load_test_config
+from tests.unit.utils import load_test_config
 import utils
 
 load_test_config()

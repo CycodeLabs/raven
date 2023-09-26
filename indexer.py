@@ -30,7 +30,7 @@ def index_downloaded_workflows_and_actions() -> None:
 def index_downloaded_actions() -> None:
     with RedisConnection(Config.redis_actions_db) as actions_db:
         actions = [a.decode() for a in actions_db.get_all_keys()]
-        logger.debug(f"[*] Indexing actions...")
+        logger.info(f"[*] Indexing actions...")
         for action in tqdm(actions, desc="Indexing actions"):
             index_action_file(action)
 
@@ -38,7 +38,7 @@ def index_downloaded_actions() -> None:
 def index_downloaded_workflows() -> None:
     with RedisConnection(Config.redis_workflows_db) as workflows_db:
         workflows = [w.decode() for w in workflows_db.get_all_keys()]
-        logger.debug(f"[*] Indexing workflows...")
+        logger.info(f"[*] Indexing workflows...")
         for workflow in tqdm(workflows, desc="Indexing workflows"):
             index_workflow_file(workflow)
 

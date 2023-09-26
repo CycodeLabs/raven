@@ -1,5 +1,10 @@
 import utils
 from config import Config
+from downloader import download_org_workflows_and_actions
+from indexer import index_downloaded_workflows_and_actions
+from os import getenv
+import pytest
+import logger
 
 
 def get_nodes(node_type: str) -> (int, list):
@@ -51,17 +56,24 @@ def test_all_steps() -> None:
     assert indexed_steps == 8
 
 
+def init_env():
+    download_org_workflows_and_actions()
+    index_downloaded_workflows_and_actions()
+
+
 def test():
-    Config.load_default_index_config()
-    for test in tests:
-        test()
-
-
-if __name__ == "__main__":
+    logger.info("[x] Starting Integration testing")
+    Config.organization_name = "RavenDemo"
+    Config.github_token = getenv("GITHUB_TOKEN")
+    init_env()
     tests = [
         test_all_workflows,
         test_all_jobs,
         test_all_composite_actions,
         test_all_steps,
     ]
-    test()
+
+    for test in tests:
+        test()
+
+    pytest.main(["-v", "tests/unit"])

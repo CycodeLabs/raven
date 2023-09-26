@@ -10,6 +10,10 @@ logger.add(
 )
 
 
+def info(msg: str) -> None:
+    logger.info(msg)
+
+
 def debug(msg: str) -> None:
     from config import Config
 
@@ -36,3 +40,7 @@ def catch_exit() -> None:
         print(f"""\n[x] View results at: http://{neo4j_server}:7474""")
 
     sys.exit(0)
+
+
+def fail_exit() -> None:
+    sys.exit(1)

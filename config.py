@@ -123,17 +123,6 @@ class Config:
         Config.action_index_history_set = "action_index_history"
 
     @staticmethod
-    def load_default_index_config() -> None:
-        Config.neo4j_uri = "neo4j://localhost:7687"
-        Config.neo4j_username = "neo4j"
-        Config.neo4j_password = "123456789"
-        Config.graph = GraphDb(
-            uri=Config.neo4j_uri,
-            user=Config.neo4j_username,
-            password=Config.neo4j_password,
-        )
-
-    @staticmethod
     def load_default_redis_config() -> None:
         Config.redis_host = "localhost"
         Config.redis_port = "6379"

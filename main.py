@@ -6,6 +6,7 @@ from downloader import (
 )
 from indexer import index_downloaded_workflows_and_actions
 from reporter.report import generate
+from tests.test_raven import test
 from config import Config
 import logger
 
@@ -149,6 +150,12 @@ def main() -> None:
         help="Send report to slack channel",
     )
 
+    test_parser = subparsers.add_parser(
+        "test",
+        parents=[redis_parser, neo4j_parser],
+        help="Test RAVEN (for development purposes only)",
+    )
+
     args = parser.parse_args()
 
     command_functions = {
@@ -158,6 +165,7 @@ def main() -> None:
         },
         "index": index_downloaded_workflows_and_actions,
         "report": generate,
+        "test": test,
     }
 
     if args.command in command_functions:
@@ -165,14 +173,18 @@ def main() -> None:
             if args.download_command:
                 Config.load_downloader_config(vars(args))
                 command_functions[args.command][args.download_command]()
+                return
             else:
                 download_parser.print_help()
         elif args.command == "index":
             Config.load_indexer_config(vars(args))
-            command_functions[args.command]()
         elif args.command == "report":
             Config.load_reporter_config(vars(args))
-            command_functions[args.command]()
+        elif args.command == "test":
+            Config.load_indexer_config(vars(args))
+
+        command_functions[args.command]()
+        return
     else:
         parser.print_help()
 
@@ -184,4 +196,9 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.catch_exit()
     except Exception as e:
-        logger.error(e)
+        if isinstance(e, AssertionError):
+            logger.error("[x] Some tests are failing")
+        else:
+            logger.error(e)
+
+        logger.fail_exit()
