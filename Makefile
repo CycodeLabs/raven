@@ -10,4 +10,4 @@ test-build:
 test-run:
 	@echo "DO NOT USE DIRECTLY; PLEASE USE: make test-build"
 	@echo "Running Tests..."
-	@python main.py test --redis-host raven-redis-test --neo4j-uri neo4j://raven-neo4j-test:7687
+	@python test_raven.py

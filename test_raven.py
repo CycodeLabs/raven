@@ -2,7 +2,6 @@ import utils
 from config import Config
 from downloader import download_org_workflows_and_actions
 from indexer import index_downloaded_workflows_and_actions
-from os import getenv
 import pytest
 import logger
 
@@ -57,14 +56,13 @@ def test_all_steps() -> None:
 
 
 def init_env():
+    Config.load_testing_config()
     download_org_workflows_and_actions()
     index_downloaded_workflows_and_actions()
 
 
 def test():
     logger.info("[x] Starting Integration testing")
-    Config.organization_name = "RavenDemo"
-    Config.github_token = getenv("GITHUB_TOKEN")
     init_env()
     tests = [
         test_all_workflows,
@@ -77,3 +75,7 @@ def test():
         test()
 
     pytest.main(["-v", "tests/unit"])
+
+
+if __name__ == "__main__":
+    test()
