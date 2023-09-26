@@ -2,6 +2,7 @@ from requests import get
 
 from config import Config
 from redis_connection import RedisConnection
+import logger
 from gh_api import (
     get_repository_generator,
     get_repository_workflows,
@@ -14,7 +15,7 @@ from utils import (
     get_repo_name_from_path,
 )
 from dependency import UsesString, UsesStringType
-import logger
+from redis_utils import clean_redis_db
 
 
 def download_org_workflows_and_actions() -> None:
@@ -35,9 +36,7 @@ def download_org_workflows_and_actions() -> None:
 
     # Clean redis
     if Config.clean_redis:
-        flush_db(Config.redis_sets_db)
-        flush_db(Config.redis_actions_db)
-        flush_db(Config.redis_workflows_db)
+        clean_redis_db()
 
     for repo in generator:
         download_workflows_and_actions(repo)
@@ -62,9 +61,7 @@ def download_all_workflows_and_actions() -> None:
 
     # Clean redis
     if Config.clean_redis:
-        flush_db(Config.redis_sets_db)
-        flush_db(Config.redis_actions_db)
-        flush_db(Config.redis_workflows_db)
+        clean_redis_db()
 
     for repo in generator:
         download_workflows_and_actions(repo)
@@ -164,9 +161,3 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             sets_db.insert_to_set(Config.action_download_history_set, full_path)
             with RedisConnection(Config.redis_actions_db) as workflows_db:
                 workflows_db.insert_to_string(full_path, resp.text)
-
-
-def flush_db(db_number) -> None:
-    # TODO: Move to utils
-    with RedisConnection(db_number) as db:
-        db.flush_db()
