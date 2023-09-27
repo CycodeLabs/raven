@@ -73,7 +73,7 @@ def index_action_file(action: str) -> None:
             if isinstance(obj, str):
                 # TODO: This is a symlink. We should handle it.
                 # Only examples at the moment are for https://github.com/edgedb/edgedb-pkg
-                # E.g., https://github.com/edgedb/edgedb-pkg/blob/master/integration/v
+                # E.g. https://github.com/edgedb/edgedb-pkg/blob/master/integration/linux/build/centos-8/action.yml
                 logger.debug(f"[-] Symlink detected: {content}. Skipping...")
                 return
 
@@ -115,7 +115,7 @@ def index_workflow_file(workflow: str) -> None:
             if isinstance(obj, str):
                 # TODO: This is a symlink. We should handle it.
                 # Only examples at the moment are for https://github.com/edgedb/edgedb-pkg
-                # E.g., https://github.com/edgedb/edgedb-pkg/blob/master/integration/linux/build/centos-8/action.yml
+                # E.g. https://github.com/edgedb/edgedb-pkg/blob/master/integration/linux/build/centos-8/action.yml
                 logger.debug(f"[-] Symlink detected: {content}. Skipping...")
                 return
 
