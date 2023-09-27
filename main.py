@@ -1,14 +1,14 @@
 import argparse
 
-import logger
-from downloader import (
+import logger.log as log
+from downloader.downloader import (
     download_all_workflows_and_actions,
     download_org_workflows_and_actions,
 )
-from indexer import index_downloaded_workflows_and_actions
+from indexer.index import index_downloaded_workflows_and_actions
 from reporter.report import generate
-from config import Config
-from config import (
+from config.config import Config
+from config.config import (
     DEBUG_DEFAULT,
     MIN_STARS_DEFAULT,
     NEO4J_CLEAN_DEFAULT,
@@ -20,7 +20,7 @@ from config import (
     REDIS_CLEAN_DEFAULT,
     REPORT_SLACK_DEFAULT,
 )
-from config import load_downloader_config, load_indexer_config
+from config.config import load_downloader_config, load_indexer_config
 
 
 def main() -> None:
@@ -198,13 +198,13 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-        logger.catch_exit()
+        log.catch_exit()
     except KeyboardInterrupt:
-        logger.catch_exit()
+        log.catch_exit()
     except Exception as e:
         if isinstance(e, AssertionError):
-            logger.error("[x] Some tests are failing")
+            log.error("[x] Some tests are failing")
         else:
-            logger.error(e)
+            log.error(e)
 
-        logger.fail_exit()
+        log.fail_exit()

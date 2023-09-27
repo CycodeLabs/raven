@@ -1,6 +1,4 @@
-from graph_db import GraphDb
-from cache import Cache
-from os import getenv
+from storage.graph_db import GraphDb
 
 # Default Values
 DEBUG_DEFAULT = False

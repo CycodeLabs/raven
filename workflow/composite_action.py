@@ -3,13 +3,13 @@ from hashlib import md5
 
 from py2neo.ogm import GraphObject, RelatedTo, Property
 
-import workflow
-from config import Config
-from utils import (
+import workflow.handler as handler
+from config.config import Config
+from common.utils import (
     get_dependencies_in_code,
     convert_dict_to_list,
 )
-from dependency import UsesString, UsesStringType
+from workflow.dependency import UsesString, UsesStringType
 
 
 def get_or_create_composite_action(path: str) -> "CompositeAction":
@@ -40,8 +40,8 @@ class CompositeActionStep(GraphObject):
     with_prop = Property("with")
 
     action = RelatedTo("CompositeAction")
-    reusable_workflow = RelatedTo(workflow.Workflow)
-    using_param = RelatedTo(workflow.StepCodeDependency)
+    reusable_workflow = RelatedTo(handler.Workflow)
+    using_param = RelatedTo(handler.StepCodeDependency)
 
     def __init__(self, _id: str, path: str):
         self._id = _id
@@ -57,7 +57,7 @@ class CompositeActionStep(GraphObject):
 
             # Adding ${{...}} dependencies as an entity.
             for code_dependency in get_dependencies_in_code(s.run):
-                param = workflow.StepCodeDependency(code_dependency)
+                param = handler.StepCodeDependency(code_dependency)
                 s.using_param.add(param)
 
             if "shell" in d:

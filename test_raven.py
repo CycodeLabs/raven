@@ -1,12 +1,10 @@
 from os import getenv
-
-import utils
+import common.utils as utils
 import pytest
-import logger
-from config import Config
-from downloader import download_org_workflows_and_actions
-from indexer import index_downloaded_workflows_and_actions
-from config import load_downloader_config, load_indexer_config
+import logger.log as log
+from downloader.downloader import download_org_workflows_and_actions
+from indexer.index import index_downloaded_workflows_and_actions
+from config.config import load_downloader_config, load_indexer_config
 
 
 def load_integration_tests_config() -> None:
@@ -85,7 +83,7 @@ def init_env():
 
 
 def test():
-    logger.info("[x] Starting Integration testing")
+    log.info("[x] Starting Integration testing")
     init_env()
     tests = [
         test_all_workflows,
@@ -97,7 +95,7 @@ def test():
     for test in tests:
         test()
 
-    pytest.main(["-v", "tests/unit"])
+    pytest.main(["-v", "tests"])
 
 
 if __name__ == "__main__":
