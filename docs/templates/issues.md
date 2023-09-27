@@ -12,7 +12,7 @@ Provide guidance on how to remediate the vulnerability once it's detected. This 
 ## References
 Include links to external resources, documentation, or security advisories related to this vulnerability type. This can help users understand the issue better and find additional information.
 
-## Real-World Example
+## Real-World Examples
 
 ### Repository Name
 

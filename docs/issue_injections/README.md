@@ -1,4 +1,4 @@
-# Issues Injections
+# Issue Injections
 
 
 ## Overview
@@ -34,7 +34,7 @@ Threat actors can exploit this by injecting malicious payloads into the issue ti
 ## References
 - [Cycode Discovers Vulnerabilities in CI/CD Pipelines of Popular Open-Source Projects](https://cycode.com/blog/github-actions-vulnerabilities/)
 
-## Real-World Example
+## Real-World Examples
 
 
 ### fauna/faunadb-js - 694 ⭐️
