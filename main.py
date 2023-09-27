@@ -70,6 +70,7 @@ def main() -> None:
     )
     neo4j_parser.add_argument(
         "--clean-neo4j",
+        "-cn",
         action="store_const",
         default=NEO4J_CLEAN_DEFAULT,
         const=True,
@@ -185,13 +186,11 @@ def main() -> None:
             else:
                 download_parser.print_help()
         elif args.command == "index":
-            load_indexer_config(vars(args))
+            Config.load_indexer_config(vars(args))
             command_functions[args.command]()
         elif args.command == "report":
             Config.load_reporter_config(vars(args))
-
-        command_functions[args.command]()
-        return
+            command_functions[args.command]()
     else:
         parser.print_help()
 

@@ -59,9 +59,11 @@ def get_organization_repository(organization_name: str, page: int) -> list[dict]
         headers=headers,
     )
     if r.status_code != HTTPStatus.OK:
-        logger.error(f"[-] Failed fetching repositories for {organization_name}")
-        raise Exception(f"status code: {r.status_code}. Response: {r.text}")
-
+        logger.error(
+            f"[-] Failed fetching repositories for {organization_name}\n"
+            f"status code: {r.status_code}. Response: {r.text}"
+        )
+        return []
     return r.json()
 
 
@@ -97,7 +99,7 @@ def get_repository_generator(
                     page=page,
                 )
 
-            if repos:
+            if repos and len(repos) > 0:
                 more_results = True
                 for repo in repos:
                     last_star_count = int(repo["stargazers_count"])
@@ -126,7 +128,8 @@ def get_repository_search(query: str, page: int = 1) -> Dict[str, Any]:
         headers=headers,
     )
     if r.status_code != 200:
-        raise Exception(f"status code: {r.status_code}. Response: {r.text}")
+        logger.error(f"status code: {r.status_code}. Response: {r.text}")
+        return {}
 
     return r.json()["items"]
 
@@ -138,9 +141,8 @@ def get_repository_workflows(repo: str) -> Dict[str, str]:
     e.g.: crowdin-upload.curriculum.yml ->
     https://raw.githubusercontent.com/freeCodeCamp/freeCodeCamp/main/
     .github/workflows/crowdin-upload.curriculum.yml
-
-    Raises exception if network error occured.
     """
+
     headers["Authorization"] = f"Token {Config.github_token}"
 
     file_path = ".github/workflows"
@@ -157,7 +159,8 @@ def get_repository_workflows(repo: str) -> Dict[str, str]:
         time.sleep(time_to_sleep)
         return get_repository_workflows(repo)
     if r.status_code != 200:
-        raise Exception(f"status code: {r.status_code}. Response: {r.text}")
+        logger.error(f"status code: {r.status_code}. Response: {r.text}")
+        return {}
 
     # When we have a single entry, the contents API returns dict instead of list.
     entries = None
@@ -197,8 +200,10 @@ def get_repository_composite_action(path: str) -> str:
         if r.status_code == 404:
             # can be both yml and yaml
             continue
+
         if r.status_code != 200:
-            raise Exception(f"status code: {r.status_code}. Response: {r.text}")
+            logger.error(f"status code: {r.status_code}. Response: {r.text}")
+            continue
 
         return r.json()["download_url"]
 
@@ -219,8 +224,9 @@ def get_repository_reusable_workflow(path: str) -> str:
         headers=headers,
     )
     if r.status_code == 404:
-        return None
+        return
     if r.status_code != 200:
-        raise Exception(f"status code: {r.status_code}. Response: {r.text}")
+        logger.error(f"status code: {r.status_code}. Response: {r.text}")
+        return
 
     return r.json()["download_url"]
