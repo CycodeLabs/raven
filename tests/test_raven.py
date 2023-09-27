@@ -95,7 +95,7 @@ def test():
     for test in tests:
         test()
 
-    pytest.main(["-v", "tests"])
+    pytest.main(["-v", "tests/unit"])
 
 
 if __name__ == "__main__":

@@ -8,7 +8,6 @@ from downloader.downloader import (
 from indexer.index import index_downloaded_workflows_and_actions
 from reporter.report import generate
 from config.config import (
-    Config,
     load_downloader_config,
     load_indexer_config,
     load_reporter_config,

@@ -1,4 +1,4 @@
-import workflow.handler as handler
+import src.workflow.workflow as workflow
 from tests.utils import load_test_config
 
 load_test_config()
@@ -20,7 +20,7 @@ def test_job_from_dict_steps():
         "path": "electron/electron/.github/workflows/issue-commented.yml",
     }
 
-    job = handler.Job.from_dict(job_d)
+    job = workflow.Job.from_dict(job_d)
 
     assert job._id == job_d["_id"]
     assert job.name == job_d["name"]
@@ -54,7 +54,7 @@ def test_workflow_from_dict():
         "path": "twbs/bootstrap/.github/workflows/release-notes.yml",
     }
 
-    wf = handler.Workflow.from_dict(workflow_d)
+    wf = workflow.Workflow.from_dict(workflow_d)
 
     assert wf.name == workflow_d["name"]
     assert wf.path == workflow_d["path"]
@@ -75,7 +75,7 @@ def test_job_from_dict_uses():
         "path": "vercel/next.js/.github/workflows/build_and_test.yml",
     }
 
-    job = handler.Job.from_dict(job_d)
+    job = workflow.Job.from_dict(job_d)
 
     assert job._id == job_d["_id"]
     assert job.name == job_d["name"]
@@ -96,7 +96,7 @@ def test_step_from_dict_uses():
         "path": "electron/electron/.github/workflows/issue-commented.yml",
     }
 
-    step = handler.Step.from_dict(step_d)
+    step = workflow.Step.from_dict(step_d)
 
     assert step._id == step_d["_id"]
     assert step.name == step_d["name"]
@@ -115,7 +115,7 @@ def test_step_from_dict_run():
         "path": "vercel/next.js/.github/workflows/issue_validator.yml",
     }
 
-    step = handler.Step.from_dict(step_d)
+    step = workflow.Step.from_dict(step_d)
 
     assert step._id == step_d["_id"]
     assert step.name == step_d["name"]

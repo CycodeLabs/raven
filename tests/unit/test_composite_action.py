@@ -1,4 +1,4 @@
-import workflow.composite_action as composite_action
+import src.workflow.composite_action as composite_action
 from tests.utils import load_test_config
 
 load_test_config()

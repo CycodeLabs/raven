@@ -5,7 +5,7 @@ from yaml.constructor import Constructor
 
 from storage.redis_connection import RedisConnection
 from config.config import Config
-from workflow.handler import Workflow
+from workflow.workflow import Workflow
 from workflow.composite_action import CompositeAction
 from tqdm import tqdm
 import logger.log as log
