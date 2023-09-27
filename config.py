@@ -1,190 +1,111 @@
-import os
 from graph_db import GraphDb
 from cache import Cache
 from os import getenv
 
+# Default Values
+DEBUG_DEFAULT = False
+MIN_STARS_DEFAULT = 1000
+REDIS_CLEAN_DEFAULT = False
+NEO4J_CLEAN_DEFAULT = False
+REPORT_SLACK_DEFAULT = False
+
+NEO4J_URI_DEFAULT = "neo4j://localhost:7687"
+NEO4J_USERNAME_DEFAULT = "neo4j"
+NEO4J_PASSWORD_DEFAULT = "123456789"
+
+REDIS_HOST_DEFAULT = "localhost"
+REDIS_PORT_DEFAULT = 6379
+
+# Constants
+REDIS_WORKFLOW_DOWNLOAD_HISTORY_SET = "workflow_download_history"
+REDIS_ACTION_DOWNLOAD_HISTORY_SET = "action_download_history"
+REDIS_WORKFLOW_INDEX_HISTORY_SET = "workflow_index_history"
+REDIS_ACTION_INDEX_HISTORY_SET = "action_index_history"
+REDIS_SETS_DB = 0
+REDIS_WORKFLOWS_DB = 1
+REDIS_ACTIONS_DB = 2
+
+
+def load_downloader_config(args) -> None:
+    """Loading downloader subcommand config.
+    Includes redis config.
+    """
+    Config.debug = args.get("debug", DEBUG_DEFAULT)
+    Config.github_token = args.get("token")
+    Config.min_stars = args.get("min_stars", MIN_STARS_DEFAULT)
+    Config.max_stars = args.get("max_stars")
+    Config.org_name = args.get("org_name")
+    Config.clean_redis = args.get("clean_redis", REDIS_CLEAN_DEFAULT)
+
+    load_redis_config(args)
+
+
+def load_indexer_config(args) -> None:
+    """Loading indexer subcommand config.
+    Includes redis and neo4j config.
+    """
+    Config.debug = args.get("debug", DEBUG_DEFAULT)
+    Config.clean_neo4j = args.get("clean_neo4j", NEO4J_CLEAN_DEFAULT)
+    Config.clean_redis = args.get("clean_redis", REDIS_CLEAN_DEFAULT)
+
+    load_redis_config(args)
+    load_neo4j_config(args)
+    load_reporter_config(args)
+
+
+def load_redis_config(args) -> None:
+    Config.redis_host = args.get("redis_host", REDIS_HOST_DEFAULT)
+    Config.redis_port = args.get("redis_port", REDIS_PORT_DEFAULT)
+
+
+def load_neo4j_config(args) -> None:
+    Config.neo4j_uri = args.get("neo4j_uri", NEO4J_URI_DEFAULT)
+    Config.neo4j_username = args.get("neo4j_username", NEO4J_USERNAME_DEFAULT)
+    Config.neo4j_password = args.get("neo4j_password", NEO4J_PASSWORD_DEFAULT)
+
+    # Initializing the neo4j graph connection
+    Config.graph = GraphDb(
+        uri=Config.neo4j_uri,
+        user=Config.neo4j_username,
+        password=Config.neo4j_password,
+    )
+
+
+def load_reporter_config(args):
+    Config.slack = args.get("slack")
+    Config.slack_token = args.get("slack_token")
+    Config.channel_id = args.get("channel_id")
+
 
 class Config:
+    # Global Config
+    debug: bool = None
+
     # Downloader Config
     github_token: str = None
     min_stars: int = None
     max_stars: int = None
-    output_data_dir: str = None
+    org_name: str = None
 
     # Indexer Configs
-    input_data_dir: str = None
-    neo4j_uri: str = None
-    neo4j_username: str = None
-    neo4j_password: str = None
-    num_workers: int = None
     clean_neo4j: bool = None
-    graph: GraphDb = None
-    workflow_index_cache: Cache = None
-    action_index_cache: Cache = None
-    workflow_download_cache: Cache = None
-    action_download_cache: Cache = None
 
     # Redis Config
     redis_host: str = None
     redis_port: int = None
-    redis_sets_db: int = None
-    redis_workflows_db: int = None
-    redis_actions_db: int = None
     clean_redis: bool = None
 
-    # Paths to store/load data
-    data_dir: str = None
-    workflow_data_path: str = None
-    action_data_path: str = None
-    workflow_download_history_path: str = None
-    action_download_history_path: str = None
-    workflow_index_history_path: str = None
-    action_index_history_path: str = None
-    # workflow_data_hash: str = None
-    # action_data_hash: str = None
-    workflow_download_history_set: str = None
-    action_download_history_set: str = None
-    workflow_index_history_set: str = None
-    action_index_history_set: str = None
+    # Redis Config Constants
+    redis_sets_db: int = REDIS_SETS_DB
+    redis_workflows_db: int = REDIS_WORKFLOWS_DB
+    redis_actions_db: int = REDIS_ACTIONS_DB
+    workflow_download_history_set: str = REDIS_WORKFLOW_DOWNLOAD_HISTORY_SET
+    action_download_history_set: str = REDIS_ACTION_DOWNLOAD_HISTORY_SET
+    workflow_index_history_set: str = REDIS_WORKFLOW_INDEX_HISTORY_SET
+    action_index_history_set: str = REDIS_ACTION_INDEX_HISTORY_SET
 
-    @staticmethod
-    def load_downloader_config(args):
-        Config.debug = args.get("debug")
-        Config.github_token = args.get("token")
-        Config.output_data_dir = args.get("output")
-        Config.min_stars = args.get("min_stars")
-        Config.max_stars = args.get("max_stars")
-        Config.organization_name = args.get("org_name")
-
-        Config.load_redis_config(args)
-
-        # Config.load_data_dir_paths(Config.output_data_dir)
-
-        # Cache/history that is used to optimize indexing.
-        Config.workflow_download_cache = Cache(
-            fpath=Config.workflow_download_history_path, num_insertions_to_backup=1
-        )
-        Config.action_download_cache = Cache(
-            fpath=Config.action_download_history_path, num_insertions_to_backup=1
-        )
-
-    @staticmethod
-    def load_indexer_config(args):
-        Config.debug = args.get("debug")
-        Config.input_data_dir = args.get("input")
-        Config.neo4j_uri = args.get("neo4j_uri")
-        Config.neo4j_username = args.get("neo4j_user")
-        Config.neo4j_password = args.get("neo4j_pass")
-        Config.num_workers = args.get("threads")
-        Config.clean_neo4j = args.get("clean_neo4j")
-
-        Config.load_redis_config(args)
-
-        # Config.load_data_dir_paths(Config.input_data_dir)
-
-        # Cache/history that is used to optimize indexing.
-        Config.workflow_index_cache = Cache(
-            fpath=Config.workflow_index_history_path, clean_cache=Config.clean_neo4j
-        )
-        Config.action_index_cache = Cache(
-            fpath=Config.action_index_history_path, clean_cache=Config.clean_neo4j
-        )
-
-        # Initializing the neo4j graph connection
-        Config.graph = GraphDb(
-            uri=Config.neo4j_uri,
-            user=Config.neo4j_username,
-            password=Config.neo4j_password,
-        )
-
-    @staticmethod
-    def load_reporter_config(args):
-        Config.slack = args.get("slack")
-        Config.slack_token = args.get("slack_token")
-        Config.channel_id = args.get("channel_id")
-
-        Config.load_indexer_config(args)
-
-    @staticmethod
-    def load_redis_config(args):
-        Config.redis_host = args.get("redis_host")
-        Config.redis_port = args.get("redis_port")
-        Config.clean_redis = args.get("clean_redis")
-
-        Config.redis_sets_db = 0
-        Config.redis_workflows_db = 1
-        Config.redis_actions_db = 2
-
-        # Redis keys
-        # Config.workflow_data_hash = "workflows"
-        # Config.action_data_hash = "actions"
-        Config.workflow_download_history_set = "workflow_download_history"
-        Config.action_download_history_set = "action_download_history"
-        Config.workflow_index_history_set = "workflow_index_history"
-        Config.action_index_history_set = "action_index_history"
-
-    @staticmethod
-    def load_testing_config() -> None:
-        Config.load_downloader_config(
-            {"debug": False, "token": getenv("GITHUB_TOKEN"), "org_name": "RavenDemo"}
-        )
-
-        Config.load_indexer_config(
-            {
-                "debug": False,
-                "redis_host": "raven-redis-test",
-                "redis_port": 6379,
-                "clean_redis": False,
-                "neo4j_uri": "neo4j://raven-neo4j-test:7687",
-                "neo4j_user": "neo4j",
-                "neo4j_pass": "123456789",
-                "threads": 1,
-                "clean_neo4j": False,
-            }
-        )
-
-    @staticmethod
-    def load_default_redis_config() -> None:
-        Config.redis_host = "localhost"
-        Config.redis_port = "6379"
-
-        Config.redis_sets_db = 0
-        Config.redis_workflows_db = 1
-        Config.redis_actions_db = 2
-
-    @staticmethod
-    def load_data_dir_paths(input_data_dir: str):
-        data_dir = input_data_dir
-
-        Config.workflow_data_path = os.path.join(data_dir, "workflows")
-        Config.action_data_path = os.path.join(data_dir, "actions")
-        Config.workflow_download_history_path = os.path.join(
-            data_dir, "workflow_download_history.txt"
-        )
-        Config.action_download_history_path = os.path.join(
-            data_dir, "action_download_history.txt"
-        )
-        Config.workflow_index_history_path = os.path.join(
-            data_dir, "workflow_index_history.txt"
-        )
-        Config.action_index_history_path = os.path.join(
-            data_dir, "action_index_history.txt"
-        )
-
-        os.makedirs(Config.workflow_data_path, exist_ok=True)
-        os.makedirs(Config.action_data_path, exist_ok=True)
-
-        if not os.path.exists(Config.workflow_download_history_path):
-            with open(
-                Config.workflow_download_history_path, "w", encoding="ascii"
-            ) as _:
-                pass
-        if not os.path.exists(Config.action_download_history_path):
-            with open(Config.action_download_history_path, "w", encoding="ascii") as _:
-                pass
-        if not os.path.exists(Config.workflow_index_history_path):
-            with open(Config.workflow_index_history_path, "w", encoding="ascii") as _:
-                pass
-        if not os.path.exists(Config.action_index_history_path):
-            with open(Config.action_index_history_path, "w", encoding="ascii") as _:
-                pass
+    # Neo4j Config
+    neo4j_uri: str = None
+    neo4j_username: str = None
+    neo4j_password: str = None
+    graph: GraphDb = None

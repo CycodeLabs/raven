@@ -1,5 +1,6 @@
 import argparse
 
+import logger
 from downloader import (
     download_all_workflows_and_actions,
     download_org_workflows_and_actions,
@@ -7,7 +8,19 @@ from downloader import (
 from indexer import index_downloaded_workflows_and_actions
 from reporter.report import generate
 from config import Config
-import logger
+from config import (
+    DEBUG_DEFAULT,
+    MIN_STARS_DEFAULT,
+    NEO4J_CLEAN_DEFAULT,
+    NEO4J_URI_DEFAULT,
+    NEO4J_USERNAME_DEFAULT,
+    NEO4J_PASSWORD_DEFAULT,
+    REDIS_HOST_DEFAULT,
+    REDIS_PORT_DEFAULT,
+    REDIS_CLEAN_DEFAULT,
+    REPORT_SLACK_DEFAULT,
+)
+from config import load_downloader_config, load_indexer_config
 
 
 def main() -> None:
@@ -21,16 +34,20 @@ def main() -> None:
 
     # Add redis arguments
     redis_parser.add_argument(
-        "--redis-host", help="Redis host, default localhost", default="localhost"
+        "--redis-host",
+        help=f"Redis host, default {REDIS_HOST_DEFAULT}",
+        default=REDIS_HOST_DEFAULT,
     )
     redis_parser.add_argument(
-        "--redis-port", help="Redis port, default 6379", default=6379
+        "--redis-port",
+        help=f"Redis port, default {REDIS_CLEAN_DEFAULT}",
+        default=REDIS_PORT_DEFAULT,
     )
     redis_parser.add_argument(
         "--clean-redis",
         "-cr",
         action="store_const",
-        default=False,
+        default=REDIS_CLEAN_DEFAULT,
         const=True,
         help="Whether to clean cache in the redis",
     )
@@ -38,23 +55,23 @@ def main() -> None:
     neo4j_parser = argparse.ArgumentParser(add_help=False)
     neo4j_parser.add_argument(
         "--neo4j-uri",
-        default="neo4j://localhost:7687",
-        help="Neo4j URI endpoint, default: neo4j://localhost:7687",
+        default=NEO4J_URI_DEFAULT,
+        help=f"Neo4j URI endpoint, default: {NEO4J_URI_DEFAULT}",
     )
     neo4j_parser.add_argument(
         "--neo4j-user",
-        default="neo4j",
-        help="Neo4j username, default: neo4j",
+        default=NEO4J_USERNAME_DEFAULT,
+        help=f"Neo4j username, default: {NEO4J_USERNAME_DEFAULT}",
     )
     neo4j_parser.add_argument(
         "--neo4j-pass",
-        default="123456789",
-        help="Neo4j password, default: 123456789",
+        default=NEO4J_PASSWORD_DEFAULT,
+        help=f"Neo4j password, default: {NEO4J_PASSWORD_DEFAULT}",
     )
     neo4j_parser.add_argument(
         "--clean-neo4j",
         action="store_const",
-        default=False,
+        default=NEO4J_CLEAN_DEFAULT,
         const=True,
         help="Whether to clean cache, and index from scratch",
     )
@@ -68,7 +85,7 @@ def main() -> None:
     download_parser_options.add_argument(
         "--debug",
         action="store_const",
-        default=False,
+        default=DEBUG_DEFAULT,
         const=True,
         help="Whether to print debug statements",
     )
@@ -97,7 +114,9 @@ def main() -> None:
         "--max-stars", help="Maximum number of stars for a repository"
     )
     crawl_download_parser.add_argument(
-        "--min-stars", default=1000, help="Minimum number of stars for a repository"
+        "--min-stars",
+        default=MIN_STARS_DEFAULT,
+        help="Minimum number of stars for a repository",
     )
 
     org_download_parser.add_argument(
@@ -115,12 +134,9 @@ def main() -> None:
     index_parser.add_argument(
         "--debug",
         action="store_const",
-        default=False,
+        default=DEBUG_DEFAULT,
         const=True,
         help="Whether to print debug statements",
-    )
-    index_parser.add_argument(
-        "--threads", "-t", type=int, default=1, help="Number of threads, default: 1"
     )
 
     report_parser = subparsers.add_parser(
@@ -132,7 +148,7 @@ def main() -> None:
         "--slack",
         "-s",
         action="store_const",
-        default=False,
+        default=REPORT_SLACK_DEFAULT,
         const=True,
         help="Send report to slack channel",
     )
@@ -163,13 +179,14 @@ def main() -> None:
     if args.command in command_functions:
         if args.command == "download":
             if args.download_command:
-                Config.load_downloader_config(vars(args))
+                load_downloader_config(vars(args))
                 command_functions[args.command][args.download_command]()
                 return
             else:
                 download_parser.print_help()
         elif args.command == "index":
-            Config.load_indexer_config(vars(args))
+            load_indexer_config(vars(args))
+            command_functions[args.command]()
         elif args.command == "report":
             Config.load_reporter_config(vars(args))
 
