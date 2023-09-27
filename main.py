@@ -7,7 +7,12 @@ from downloader.downloader import (
 )
 from indexer.index import index_downloaded_workflows_and_actions
 from reporter.report import generate
-from config.config import Config
+from config.config import (
+    Config,
+    load_downloader_config,
+    load_indexer_config,
+    load_reporter_config,
+)
 from config.config import (
     DEBUG_DEFAULT,
     MIN_STARS_DEFAULT,
@@ -20,7 +25,6 @@ from config.config import (
     REDIS_CLEAN_DEFAULT,
     REPORT_SLACK_DEFAULT,
 )
-from config.config import load_downloader_config, load_indexer_config
 
 
 def main() -> None:
@@ -186,10 +190,10 @@ def main() -> None:
             else:
                 download_parser.print_help()
         elif args.command == "index":
-            Config.load_indexer_config(vars(args))
+            load_indexer_config(vars(args))
             command_functions[args.command]()
         elif args.command == "report":
-            Config.load_reporter_config(vars(args))
+            load_reporter_config(vars(args))
             command_functions[args.command]()
     else:
         parser.print_help()
