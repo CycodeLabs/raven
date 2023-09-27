@@ -13,6 +13,7 @@ from utils import (
     find_uses_strings,
     convert_workflow_to_unix_path,
     get_repo_name_from_path,
+    convert_raw_github_url_to_github_com_url,
 )
 from dependency import UsesString, UsesStringType
 from redis_utils import clean_redis_db
@@ -97,7 +98,14 @@ def download_workflows_and_actions(repo: str) -> None:
 
             with RedisConnection(Config.redis_workflows_db) as workflows_db:
                 workflow_unix_path = convert_workflow_to_unix_path(repo, name)
-                workflows_db.insert_to_string(workflow_unix_path, resp.text)
+                workflows_db.insert_to_hash(
+                    workflow_unix_path, Config.redis_data_hash_field_name, resp.text
+                )
+                workflows_db.insert_to_hash(
+                    workflow_unix_path,
+                    Config.redis_url_hash_field_name,
+                    convert_raw_github_url_to_github_com_url(url),
+                )
 
         sets_db.insert_to_set(Config.workflow_download_history_set, repo)
 
@@ -117,7 +125,12 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             return
         # If already scanned workflow - Have to check workflow db because only it contains the full workflow path.
         with RedisConnection(Config.redis_workflows_db) as workflows_db:
-            if workflows_db.get_string(full_path) is not None:
+            if (
+                workflows_db.get_value_from_hash(
+                    full_path, Config.redis_data_hash_field_name
+                )
+                is not None
+            ):
                 return
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
@@ -156,8 +169,22 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
             sets_db.insert_to_set(Config.workflow_download_history_set, full_path)
             with RedisConnection(Config.redis_workflows_db) as workflows_db:
-                workflows_db.insert_to_string(full_path, resp.text)
+                workflows_db.insert_to_hash(
+                    full_path, Config.redis_data_hash_field_name, resp.text
+                )
+                workflows_db.insert_to_hash(
+                    full_path,
+                    Config.redis_url_hash_field_name,
+                    convert_raw_github_url_to_github_com_url(url),
+                )
         else:  # UsesStringType.ACTION
             sets_db.insert_to_set(Config.action_download_history_set, full_path)
-            with RedisConnection(Config.redis_actions_db) as workflows_db:
-                workflows_db.insert_to_string(full_path, resp.text)
+            with RedisConnection(Config.redis_actions_db) as actions_db:
+                actions_db.insert_to_hash(
+                    full_path, Config.redis_data_hash_field_name, resp.text
+                )
+                actions_db.insert_to_hash(
+                    full_path,
+                    Config.redis_url_hash_field_name,
+                    convert_raw_github_url_to_github_com_url(url),
+                )

@@ -21,6 +21,9 @@ REDIS_WORKFLOW_DOWNLOAD_HISTORY_SET = "workflow_download_history"
 REDIS_ACTION_DOWNLOAD_HISTORY_SET = "action_download_history"
 REDIS_WORKFLOW_INDEX_HISTORY_SET = "workflow_index_history"
 REDIS_ACTION_INDEX_HISTORY_SET = "action_index_history"
+# Field names to use in the hash of Actions and Workflows in the DB
+REDIS_DATA_HASH_FIELD_NAME = "data"
+REDIS_URL_HASH_FIELD_NAME = "url"
 REDIS_SETS_DB = 0
 REDIS_WORKFLOWS_DB = 1
 REDIS_ACTIONS_DB = 2
@@ -60,8 +63,8 @@ def load_redis_config(args) -> None:
 
 def load_neo4j_config(args) -> None:
     Config.neo4j_uri = args.get("neo4j_uri", NEO4J_URI_DEFAULT)
-    Config.neo4j_username = args.get("neo4j_username", NEO4J_USERNAME_DEFAULT)
-    Config.neo4j_password = args.get("neo4j_password", NEO4J_PASSWORD_DEFAULT)
+    Config.neo4j_username = args.get("neo4j_user", NEO4J_USERNAME_DEFAULT)
+    Config.neo4j_password = args.get("neo4j_pass", NEO4J_PASSWORD_DEFAULT)
 
     # Initializing the neo4j graph connection
     Config.graph = GraphDb(
@@ -99,6 +102,8 @@ class Config:
     redis_sets_db: int = REDIS_SETS_DB
     redis_workflows_db: int = REDIS_WORKFLOWS_DB
     redis_actions_db: int = REDIS_ACTIONS_DB
+    redis_data_hash_field_name: str = REDIS_DATA_HASH_FIELD_NAME
+    redis_url_hash_field_name: str = REDIS_URL_HASH_FIELD_NAME
     workflow_download_history_set: str = REDIS_WORKFLOW_DOWNLOAD_HISTORY_SET
     action_download_history_set: str = REDIS_ACTION_DOWNLOAD_HISTORY_SET
     workflow_index_history_set: str = REDIS_WORKFLOW_INDEX_HISTORY_SET
