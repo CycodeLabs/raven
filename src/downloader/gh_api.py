@@ -3,8 +3,8 @@ import urllib
 from requests import get
 from typing import Dict, Any, Optional, Iterator, Optional
 from http import HTTPStatus
-from config.config import Config
-import logger.log as log
+from src.config.config import Config
+import src.logger.log as log
 
 """
 Current rate limiting:

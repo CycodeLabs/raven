@@ -2,15 +2,15 @@ from typing import Optional, Dict, Any
 from hashlib import md5
 
 from py2neo.ogm import GraphObject, RelatedTo, RelatedFrom, Property
-from config.config import Config
-from common.utils import (
+from src.config.config import Config
+from src.common.utils import (
     get_dependencies_in_code,
     get_repo_name_from_path,
     convert_dict_to_list,
     find_workflow_by_name,
 )
-from workflow.dependency import UsesString, UsesStringType
-import logger.log as log
+from src.workflow.dependency import UsesString, UsesStringType
+import src.logger.log as log
 
 
 def get_or_create_workflow(path: str) -> "Workflow":
@@ -46,7 +46,7 @@ class Step(GraphObject):
     ref = Property()
     with_prop = Property("with")
 
-    action = RelatedTo("workflow.composite_action.CompositeAction")
+    action = RelatedTo("src.workflow.composite_action.CompositeAction")
     reusable_workflow = RelatedTo("Workflow")
     using_param = RelatedTo("StepCodeDependency")
 
@@ -72,7 +72,7 @@ class Step(GraphObject):
             uses_string_obj = UsesString.analyze(uses_string=s.uses)
             if uses_string_obj.type == UsesStringType.ACTION:
                 # Avoiding circular imports.
-                import workflow.composite_action as composite_action
+                import src.workflow.composite_action as composite_action
 
                 obj = composite_action.get_or_create_composite_action(
                     uses_string_obj.get_full_path(s.path)

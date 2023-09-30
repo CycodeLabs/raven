@@ -5,9 +5,9 @@ from typing import List, Dict, Union
 import yaml
 from py2neo.data import Node
 
-from storage.redis_connection import RedisConnection
-from config.config import Config
-import logger.log as log
+from src.storage.redis_connection import RedisConnection
+from src.config.config import Config
+import src.logger.log as log
 
 
 def get_dependencies_in_code(code: str) -> List[str]:

@@ -1,4 +1,4 @@
-from storage.graph_db import GraphDb
+from src.storage.graph_db import GraphDb
 
 # Default Values
 DEBUG_DEFAULT = False

@@ -1,7 +1,7 @@
 import os
 from enum import Enum
 
-from common.utils import get_repo_name_from_path
+from src.common.utils import get_repo_name_from_path
 
 
 class UsesStringType(Enum):

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import redis
-from config.config import Config
-import logger.log as log
+from src.config.config import Config
+import src.logger.log as log
 
 
 class RedisConnection:

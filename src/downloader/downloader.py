@@ -1,21 +1,21 @@
 from requests import get
 
-from config.config import Config
-from storage.redis_connection import RedisConnection
-from storage.redis_utils import clean_redis_db
-from downloader.gh_api import (
+from src.config.config import Config
+from src.storage.redis_connection import RedisConnection
+from src.storage.redis_utils import clean_redis_db
+from src.downloader.gh_api import (
     get_repository_generator,
     get_repository_workflows,
     get_repository_composite_action,
     get_repository_reusable_workflow,
 )
-from common.utils import (
+from src.common.utils import (
     find_uses_strings,
     convert_workflow_to_unix_path,
     get_repo_name_from_path,
 )
-from workflow.dependency import UsesString, UsesStringType
-import logger.log as log
+from src.workflow.dependency import UsesString, UsesStringType
+import src.logger.log as log
 
 
 def download_org_workflows_and_actions() -> None:

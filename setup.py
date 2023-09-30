@@ -1,12 +1,11 @@
 from setuptools import find_packages
 from setuptools import setup
 import pathlib
-from os import path
 import sys
 
 HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
-REQUIRMENTS = (HERE / path.join("src", "requirements.txt")).read_text().splitlines()
+REQUIRMENTS = (HERE / "requirements.txt").read_text().splitlines()
 CURRENT_PYTHON = sys.version_info[:2]
 REQUIRED_PYTHON = (3, 7)
 
@@ -52,8 +51,6 @@ setup(
         "Topic :: CI/CD Security",
     ],
     install_requires=REQUIRMENTS,
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
-    entry_points={"console_scripts": ["raven = main:main"]},
-    scripts=["src/main.py"],
+    packages=find_packages(exclude=("tests", "tests.*")),
+    entry_points={"console_scripts": ["raven = src.cmdline:execute"]},
 )

@@ -1,18 +1,18 @@
 import argparse
 
-import logger.log as log
-from downloader.downloader import (
+import src.logger.log as log
+from src.downloader.downloader import (
     download_all_workflows_and_actions,
     download_org_workflows_and_actions,
 )
-from indexer.index import index_downloaded_workflows_and_actions
-from reporter.report import generate
-from config.config import (
+from src.indexer.index import index_downloaded_workflows_and_actions
+from src.reporter.report import generate
+from src.config.config import (
     load_downloader_config,
     load_indexer_config,
     load_reporter_config,
 )
-from config.config import (
+from src.config.config import (
     DEBUG_DEFAULT,
     MIN_STARS_DEFAULT,
     NEO4J_CLEAN_DEFAULT,
@@ -26,7 +26,7 @@ from config.config import (
 )
 
 
-def main() -> None:
+def execute() -> None:
     parser = argparse.ArgumentParser(
         description="Github Actions downloader and indexer"
     )
@@ -198,16 +198,16 @@ def main() -> None:
         parser.print_help()
 
 
-if __name__ == "__main__":
-    try:
-        main()
-        log.catch_exit()
-    except KeyboardInterrupt:
-        log.catch_exit()
-    except Exception as e:
-        if isinstance(e, AssertionError):
-            log.error("[x] Some tests are failing")
-        else:
-            log.error(e)
+# if __name__ == "__main__":
+#     try:
+#         execute()
+#         log.catch_exit()
+#     except KeyboardInterrupt:
+#         log.catch_exit()
+#     except Exception as e:
+#         if isinstance(e, AssertionError):
+#             log.error("[x] Some tests are failing")
+#         else:
+#             log.error(e)
 
-        log.fail_exit()
+#         log.fail_exit()

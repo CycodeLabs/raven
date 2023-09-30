@@ -1,5 +1,5 @@
-from storage.redis_connection import RedisConnection
-from config.config import Config
+from src.storage.redis_connection import RedisConnection
+from src.config.config import Config
 
 
 def clean_redis_db() -> None:

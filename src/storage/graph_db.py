@@ -2,8 +2,8 @@ from py2neo import Graph
 from py2neo.ogm import GraphObject
 from py2neo.data import Node
 from typing import Tuple, Optional
-import logger.log as log
-from library import query_library
+import src.logger.log as log
+from src.library import query_library
 
 
 class GraphDb(object):

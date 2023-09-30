@@ -1,10 +1,10 @@
 from os import getenv
-import common.utils as utils
+import src.common.utils as utils
 import pytest
-import logger.log as log
-from downloader.downloader import download_org_workflows_and_actions
-from indexer.index import index_downloaded_workflows_and_actions
-from config.config import load_downloader_config, load_indexer_config
+import src.logger.log as log
+from src.downloader.downloader import download_org_workflows_and_actions
+from src.indexer.index import index_downloaded_workflows_and_actions
+from src.config.config import load_downloader_config, load_indexer_config
 
 
 def load_integration_tests_config() -> None:

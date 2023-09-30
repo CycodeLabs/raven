@@ -1,5 +1,5 @@
 from tests.utils import load_test_config
-import workflow.dependency as dependency
+import src.workflow.dependency as dependency
 
 load_test_config()
 

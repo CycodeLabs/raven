@@ -3,12 +3,12 @@ import io
 import yaml
 from yaml.constructor import Constructor
 
-from storage.redis_connection import RedisConnection
-from config.config import Config
-from workflow.workflow import Workflow
-from workflow.composite_action import CompositeAction
+from src.storage.redis_connection import RedisConnection
+from src.config.config import Config
+from src.workflow.workflow import Workflow
+from src.workflow.composite_action import CompositeAction
 from tqdm import tqdm
-import logger.log as log
+import src.logger.log as log
 
 
 # A hack to deny PyYAML to convert "on" tags into Python boolean values.

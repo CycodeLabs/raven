@@ -3,13 +3,13 @@ from hashlib import md5
 
 from py2neo.ogm import GraphObject, RelatedTo, Property
 
-import workflow.workflow as workflow
-from config.config import Config
-from common.utils import (
+import src.workflow.workflow as workflow
+from src.config.config import Config
+from src.common.utils import (
     get_dependencies_in_code,
     convert_dict_to_list,
 )
-from workflow.dependency import UsesString, UsesStringType
+from src.workflow.dependency import UsesString, UsesStringType
 
 
 def get_or_create_composite_action(path: str) -> "CompositeAction":
