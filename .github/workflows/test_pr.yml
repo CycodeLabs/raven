@@ -38,6 +38,8 @@ jobs:
         run: make setup
 
       - name: Download Organization
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          raven download org --token ${{ secrets.GITHUB_TOKEN }} --org-name RavenDemo --debug
-          raven index --debug
+          raven download org --token $GITHUB_TOKEN --org-name RavenDemo --debug
+          raven index
