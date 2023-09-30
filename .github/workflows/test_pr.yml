@@ -40,4 +40,4 @@ jobs:
       - name: Download Organization
         run: |
           raven download org --token ${{ secrets.GITHUB_TOKEN }} --org-name RavenDemo --debug
-          raven index
+          raven index --debug
