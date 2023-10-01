@@ -1,4 +1,5 @@
 import argparse
+import traceback
 
 import logger
 from downloader import (
@@ -20,7 +21,11 @@ from config import (
     REDIS_CLEAN_DEFAULT,
     REPORT_SLACK_DEFAULT,
 )
-from config import load_downloader_config, load_indexer_config
+from config import (
+    load_downloader_config,
+    load_indexer_config,
+    load_reporter_config,
+)
 
 
 def main() -> None:
@@ -186,10 +191,10 @@ def main() -> None:
             else:
                 download_parser.print_help()
         elif args.command == "index":
-            Config.load_indexer_config(vars(args))
+            load_indexer_config(vars(args))
             command_functions[args.command]()
         elif args.command == "report":
-            Config.load_reporter_config(vars(args))
+            load_reporter_config(vars(args))
             command_functions[args.command]()
     else:
         parser.print_help()
@@ -205,6 +210,5 @@ if __name__ == "__main__":
         if isinstance(e, AssertionError):
             logger.error("[x] Some tests are failing")
         else:
-            logger.error(e)
-
+            logger.error(f"{e} {traceback.format_exc()}")
         logger.fail_exit()

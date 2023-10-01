@@ -37,6 +37,7 @@ class CompositeActionStep(GraphObject):
     uses = Property()
     ref = Property()
     shell = Property()
+    url = Property()
     with_prop = Property("with")
 
     action = RelatedTo("CompositeAction")
@@ -48,22 +49,24 @@ class CompositeActionStep(GraphObject):
         self.path = path
 
     @staticmethod
-    def from_dict(d) -> "CompositeActionStep":
-        s = CompositeActionStep(_id=d["_id"], path=d["path"])
-        if "id" in d:
-            s.name = d["id"]
-        if "run" in d:
-            s.run = d["run"]
+    def from_dict(obj_dict) -> "CompositeActionStep":
+        s = CompositeActionStep(_id=obj_dict["_id"], path=obj_dict["path"])
+        s.url = obj_dict["url"]
+        if "id" in obj_dict:
+            s.name = obj_dict["id"]
+        if "run" in obj_dict:
+            s.run = obj_dict["run"]
 
             # Adding ${{...}} dependencies as an entity.
             for code_dependency in get_dependencies_in_code(s.run):
                 param = workflow.StepCodeDependency(code_dependency)
+                param.url = s.url
                 s.using_param.add(param)
 
-            if "shell" in d:
-                s.shell = d["shell"]
-        elif "uses" in d:
-            s.uses = d["uses"]
+            if "shell" in obj_dict:
+                s.shell = obj_dict["shell"]
+        elif "uses" in obj_dict:
+            s.uses = obj_dict["uses"]
             # Uses string is quite complex, and may reference to several types of nodes.
             # In the case of action steps, it may only reference actions (and not reusable workflows).
             uses_string_obj = UsesString.analyze(uses_string=s.uses)
@@ -73,8 +76,8 @@ class CompositeActionStep(GraphObject):
                 )
                 s.action.add(obj)
 
-            if "with" in d:
-                s.with_prop = convert_dict_to_list(d["with"])
+            if "with" in obj_dict:
+                s.with_prop = convert_dict_to_list(obj_dict["with"])
 
             if len(s.uses.split("@")) > 1:
                 s.ref = s.uses.split("@")[1]
@@ -91,6 +94,7 @@ class CompositeAction(GraphObject):
     inputs = Property()
     using = Property()
     image = Property()
+    url = Property()
 
     steps = RelatedTo(CompositeActionStep)
 
@@ -100,14 +104,15 @@ class CompositeAction(GraphObject):
         self._id = md5(path.encode()).hexdigest()
 
     @staticmethod
-    def from_dict(d) -> "CompositeAction":
-        ca = CompositeAction(name=d.get("name"), path=d["path"])
+    def from_dict(obj_dict) -> "CompositeAction":
+        ca = CompositeAction(name=obj_dict.get("name"), path=obj_dict["path"])
 
-        if "inputs" in d:
-            ca.inputs = list(d["inputs"].keys())
+        ca.url = obj_dict["url"]
+        if "inputs" in obj_dict:
+            ca.inputs = list(obj_dict["inputs"].keys())
 
-        if "runs" in d:
-            d_runs = d["runs"]
+        if "runs" in obj_dict:
+            d_runs = obj_dict["runs"]
 
             if "using" in d_runs:
                 ca.using = d_runs["using"]
@@ -119,6 +124,7 @@ class CompositeAction(GraphObject):
                 for i, step in enumerate(d_runs["steps"]):
                     step["_id"] = md5(f"{ca._id}_{i}".encode()).hexdigest()
                     step["path"] = ca.path
+                    step["url"] = ca.url
                     ca.steps.add(CompositeActionStep.from_dict(step))
 
         return ca

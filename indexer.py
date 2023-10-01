@@ -50,7 +50,12 @@ def index_action_file(action: str) -> None:
                 return
 
             with RedisConnection(Config.redis_actions_db) as actions_db:
-                content = actions_db.get_string(action).decode()
+                content = actions_db.get_value_from_hash(
+                    action, Config.redis_data_hash_field_name
+                ).decode()
+                url = actions_db.get_value_from_hash(
+                    action, Config.redis_url_hash_field_name
+                ).decode()
 
             # PyYAML has issues with tabs.
             content = content.replace("\t", "  ")
@@ -78,6 +83,7 @@ def index_action_file(action: str) -> None:
                 return
 
             obj["path"] = action
+            obj["url"] = url
 
             Config.graph.push_object(CompositeAction.from_dict(obj))
             sets_db.insert_to_set(Config.action_index_history_set, action)
@@ -92,7 +98,12 @@ def index_workflow_file(workflow: str) -> None:
                 return
 
             with RedisConnection(Config.redis_workflows_db) as workflows_db:
-                content = workflows_db.get_string(workflow).decode()
+                content = workflows_db.get_value_from_hash(
+                    workflow, Config.redis_data_hash_field_name
+                ).decode()
+                url = workflows_db.get_value_from_hash(
+                    workflow, Config.redis_url_hash_field_name
+                ).decode()
 
             # PyYAML has issues with tabs.
             content = content.replace("\t", "  ")
@@ -120,6 +131,7 @@ def index_workflow_file(workflow: str) -> None:
                 return
 
             obj["path"] = workflow
+            obj["url"] = url
 
             Config.graph.push_object(Workflow.from_dict(obj))
             sets_db.insert_to_set(Config.workflow_index_history_set, workflow)
