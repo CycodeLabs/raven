@@ -52,7 +52,7 @@ class GraphDb(object):
     def clean_graph(self):
         self.graph.delete_all()
 
-    def run_predefined_queries(self):
+    def run_predefined_queries(self) -> list:
         detection_results = []
         for detection in query_library.PREDEFINED_DETECTIONS:
             query = detection.get("query", "")

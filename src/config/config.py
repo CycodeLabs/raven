@@ -77,6 +77,9 @@ def load_reporter_config(args):
     Config.slack_token = args.get("slack_token")
     Config.channel_id = args.get("channel_id")
 
+    load_redis_config(args)
+    load_neo4j_config(args)
+
 
 class Config:
     # Global Config
