@@ -27,6 +27,17 @@ from src.config.config import (
 
 
 def execute() -> None:
+    try:
+        raven()
+        log.catch_exit()
+    except KeyboardInterrupt:
+        log.catch_exit()
+    except Exception as e:
+        log.error(e)
+        log.fail_exit()
+
+
+def raven() -> None:
     parser = argparse.ArgumentParser(
         description="Github Actions downloader and indexer"
     )
@@ -196,18 +207,3 @@ def execute() -> None:
             command_functions[args.command]()
     else:
         parser.print_help()
-
-
-# if __name__ == "__main__":
-#     try:
-#         execute()
-#         log.catch_exit()
-#     except KeyboardInterrupt:
-#         log.catch_exit()
-#     except Exception as e:
-#         if isinstance(e, AssertionError):
-#             log.error("[x] Some tests are failing")
-#         else:
-#             log.error(e)
-
-#         log.fail_exit()
