@@ -43,19 +43,30 @@ Each of the vulnerabilities above has unique characteristics, making it nearly i
 
 It was for these reasons that Raven was created, a framework for CI/CD security analysis workflows (and GitHub Actions as the first use case). In our focus, we examined complex scenarios where each issue isn't a threat on its own, but when combined, they pose a severe threat.
 
-## Setup
+## Setup && Run
 
-Clone Raven repository.
-
+Download the latest stable version
 ```bash
-git clone https://github.com/CycodeLabs/Raven.git
-cd Raven
+wget https://github.com/CycodeLabs/Raven/archive/refs/tags/v1.0.0.tar.gz -O raven.tar.gz
+tar -xvf raven.tar.gz
+cd raven
 ```
 
-Build and run `neo4j` && `redis` containers.
+Create Virtual Environment
+``` bash
+python -m venv .venv
+source .venv/bin/activate
+```
 
+Build Containerized Environment and install Raven
 ```bash
 make setup
+pip install .
+```
+
+Run Raven
+``` bash
+raven
 ```
 
 ## Usage
@@ -64,63 +75,82 @@ The tool contains two main functionalities, `download` and `index`.
 
 ### Download
 
-```bash
-usage: main.py download [-h] --token TOKEN [--output OUTPUT]
-                        [--max_stars MAX_STARS] [--min_stars MIN_STARS]
 
-optional arguments:
+#### Download Organization Repositories
+
+```bash
+usage: raven download org [-h] --token TOKEN [--debug] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] --org-name ORG_NAME
+
+options:
   -h, --help            show this help message and exit
-  --token TOKEN         GITHUB_TOKEN to download data from Github API
-                        (Needed for effective rate-limiting)
-  --output OUTPUT, -o OUTPUT
-                        Output directory to download the workflows
+  --token TOKEN         GITHUB_TOKEN to download data from Github API (Needed for effective rate-limiting)
+  --debug               Whether to print debug statements, default: False
+  --redis-host REDIS_HOST
+                        Redis host, default: localhost
+  --redis-port REDIS_PORT
+                        Redis port, default: 6379
+  --clean-redis, -cr    Whether to clean cache in the redis, default: False
+  --org-name ORG_NAME   Organization name to download the workflows
+```
+
+#### Download Public Repositories
+``` bash
+usage: raven download crawl [-h] --token TOKEN [--debug] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] [--max-stars MAX_STARS] [--min-stars MIN_STARS]
+
+options:
+  -h, --help            show this help message and exit
+  --token TOKEN         GITHUB_TOKEN to download data from Github API (Needed for effective rate-limiting)
+  --debug               Whether to print debug statements, default: False
+  --redis-host REDIS_HOST
+                        Redis host, default: localhost
+  --redis-port REDIS_PORT
+                        Redis port, default: 6379
+  --clean-redis, -cr    Whether to clean cache in the redis, default: False
   --max-stars MAX_STARS
                         Maximum number of stars for a repository
   --min-stars MIN_STARS
-                        Minimum number of stars for a repository
+                        Minimum number of stars for a repository, default: 1000
 ```
 
 ### Index
 
 ```bash
-usage: main.py index [-h] [--input INPUT] [--neo4j-uri NEO4J_URI]
-                     [--neo4j-user NEO4J_USER]
-                     [--neo4j-pass NEO4J_PASS] [--threads THREADS]
-                     [--clean]
+usage: raven index [-h] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] [--neo4j-uri NEO4J_URI] [--neo4j-user NEO4J_USER] [--neo4j-pass NEO4J_PASS]
+                   [--clean-neo4j] [--debug]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  --input INPUT, -i INPUT
-                        Input directory with the downloaded workflows
+  --redis-host REDIS_HOST
+                        Redis host, default: localhost
+  --redis-port REDIS_PORT
+                        Redis port, default: 6379
+  --clean-redis, -cr    Whether to clean cache in the redis, default: False
   --neo4j-uri NEO4J_URI
-                        Neo4j URI endpoint
+                        Neo4j URI endpoint, default: neo4j://localhost:7687
   --neo4j-user NEO4J_USER
-                        Neo4j username
+                        Neo4j username, default: neo4j
   --neo4j-pass NEO4J_PASS
-                        Neo4j password
-  --threads THREADS, -t THREADS
-                        Number of threads
-  --clean, -c           Whether to clean cache, and index from scratch
+                        Neo4j password, default: 123456789
+  --clean-neo4j, -cn    Whether to clean cache, and index from scratch, default: False
+  --debug               Whether to print debug statements, default: False
 ```
 
 ## Examples
 
 Retrieve all workflows and actions associated with the organization.
-
-```bash
-python main.py download org --token $GITHUB_TOKEN --org-name microsoft --debug
+``` bash
+raven download org --token $GITHUB_TOKEN --org-name microsoft --debug
 ```
 
 Scrape all publicly accessible GitHub repositories.
-
-```bash
-python main.py download crawl --token $GITHUB_TOKEN --min-stars 100 --max-stars 1000 --debug
+``` bash
+raven download crawl --token $GITHUB_TOKEN --min-stars 100 --max-stars 1000 --debug
 ```
 
 After finishing the download process or if interrupted using Ctrl+C, proceed to index all workflows and actions into the Neo4j database.
 
-```bash
-python main.py index --debug
+``` bash
+raven index --debug
 ```
 
 ## Rate Limiting

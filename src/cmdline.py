@@ -63,12 +63,12 @@ def raven() -> None:
     # Add redis arguments
     redis_parser.add_argument(
         "--redis-host",
-        help=f"Redis host, default {REDIS_HOST_DEFAULT}",
+        help=f"Redis host, default: {REDIS_HOST_DEFAULT}",
         default=REDIS_HOST_DEFAULT,
     )
     redis_parser.add_argument(
         "--redis-port",
-        help=f"Redis port, default {REDIS_CLEAN_DEFAULT}",
+        help=f"Redis port, default: {REDIS_PORT_DEFAULT}",
         default=REDIS_PORT_DEFAULT,
     )
     redis_parser.add_argument(
@@ -77,7 +77,7 @@ def raven() -> None:
         action="store_const",
         default=REDIS_CLEAN_DEFAULT,
         const=True,
-        help="Whether to clean cache in the redis",
+        help=f"Whether to clean cache in the redis, default: {REDIS_CLEAN_DEFAULT}",
     )
 
     neo4j_parser = argparse.ArgumentParser(add_help=False)
@@ -102,7 +102,7 @@ def raven() -> None:
         action="store_const",
         default=NEO4J_CLEAN_DEFAULT,
         const=True,
-        help="Whether to clean cache, and index from scratch",
+        help=f"Whether to clean cache, and index from scratch, default: {NEO4J_CLEAN_DEFAULT}",
     )
 
     download_parser_options = argparse.ArgumentParser(add_help=False)
@@ -116,7 +116,7 @@ def raven() -> None:
         action="store_const",
         default=DEBUG_DEFAULT,
         const=True,
-        help="Whether to print debug statements",
+        help=f"Whether to print debug statements, default: {DEBUG_DEFAULT}",
     )
 
     download_parser = subparsers.add_parser(
@@ -145,7 +145,7 @@ def raven() -> None:
     crawl_download_parser.add_argument(
         "--min-stars",
         default=MIN_STARS_DEFAULT,
-        help="Minimum number of stars for a repository",
+        help=f"Minimum number of stars for a repository, default: {MIN_STARS_DEFAULT}",
     )
 
     org_download_parser.add_argument(
@@ -165,7 +165,7 @@ def raven() -> None:
         action="store_const",
         default=DEBUG_DEFAULT,
         const=True,
-        help="Whether to print debug statements",
+        help=f"Whether to print debug statements, default: {DEBUG_DEFAULT}",
     )
 
     report_parser = subparsers.add_parser(
@@ -179,7 +179,7 @@ def raven() -> None:
         action="store_const",
         default=REPORT_SLACK_DEFAULT,
         const=True,
-        help="Send report to slack channel",
+        help=f"Send report to slack channel, default: {REPORT_SLACK_DEFAULT}",
     )
     report_parser.add_argument(
         "--slack-token",
