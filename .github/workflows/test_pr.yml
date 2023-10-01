@@ -9,9 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: python3 -m pip install black flake8
+        run: python -m pip install black flake8
       - name: Black
-        run: python3 -m black --diff --check .
+        run: python -m black --diff --check .
 
   test_raven:
     runs-on: ubuntu-latest
@@ -24,3 +24,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           make test-build
+
+  test_raven_package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Build Package
+        run: pip3 install .
+
+      - name: Setup environment
+        run: make setup
+
+      - name: Download Organization
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          raven download org --token $GITHUB_TOKEN --org-name RavenDemo --debug
+          raven index

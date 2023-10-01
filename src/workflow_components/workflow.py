@@ -2,15 +2,15 @@ from typing import Optional, Dict, Any
 from hashlib import md5
 
 from py2neo.ogm import GraphObject, RelatedTo, RelatedFrom, Property
-from config import Config
-from utils import (
+from src.config.config import Config
+from src.common.utils import (
     get_dependencies_in_code,
     get_repo_name_from_path,
     convert_dict_to_list,
     find_workflow_by_name,
 )
-from dependency import UsesString, UsesStringType
-import logger
+from src.workflow_components.dependency import UsesString, UsesStringType
+import src.logger.log as log
 
 
 def get_or_create_workflow(path: str) -> "Workflow":
@@ -48,7 +48,7 @@ class Step(GraphObject):
     with_prop = Property("with")
     url = Property()
 
-    action = RelatedTo("composite_action.CompositeAction")
+    action = RelatedTo("src.workflow_components.composite_action.CompositeAction")
     reusable_workflow = RelatedTo("Workflow")
     using_param = RelatedTo("StepCodeDependency")
 
@@ -76,7 +76,7 @@ class Step(GraphObject):
             uses_string_obj = UsesString.analyze(uses_string=s.uses)
             if uses_string_obj.type == UsesStringType.ACTION:
                 # Avoiding circular imports.
-                import composite_action
+                import src.workflow_components.composite_action as composite_action
 
                 obj = composite_action.get_or_create_composite_action(
                     uses_string_obj.get_full_path(s.path)
@@ -88,7 +88,6 @@ class Step(GraphObject):
 
             if len(s.uses.split("@")) > 1:
                 s.ref = s.uses.split("@")[1]
-
         return s
 
 
@@ -194,7 +193,7 @@ class Workflow(GraphObject):
                     repo = get_repo_name_from_path(w.path)
                     w_path = find_workflow_by_name(repo, workflow_name)
                     if w_path is None:
-                        logger.debug(
+                        log.debug(
                             f"[-] Couldn't find the triggering workflow '{workflow_name}' in repository '{repo}'"
                         )
                     else:
@@ -209,6 +208,7 @@ class Workflow(GraphObject):
 
         for job_name, job in obj_dict["jobs"].items():
             if not isinstance(job, dict):
+                log.error("[-] Invalid job structure")
                 raise Exception("Invalid job structure.")
             job["_id"] = md5(f"{w._id}_{job_name}".encode()).hexdigest()
             job["path"] = w.path

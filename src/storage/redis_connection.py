@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import redis
-from config import Config
-import logger
+from src.config.config import Config
+import src.logger.log as log
 
 
 class RedisConnection:
@@ -18,7 +18,7 @@ class RedisConnection:
                 host=self.redis_host, port=self.redis_port, db=self.redis_db
             )
         except Exception as err:
-            logger.error(f"Failed to connect to Redis: {err}")
+            log.error(f"Failed to connect to Redis: {err}")
 
         return self
 
@@ -31,7 +31,7 @@ class RedisConnection:
         try:
             self.redis_client.hset(hash, field, value)
         except redis.exceptions.ResponseError as e:
-            logger.error(f"Failed to set value: {e}")
+            log.error(f"Failed to set value: {e}")
 
     def get_value_from_hash(self, key: str, field: str) -> str:
         return self.redis_client.hget(key, field)
@@ -41,7 +41,7 @@ class RedisConnection:
         try:
             self.redis_client.set(key, value)
         except redis.exceptions.ResponseError as e:
-            logger.error(f"Failed to set value: {e}")
+            log.error(f"Failed to set value: {e}")
 
     def get_string(self, key: str) -> str:
         return self.redis_client.get(key)
@@ -51,7 +51,7 @@ class RedisConnection:
         try:
             self.redis_client.sadd(set, value)
         except redis.exceptions.ResponseError as e:
-            logger.error(f"Failed to set value: {e}")
+            log.error(f"Failed to set value: {e}")
 
     def exists_in_set(self, set: str, value: str) -> bool:
         return bool(self.redis_client.sismember(set, value))

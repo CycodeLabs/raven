@@ -1,6 +1,6 @@
-from config import Config
+from src.config.config import Config
 from tabulate import tabulate
-from reporter import slack
+from src.reporter import slack
 
 
 def generate() -> None:

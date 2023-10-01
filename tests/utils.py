@@ -1,4 +1,4 @@
-from config import Config
+from src.config.config import Config
 from typing import Tuple, Optional
 
 from py2neo.ogm import GraphObject

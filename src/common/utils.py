@@ -1,4 +1,3 @@
-import os
 import re
 import io
 from typing import List, Dict, Union
@@ -6,9 +5,9 @@ from typing import List, Dict, Union
 import yaml
 from py2neo.data import Node
 
-from redis_connection import RedisConnection
-from config import Config
-import logger
+from src.storage.redis_connection import RedisConnection
+from src.config.config import Config
+import src.logger.log as log
 
 
 def get_dependencies_in_code(code: str) -> List[str]:
@@ -64,7 +63,7 @@ def find_workflow_by_name(repo: str, workflow_name: str) -> str:
                     try:
                         obj = yaml.load(f, yaml.loader.Loader)
                     except yaml.scanner.ScannerError as e:
-                        logger.error(
+                        log.error(
                             f"[-] Failed loading: {workflow}. Exception: {e}. Skipping..."
                         )
                         return

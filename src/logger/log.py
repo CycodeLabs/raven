@@ -15,7 +15,7 @@ def info(msg: str) -> None:
 
 
 def debug(msg: str) -> None:
-    from config import Config
+    from src.config.config import Config
 
     if Config.debug:
         logger.debug(msg)
@@ -30,7 +30,7 @@ def warning(msg: str) -> None:
 
 
 def catch_exit() -> None:
-    from config import Config
+    from src.config.config import Config
 
     if Config.github_token:
         print("""\n[x] Index results with: python main.py index""")

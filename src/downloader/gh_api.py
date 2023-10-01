@@ -3,8 +3,8 @@ import urllib
 from requests import get
 from typing import Dict, Any, Optional, Iterator, Optional
 from http import HTTPStatus
-from config import Config
-import logger
+from src.config.config import Config
+import src.logger.log as log
 
 """
 Current rate limiting:
@@ -59,11 +59,9 @@ def get_organization_repository(organization_name: str, page: int) -> list[dict]
         headers=headers,
     )
     if r.status_code != HTTPStatus.OK:
-        logger.error(
-            f"[-] Failed fetching repositories for {organization_name}\n"
-            f"status code: {r.status_code}. Response: {r.text}"
-        )
-        return []
+        log.error(f"[-] Failed fetching repositories for {organization_name}")
+        raise Exception(f"status code: {r.status_code}. Response: {r.text}")
+
     return r.json()
 
 
@@ -80,7 +78,7 @@ def get_repository_generator(
     while True:
         more_results = False
         for page in range(1, 11):
-            logger.info(f"[*] Querying page: {page}")
+            log.info(f"[*] Querying page: {page}")
             if organization_name:
                 repos = get_organization_repository(
                     organization_name=organization_name, page=page
@@ -103,7 +101,7 @@ def get_repository_generator(
                 more_results = True
                 for repo in repos:
                     last_star_count = int(repo["stargazers_count"])
-                    logger.debug(
+                    log.debug(
                         f"[+] About to download repository: {repo['full_name']}, Stars: {last_star_count}"
                     )
                     yield repo["full_name"]
@@ -128,7 +126,7 @@ def get_repository_search(query: str, page: int = 1) -> Dict[str, Any]:
         headers=headers,
     )
     if r.status_code != 200:
-        logger.error(f"status code: {r.status_code}. Response: {r.text}")
+        log.error(f"status code: {r.status_code}. Response: {r.text}")
         return {}
 
     return r.json()["items"]
@@ -153,13 +151,13 @@ def get_repository_workflows(repo: str) -> Dict[str, str]:
         import time
 
         time_to_sleep = int(r.headers["X-RateLimit-Reset"]) - time.time() + 1
-        logger.error(
+        log.error(
             f"[*] Ratelimit for for contents API depleted. Sleeping {time_to_sleep} seconds"
         )
         time.sleep(time_to_sleep)
         return get_repository_workflows(repo)
     if r.status_code != 200:
-        logger.error(f"status code: {r.status_code}. Response: {r.text}")
+        log.error(f"status code: {r.status_code}. Response: {r.text}")
         return {}
 
     # When we have a single entry, the contents API returns dict instead of list.
@@ -202,7 +200,7 @@ def get_repository_composite_action(path: str) -> str:
             continue
 
         if r.status_code != 200:
-            logger.error(f"status code: {r.status_code}. Response: {r.text}")
+            log.error(f"status code: {r.status_code}. Response: {r.text}")
             continue
 
         return r.json()["download_url"]
@@ -226,7 +224,7 @@ def get_repository_reusable_workflow(path: str) -> str:
     if r.status_code == 404:
         return
     if r.status_code != 200:
-        logger.error(f"status code: {r.status_code}. Response: {r.text}")
+        log.error(f"status code: {r.status_code}. Response: {r.text}")
         return
 
     return r.json()["download_url"]

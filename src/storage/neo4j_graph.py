@@ -2,8 +2,8 @@ from py2neo import Graph
 from py2neo.ogm import GraphObject
 from py2neo.data import Node
 from typing import Tuple, Optional
-import logger
-from query_library import PREDEFINED_DETECTIONS
+import src.logger.log as log
+from src.library import query_library
 
 
 class GraphDb(object):
@@ -30,7 +30,7 @@ class GraphDb(object):
         """
         matched_obj = obj.__class__.match(self.graph, obj._id)
         if not matched_obj.exists():
-            logger.warning(
+            log.warning(
                 f"WARNING: We didn't found object {obj._id} of type {obj.__class__.__name__}, so we created it."
             )
             self.graph.push(obj)
@@ -52,9 +52,9 @@ class GraphDb(object):
     def clean_graph(self):
         self.graph.delete_all()
 
-    def run_predefined_queries(self):
+    def run_predefined_queries(self) -> list:
         detection_results = []
-        for detection in PREDEFINED_DETECTIONS:
+        for detection in query_library.PREDEFINED_DETECTIONS:
             query = detection.get("query", "")
             result = self.graph.run(query)
             results = [record for record in result]

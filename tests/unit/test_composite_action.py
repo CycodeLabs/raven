@@ -1,5 +1,5 @@
-import composite_action
-from tests.unit.utils import load_test_config
+import src.workflow_components.composite_action as composite_action
+from tests.utils import load_test_config
 
 load_test_config()
 

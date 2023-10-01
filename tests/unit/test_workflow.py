@@ -1,5 +1,5 @@
-import workflow
-from tests.unit.utils import load_test_config
+import src.workflow_components.workflow as workflow
+from tests.utils import load_test_config
 
 load_test_config()
 
