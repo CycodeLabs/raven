@@ -1,5 +1,6 @@
 from setuptools import find_packages
 from setuptools import setup
+from distutils import log
 import pathlib
 import sys
 
@@ -8,23 +9,8 @@ README = (HERE / "README.md").read_text()
 REQUIRMENTS = (HERE / "requirements.txt").read_text().splitlines()
 CURRENT_PYTHON = sys.version_info[:2]
 REQUIRED_PYTHON = (3, 7)
-
 if CURRENT_PYTHON < REQUIRED_PYTHON:
-    sys.stderr.write(
-        """
-==========================
-Unsupported Python version
-==========================
-This version of Requests requires at least Python {}.{}, but
-you're trying to install it on Python {}.{}. To resolve this,
-consider upgrading to a supported Python version.
-
-If you can't upgrade your Python version, you'll need to
-pin to an older version of Requests (<2.28).
-""".format(
-            *(REQUIRED_PYTHON + CURRENT_PYTHON)
-        )
-    )
+    log.fatal("Raven requires Python V3.7 or greater.")
     sys.exit(1)
 
 
