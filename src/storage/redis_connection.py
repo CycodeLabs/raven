@@ -26,12 +26,17 @@ class RedisConnection:
         if self.redis_client:
             self.redis_client.close()
 
+    ## Hash functions
     def insert_to_hash(self, hash: str, field: str, value: str) -> None:
         try:
             self.redis_client.hset(hash, field, value)
         except redis.exceptions.ResponseError as e:
             log.error(f"Failed to set value: {e}")
 
+    def get_value_from_hash(self, key: str, field: str) -> str:
+        return self.redis_client.hget(key, field)
+
+    ## String functions
     def insert_to_string(self, key: str, value: str) -> None:
         try:
             self.redis_client.set(key, value)
@@ -41,14 +46,12 @@ class RedisConnection:
     def get_string(self, key: str) -> str:
         return self.redis_client.get(key)
 
+    ## Set functions
     def insert_to_set(self, set: str, value: str) -> str:
         try:
             self.redis_client.sadd(set, value)
         except redis.exceptions.ResponseError as e:
             log.error(f"Failed to set value: {e}")
-
-    def get_value_from_hash(self, hash: str, field: str) -> str or None:
-        return self.redis_client.hget(hash, field)
 
     def exists_in_set(self, set: str, value: str) -> bool:
         return bool(self.redis_client.sismember(set, value))
@@ -59,6 +62,7 @@ class RedisConnection:
     def get_set_values(self, set: str) -> set:
         return self.redis_client.smembers(set)
 
+    ## General DB functions
     def delete_key(self, key: str) -> None:
         self.redis_client.delete(key)
 

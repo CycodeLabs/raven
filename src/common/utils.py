@@ -26,6 +26,19 @@ def convert_workflow_to_unix_path(repo: str, workflow_name: str) -> str:
     return f"{repo}/.github/workflows/{workflow_name}"
 
 
+def convert_raw_github_url_to_github_com_url(raw_url: str):
+    """
+    Convert a GitHub raw URL to its corresponding tree URL.
+    convert_raw_to_tree_url("https://raw.githubusercontent.com/myorg/myrepo/master/.github/workflows/android.yml")
+        >> "https://github.com/myorg/myrepo/tree/master/.github/workflows/android.yml"
+    """
+
+    tree_url = raw_url.replace("raw.githubusercontent.com", "github.com")
+    parts = tree_url.split("/")
+    parts.insert(5, "tree")
+    return "/".join(parts)
+
+
 def find_workflow_by_name(repo: str, workflow_name: str) -> str:
     """Tries to find workflow in specified repo,
     with the given workflow name
@@ -37,7 +50,9 @@ def find_workflow_by_name(repo: str, workflow_name: str) -> str:
             workflow = workflow.decode()
 
             if workflow.startswith(repo):
-                data = workflows_db.get_string(workflow).decode()
+                data = workflows_db.get_value_from_hash(
+                    workflow, Config.redis_data_hash_field_name
+                ).decode()
 
                 # PyYAML has issues with tabs.
                 data = data.replace("\t", "  ")
