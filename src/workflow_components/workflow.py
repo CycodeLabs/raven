@@ -9,7 +9,7 @@ from src.common.utils import (
     convert_dict_to_list,
     find_workflow_by_name,
 )
-from src.workflow.dependency import UsesString, UsesStringType
+from src.workflow_components.dependency import UsesString, UsesStringType
 import src.logger.log as log
 
 
@@ -48,7 +48,7 @@ class Step(GraphObject):
     with_prop = Property("with")
     url = Property()
 
-    action = RelatedTo("src.workflow.composite_action.CompositeAction")
+    action = RelatedTo("src.workflow_components.composite_action.CompositeAction")
     reusable_workflow = RelatedTo("Workflow")
     using_param = RelatedTo("StepCodeDependency")
 
@@ -76,7 +76,7 @@ class Step(GraphObject):
             uses_string_obj = UsesString.analyze(uses_string=s.uses)
             if uses_string_obj.type == UsesStringType.ACTION:
                 # Avoiding circular imports.
-                import src.workflow.composite_action as composite_action
+                import src.workflow_components.composite_action as composite_action
 
                 obj = composite_action.get_or_create_composite_action(
                     uses_string_obj.get_full_path(s.path)

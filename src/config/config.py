@@ -1,4 +1,4 @@
-from src.storage.graph_db import GraphDb
+from src.storage.neo4j_graph import GraphDb
 
 # Default Values
 DEBUG_DEFAULT = False
@@ -25,6 +25,13 @@ REDIS_URL_HASH_FIELD_NAME = "url"
 REDIS_SETS_DB = 0
 REDIS_WORKFLOWS_DB = 1
 REDIS_ACTIONS_DB = 2
+
+# CLI commands
+DOWNLOAD_COMMAND = "download"
+DOWNLOAD_ORG_COMMAND = "org"
+DOWNLOAD_CRAWL_COMMAND = "crawl"
+INDEX_COMMAND = "index"
+REPORT_COMMAND = "report"
 
 
 def load_downloader_config(args) -> None:

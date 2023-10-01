@@ -1,7 +1,7 @@
 import argparse
 
 import src.logger.log as log
-from src.downloader.downloader import (
+from src.downloader.download import (
     download_all_workflows_and_actions,
     download_org_workflows_and_actions,
 )
@@ -23,7 +23,21 @@ from src.config.config import (
     REDIS_PORT_DEFAULT,
     REDIS_CLEAN_DEFAULT,
     REPORT_SLACK_DEFAULT,
+    DOWNLOAD_COMMAND,
+    DOWNLOAD_ORG_COMMAND,
+    DOWNLOAD_CRAWL_COMMAND,
+    INDEX_COMMAND,
+    REPORT_COMMAND,
 )
+
+COMMAND_FUNCTIONS = {
+    DOWNLOAD_COMMAND: {
+        DOWNLOAD_CRAWL_COMMAND: download_all_workflows_and_actions,
+        DOWNLOAD_ORG_COMMAND: download_org_workflows_and_actions,
+    },
+    INDEX_COMMAND: index_downloaded_workflows_and_actions,
+    REPORT_COMMAND: generate,
+}
 
 
 def execute() -> None:
@@ -182,28 +196,19 @@ def raven() -> None:
 
     args = parser.parse_args()
 
-    command_functions = {
-        "download": {
-            "crawl": download_all_workflows_and_actions,
-            "org": download_org_workflows_and_actions,
-        },
-        "index": index_downloaded_workflows_and_actions,
-        "report": generate,
-    }
-
-    if args.command in command_functions:
-        if args.command == "download":
+    if args.command in COMMAND_FUNCTIONS:
+        if args.command == DOWNLOAD_COMMAND:
             if args.download_command:
                 load_downloader_config(vars(args))
-                command_functions[args.command][args.download_command]()
+                COMMAND_FUNCTIONS[args.command][args.download_command]()
                 return
             else:
                 download_parser.print_help()
-        elif args.command == "index":
+        elif args.command == INDEX_COMMAND:
             load_indexer_config(vars(args))
-            command_functions[args.command]()
-        elif args.command == "report":
+            COMMAND_FUNCTIONS[args.command]()
+        elif args.command == REPORT_COMMAND:
             load_reporter_config(vars(args))
-            command_functions[args.command]()
+            COMMAND_FUNCTIONS[args.command]()
     else:
         parser.print_help()

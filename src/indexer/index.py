@@ -5,8 +5,8 @@ from yaml.constructor import Constructor
 
 from src.storage.redis_connection import RedisConnection
 from src.config.config import Config
-from src.workflow.workflow import Workflow
-from src.workflow.composite_action import CompositeAction
+from src.workflow_components.workflow import Workflow
+from src.workflow_components.composite_action import CompositeAction
 from tqdm import tqdm
 import src.logger.log as log
 

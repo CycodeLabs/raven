@@ -15,7 +15,7 @@ from src.common.utils import (
     get_repo_name_from_path,
     convert_raw_github_url_to_github_com_url,
 )
-from src.workflow.dependency import UsesString, UsesStringType
+from src.workflow_components.dependency import UsesString, UsesStringType
 import src.logger.log as log
 
 
