@@ -104,19 +104,22 @@ optional arguments:
 ```
 
 ## Examples
+
 Retrieve all workflows and actions associated with the organization.
-``` bash
+
+```bash
 python main.py download org --token $GITHUB_TOKEN --org-name microsoft --debug
 ```
 
 Scrape all publicly accessible GitHub repositories.
-``` bash
+
+```bash
 python main.py download crawl --token $GITHUB_TOKEN --min-stars 100 --max-stars 1000 --debug
 ```
 
 After finishing the download process or if interrupted using Ctrl+C, proceed to index all workflows and actions into the Neo4j database.
 
-``` bash
+```bash
 python main.py index --debug
 ```
 
@@ -161,9 +164,15 @@ For authenticated users, the next rate limiting applies:
 - Expand the research for findings of harmful misuse of `GITHUB_ENV`. This may utilize the previous taint analysis as well.
 - Research whether `actions/github-script` has an interesting threat landscape. If it is, it can be modeled in the graph.
 
-## Contribution
+## Contributing
 
-TODO
+We encourage contributions from the community to help improve our tooling and research. We manage contributions primarily through GitHub Issues and Pull Requests.
+
+If you have a feature request, bug report, or any improvement suggestions, please create an issue to discuss it. To start contributing, you may check [good first issue](https://github.com/CycodeLabs/Raven/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) label to get started quickly into the code base.
+
+To contribute code changes, fork our repository, make your modifications, and then submit a pull request.
+
+Feel free to reach out to the development team through research@cycode.com. We appreciate your collaboration and look forward to your valuable contributions!
 
 ## License
 
@@ -177,7 +186,7 @@ TODO
 | [storybookjs/storybook](https://github.com/storybookjs/storybook)                               | ![](https://img.shields.io/github/stars/storybookjs/storybook)                | [ffb8558](https://github.com/storybookjs/storybook/commit/ffb8558b7e5df4644299e5ec7009ade6ca1a721c)                             | [Blog](https://cycode.com/ci-story-how-we-found-critical-vulnerabilities-in-storybook-project/)              |
 | [tiangolo/fastapi](https://github.com/tiangolo/fastapi)                                         | ![](https://img.shields.io/github/stars/tiangolo/fastapi)                     | [9efab1b](https://github.com/tiangolo/fastapi/commit/9efab1bd96ef061edf1753626573a0a2be1eef09)                                  | [LinkedIn](https://www.linkedin.com/feed/update/urn:li:activity:7011753940283203584/)                        |
 | [withastro/astro](https://github.com/withastro/astro)                                           | ![](https://img.shields.io/github/stars/withastro/astro)                      | [650fb1a](https://github.com/withastro/astro/commit/650fb1aa51a1c843c10bc89a11732b45a6345b00)                                   | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
-| [statelyai/xstate](https://github.com/statelyai/xstate)                                         | ![](https://img.shields.io/github/stars/statelyai/xstate)                     | CodeSee package update          | [Blog](https://cycode.com/blog/cycode-secures-thousands-of-open-source-projects/)                            |
+| [statelyai/xstate](https://github.com/statelyai/xstate)                                         | ![](https://img.shields.io/github/stars/statelyai/xstate)                     | CodeSee package update                                                                                                          | [Blog](https://cycode.com/blog/cycode-secures-thousands-of-open-source-projects/)                            |
 | [docker-slim/docker-slim](https://github.com/docker-slim/docker-slim)                           | ![](https://img.shields.io/github/stars/docker-slim/docker-slim)              | CodeSee package update                                                                                                          | [Blog](https://cycode.com/blog/cycode-secures-thousands-of-open-source-projects/)                            |
 | [microsoft/fluentui](https://github.com/microsoft/fluentui)                                     | ![](https://img.shields.io/github/stars/microsoft/fluentui)                   | [2ea6195](https://github.com/microsoft/fluentui/commit/2ea6195152131766641311ee5604e746b578d8e7)                                | [Blog](https://cycode.com/blog/analyzing-the-vulnerability-that-could-have-compromised-microsoft-365-users/) |
 | [tiangolo/sqlmodel](https://github.com/tiangolo/sqlmodel)                                       | ![](https://img.shields.io/github/stars/tiangolo/sqlmodel)                    | [cf36b2d](https://github.com/tiangolo/sqlmodel/commit/cf36b2d9baccf527bc61071850f102e2cd8bf6bf)                                 | [LinkedIn](https://www.linkedin.com/feed/update/urn:li:activity:7011753940283203584/)                        |
