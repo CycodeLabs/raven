@@ -78,7 +78,7 @@ WHERE
     (
         d.param IN ["github.event.issue.title", "github.event.issue.body"]
     )
-RETURN DISTINCT w.path;
+RETURN DISTINCT w.path, w.url;
 ```
 
 <img width="1180" alt="image" src="issue_injection.png">
@@ -109,5 +109,5 @@ WHERE
             )
         )
     }
-RETURN w.path
+RETURN w.path, w.url
 ```

@@ -36,5 +36,5 @@ WHERE
             )
         )
     }
-RETURN DISTINCT w.path;
+RETURN DISTINCT w.path, w.url;
 ```

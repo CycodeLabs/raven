@@ -50,7 +50,7 @@ EXISTS {
         (w2)-[*]->(caTmp:CompositeAction)
         WHERE caTmp.path = "actions/checkout"
     }
-RETURN DISTINCT w2.path;
+RETURN DISTINCT w2.path, w2.url;
 ```
 
 ### Workflow Run + Head Branch Injection
@@ -78,5 +78,5 @@ MATCH p=(w1:Workflow)-->(w2:Workflow)-[*]->(s:Step) WHERE
 ) AND (
     s.run CONTAINS "$(<pr-id.txt)"
 )
-RETURN DISTINCT w2.path;
+RETURN DISTINCT w2.path, w2.url;
 ```
