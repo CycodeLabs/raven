@@ -15,7 +15,7 @@ COPY tests /raven/tests
 RUN mv /raven/tests/test_raven.py /raven/test_raven.py
 
 # Install any needed packages specified in requirements.txt
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # Run RAVEN tests
 CMD ["make", "test-run"]
