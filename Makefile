@@ -1,4 +1,3 @@
-
 setup:
 	@echo "Building Services..."
 	docker-compose -p raven --file deployment/docker-compose.yml up -d
@@ -10,4 +9,4 @@ test-build:
 test-run:
 	@echo "DO NOT USE DIRECTLY; PLEASE USE: make test-build"
 	@echo "Running Tests..."
-	@python test_raven.py
+	@python3 test_raven.py

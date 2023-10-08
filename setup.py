@@ -8,9 +8,9 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 REQUIRMENTS = (HERE / "requirements.txt").read_text().splitlines()
 CURRENT_PYTHON = sys.version_info[:2]
-REQUIRED_PYTHON = (3, 7)
+REQUIRED_PYTHON = (3, 9)
 if CURRENT_PYTHON < REQUIRED_PYTHON:
-    log.fatal("Raven requires Python V3.7 or greater.")
+    log.fatal("Raven requires Python V3.9 or greater.")
     sys.exit(1)
 
 
@@ -18,15 +18,13 @@ setup(
     name="raven",
     description="",
     long_description=README,
-    url="https://github.com/CycodeLabs/Raven",
-    project_urls={"Source": "https://github.com/CycodeLabs/Raven"},
+    url="https://github.com/CycodeLabs/raven",
+    project_urls={"Source": "https://github.com/CycodeLabs/raven"},
     author="Cycode",
     license="Apache License 2.0",
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",

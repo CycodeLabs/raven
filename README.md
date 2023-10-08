@@ -50,20 +50,20 @@ It was for these reasons that Raven was created, a framework for CI/CD security 
 Download the latest stable version
 ```bash
 wget https://github.com/CycodeLabs/Raven/archive/refs/tags/v1.0.0.tar.gz -O raven.tar.gz
-tar -xvf raven.tar.gz
+tar -xvf raven.tar.gz --one-top-level=raven --strip-components 1
 cd raven
 ```
 
 Create Virtual Environment
 ``` bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
 Build Containerized Environment and install Raven
 ```bash
-make setup
-pip install .
+sudo make setup
+pip3 install .
 ```
 
 Run Raven
@@ -71,14 +71,17 @@ Run Raven
 raven
 ```
 
+### Prerequisites
+
+- Python 3.9+
+- Docker Compose v2.1.0+
+- Docker Engine v1.13.0+
+
 ## Infrastructure
 Raven is using two primary docker containers: Redis and Neo4j. 
 `make setup` will run a `docker-compose` command to prepare that environment.
 
 ![image](https://github.com/CycodeLabs/raven/assets/124190990/bedc9389-faa3-4152-b9f0-7eeca6ac6c12)
-
-
-
 
 
 ## Usage
