@@ -8,6 +8,7 @@ from src.downloader.gh_api import (
     get_repository_workflows,
     get_repository_composite_action,
     get_repository_reusable_workflow,
+    get_organization_repository_generator,
 )
 from src.common.utils import (
     find_uses_strings,
@@ -32,8 +33,8 @@ def download_org_workflows_and_actions() -> None:
 
     We are trying to cache the downloads as much as we can to reduce redundant download attempts.
     """
-    log.debug("[+] Starting repository iterator")
-    generator = get_repository_generator(organization_name=Config.org_name)
+    log.debug("[+] Starting organization repository iterator")
+    generator = get_organization_repository_generator(Config.org_name)
 
     # Clean redis
     if Config.clean_redis:

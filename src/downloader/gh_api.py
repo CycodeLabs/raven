@@ -37,6 +37,74 @@ headers = {
 }
 
 
+def get_organization_repository_generator(organization_name: str) -> Iterator[str]:
+    # Quering organization repositories is not limited. We loop over each page,
+    # and look for more repos. If there are no more repos, we break
+    page = 1
+    while True:
+        log.info(f"[*] Querying page: {page}")
+        repos = get_organization_repository(
+            organization_name=organization_name, page=page
+        )
+        if repos:
+            for repo in repos:
+                repo_star_count = int(repo["stargazers_count"])
+                log.debug(
+                    f"[+] About to download repository: {repo['full_name']}, Stars: {repo_star_count}"
+                )
+                yield repo["full_name"]
+        else:
+            break
+
+        page += 1
+
+
+def get_repository_generator(
+    min_stars: int,
+    max_stars: Optional[int] = 0,
+) -> Iterator[str]:
+    # Github allows only querying up to 1000 results, means 10 pages.
+
+    # In addition, to make wider queries, we going to change the query after each 10 pages.
+    # Because our query only do stars count, we can just narrow the stars, and keep querying.
+    last_star_count = 0
+    while True:
+        more_results = False
+        for page in range(1, 11):
+            log.info(f"[*] Querying page: {page}")
+            if not max_stars:
+                query = REPOSITORY_QUERY_MIN.format(min_stars=min_stars)
+            else:
+                query = REPOSITORY_QUERY_MIN_MAX.format(
+                    min_stars=min_stars, max_stars=max_stars
+                )
+
+            repos = get_repository_search(
+                query=query,
+                page=page,
+            )
+
+            if repos:
+                more_results = True
+                for repo in repos:
+                    last_star_count = int(repo["stargazers_count"])
+                    log.debug(
+                        f"[+] About to download repository: {repo['full_name']}, Stars: {last_star_count}"
+                    )
+                    yield repo["full_name"]
+            else:
+                more_results = False
+                break
+
+            page += 1
+
+        if not more_results:
+            # Recieved no results. can quit.
+            break
+        else:
+            max_stars = last_star_count + 1
+
+
 def get_organization_repository(organization_name: str, page: int) -> list[dict]:
     """
     Returns a list of all repositories for the specified organization.
@@ -63,59 +131,6 @@ def get_organization_repository(organization_name: str, page: int) -> list[dict]
         raise Exception(f"status code: {r.status_code}. Response: {r.text}")
 
     return r.json()
-
-
-def get_repository_generator(
-    min_stars: Optional[int] = 0,
-    max_stars: Optional[int] = 0,
-    organization_name: Optional[str] = "",
-) -> Iterator[str]:
-    # Github allows only querying up to 1000 results, means 10 pages.
-
-    # In addition, to make wider queries, we going to change the query after each 10 pages.
-    # Because our query only do stars count, we can just narrow the stars, and keep querying.
-    last_star_count = 0
-    while True:
-        more_results = False
-        for page in range(1, 11):
-            log.info(f"[*] Querying page: {page}")
-            if organization_name:
-                repos = get_organization_repository(
-                    organization_name=organization_name, page=page
-                )
-
-            else:
-                if not max_stars:
-                    query = REPOSITORY_QUERY_MIN.format(min_stars=min_stars)
-                else:
-                    query = REPOSITORY_QUERY_MIN_MAX.format(
-                        min_stars=min_stars, max_stars=max_stars
-                    )
-
-                repos = get_repository_search(
-                    query=query,
-                    page=page,
-                )
-
-            if repos and len(repos) > 0:
-                more_results = True
-                for repo in repos:
-                    last_star_count = int(repo["stargazers_count"])
-                    log.debug(
-                        f"[+] About to download repository: {repo['full_name']}, Stars: {last_star_count}"
-                    )
-                    yield repo["full_name"]
-            else:
-                more_results = False
-                break
-
-            page += 1
-
-        if not more_results:
-            # Recieved no results. can quit.
-            break
-        else:
-            max_stars = last_star_count + 1
 
 
 def get_repository_search(query: str, page: int = 1) -> Dict[str, Any]:
