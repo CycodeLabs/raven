@@ -151,6 +151,8 @@ def raven() -> None:
     org_download_parser.add_argument(
         "--org-name",
         required=True,
+        action="append",
+        type=str,
         help="Organization name to download the workflows",
     )
 

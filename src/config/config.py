@@ -96,7 +96,7 @@ class Config:
     github_token: str = None
     min_stars: int = None
     max_stars: int = None
-    org_name: str = None
+    org_name: list[str] = []
 
     # Indexer Configs
     clean_neo4j: bool = None
