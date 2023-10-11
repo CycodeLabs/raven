@@ -15,7 +15,7 @@ from tests.integration.test_node_count import (
 
 def load_integration_tests_config() -> None:
     load_downloader_config(
-        {"debug": False, "token": getenv("GITHUB_TOKEN"), "org_name": "RavenDemo"}
+        {"debug": False, "token": getenv("GITHUB_TOKEN"), "org_name": ["RavenDemo"]}
     )
 
     load_indexer_config(

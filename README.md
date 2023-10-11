@@ -154,7 +154,7 @@ options:
 
 Retrieve all workflows and actions associated with the organization.
 ``` bash
-raven download org --token $GITHUB_TOKEN --org-name microsoft --debug
+raven download org --token $GITHUB_TOKEN --org-name microsoft --org-name google --debug
 ```
 
 Scrape all publicly accessible GitHub repositories.
