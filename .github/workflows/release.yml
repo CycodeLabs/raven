@@ -1,0 +1,31 @@
+name: release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  test_release:
+    name: Test Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Latest Release
+      run: |
+        curl -s https://raw.githubusercontent.com/CycodeLabs/raven/main/install.sh | bash
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Create virtual env
+      working-directory: ./raven
+      run: |
+        python3 -m venv .venv
+        source .venv/bin/activate
+
+    - name: Build and Run Raven
+      working-directory: ./raven
+      run: |
+        pip3 install .
+        raven
