@@ -146,10 +146,24 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             return
 
         if url is None:
-            # Maybe runs a local action that was checked out previously? Maybe the action is executed through a Dockerfile?
-            log.error(
-                f"[-] Couldn't download the action.yml for the dependent action referenced by '{uses_string}'"
-            )
+            # This actions might be a local action, or a docker action.
+
+            if uses_string.startswith("./"):
+                log.info(
+                    f"[-] Local action '{uses_string}' not found in '{repo}', skipping."
+                )
+            elif uses_string_obj.type == UsesStringType.ACTION:
+                log.warning(
+                    f"[-] Action '{uses_string}' could not be found while scanning repo '{repo}', skipping."
+                )
+            elif uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
+                log.warning(
+                    f"[-] Reusable workflow '{uses_string}' could not be found while scanning repo '{repo}', skipping."
+                )
+            else:
+                log.warning(
+                    f"[-] Docker Action '{uses_string}' could not be found while scanning repo '{repo}', skipping."
+                )
             return
 
         resp = get(url, timeout=10)
