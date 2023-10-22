@@ -104,5 +104,5 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          raven download org --token $GITHUB_TOKEN --org-name RavenDemo --debug
+          raven download org --token $GITHUB_TOKEN --org-name RavenDemo
           raven index
