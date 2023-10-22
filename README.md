@@ -85,7 +85,7 @@ raven
 Raven is using two primary docker containers: Redis and Neo4j. 
 `make setup` will run a `docker-compose` command to prepare that environment.
 
-![image](https://github.com/CycodeLabs/raven/assets/124190990/bedc9389-faa3-4152-b9f0-7eeca6ac6c12)
+![Infrastructure](assets/images/infrastructure.png)
 
 
 ## Usage
