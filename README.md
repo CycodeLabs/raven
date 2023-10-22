@@ -55,7 +55,8 @@ It was for these reasons that Raven was created, a framework for CI/CD security 
 
 Download the latest stable version
 ```bash
-curl -s https://raw.githubusercontent.com/CycodeLabs/raven/main/install.sh | bash
+curl -sSfL https://raw.githubusercontent.com/CycodeLabs/raven/main/install.sh | bash
+cd raven
 ```
 
 Create Virtual Environment
