@@ -68,7 +68,6 @@ source .venv/bin/activate
 Build Containerized Environment and install Raven
 ```bash
 sudo make setup
-pip3 install .
 ```
 
 Run Raven
