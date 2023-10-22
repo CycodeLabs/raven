@@ -1,0 +1,55 @@
+name: release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  test_release:
+    name: Test Release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: cycodelabs/cimon-action@v0
+      with:
+        prevent: true
+        fail-on-error: true
+        allowed-ips: >
+          18.215.138.58
+          34.194.164.123
+          44.196.175.70
+          52.1.184.176
+          52.3.144.121
+          54.165.156.197
+          104.16.100.207
+          104.16.101.207
+          104.16.102.207
+          104.16.103.207
+          104.16.104.207
+        allowed-hosts: >
+          files.pythonhosted.org
+          pypi.org
+          raw.githubusercontent.com
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Download Latest Release
+      run: |
+        curl -s https://raw.githubusercontent.com/CycodeLabs/raven/main/install.sh | bash
+
+    - name: Build Package
+      working-directory: raven
+      run: python -m pip install .
+
+    - name: Setup environment
+      working-directory: raven
+      run: make setup
+
+    - name: Download Organization
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        raven download org --token $GITHUB_TOKEN --org-name RavenDemo
+        raven index
