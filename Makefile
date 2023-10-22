@@ -1,6 +1,8 @@
 setup:
 	@echo "Building Services..."
 	docker-compose -p raven --file deployment/docker-compose.yml up -d
+	@echo "Building raven..."
+	pip3 install .
 
 test-build:
 	@echo "Running Tests in isolated environment..."
