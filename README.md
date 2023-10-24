@@ -1,7 +1,6 @@
 # Raven - CI/CD Security Analyzer
 [![License](https://img.shields.io/badge/license-Apache%202.0-orange.svg)](https://opensource.org/licenses/MIT)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/CycodeLabs/raven?color=red)
-![GitHub stars](https://img.shields.io/github/stars/CycodeLabs/raven?color=yellow)
 
 
 **RAVEN (Risk Analysis and Vulnerability Enumeration for CI/CD)** is a powerful security tool designed to perform massive scans for GitHub Actions CI workflows and digest the discovered data into a Neo4j database.
@@ -55,24 +54,28 @@ It was for these reasons that Raven was created, a framework for CI/CD security 
 
 ## Setup && Run
 
-Download the latest stable version
-```bash
-curl -sSfL https://raw.githubusercontent.com/CycodeLabs/raven/main/install.sh | bash
+To get started with Raven, follow these installation instructions:
+
+**Step 1**: Download the latest stable version, The install script requires `curl`, `wget` and `jq`
+``` bash
+curl -sSfL https://raw.githubusercontent.com/CycodeLabs/raven/f020094d175ab5cd0eb10442c6f7728485cc6903/install.sh | bash
 cd raven
 ```
 
-Create Virtual Environment
+or, you can download the latest release from `https://github.com/CycodeLabs/raven/releases/latest`
+
+**Step 2**: Create virtual environment
 ``` bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Build Containerized Environment and install Raven
+**Step 3**: Build containerized environment and install Raven
 ```bash
 sudo make setup
 ```
 
-Run Raven
+**Step 4**: Run Raven
 ``` bash
 raven
 ```
