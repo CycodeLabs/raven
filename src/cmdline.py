@@ -173,7 +173,7 @@ def raven() -> None:
     report_parser = subparsers.add_parser(
         "report",
         parents=[redis_parser, neo4j_parser],
-        help="Generate report from indexed Actions",
+        help="Generate report from indexed Actions - Beta Version",
     )
     report_parser.add_argument(
         "--slack",

@@ -154,6 +154,48 @@ options:
   --debug               Whether to print debug statements, default: False
 ```
 
+### Report - beta version
+<details>
+  <summary>expand</summary>
+    
+```bash
+usage: raven report [-h] [--redis-host REDIS_HOST]
+      [--redis-port REDIS_PORT] [--clean-redis]
+      [--neo4j-uri NEO4J_URI]
+      [--neo4j-user NEO4J_USER]
+      [--neo4j-pass NEO4J_PASS] [--clean-neo4j]
+      [--slack] [--slack-token SLACK_TOKEN]
+        [--channel-id CHANNEL_ID]
+
+optional arguments:
+-h, --help            show this help message and exit
+--redis-host REDIS_HOST
+                    Redis host, default: localhost
+--redis-port REDIS_PORT
+                    Redis port, default: 6379
+--clean-redis, -cr    Whether to clean cache in the redis,
+                    default: False
+--neo4j-uri NEO4J_URI
+                    Neo4j URI endpoint, default:
+                    neo4j://localhost:7687
+--neo4j-user NEO4J_USER
+                    Neo4j username, default: neo4j
+--neo4j-pass NEO4J_PASS
+                    Neo4j password, default: 123456789
+--clean-neo4j, -cn    Whether to clean cache, and index from
+                    scratch, default: False
+--slack, -s           Send report to slack channel, default:
+                    False
+--slack-token SLACK_TOKEN, -st SLACK_TOKEN
+                    Send report to slack channel
+--channel-id CHANNEL_ID, -ci CHANNEL_ID
+                    Send report to slack channel
+```
+
+  
+</details>
+
+
 ## Examples
 
 Retrieve all workflows and actions associated with the organization.
@@ -249,3 +291,6 @@ Feel free to reach out to the development team through research@cycode.com. We a
 | [DynamoDS/Dynamo](https://github.com/DynamoDS/Dynamo)                                           | ![](https://img.shields.io/github/stars/DynamoDS/Dynamo)                      | Disabled workflow                                                                                                               | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
 | [fauna/faunadb-js](https://github.com/fauna/faunadb-js)                                         | ![](https://img.shields.io/github/stars/fauna/faunadb-js)                     | [ee6f53f](https://github.com/fauna/faunadb-js/commit/ee6f53f9c985bde41976743530e3846dee058587)                                  | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
 | [apache/incubator-kie-kogito-runtimes](https://github.com/apache/incubator-kie-kogito-runtimes) | ![](https://img.shields.io/github/stars/apache/incubator-kie-kogito-runtimes) | [53c18e5](https://github.com/apache/incubator-kie-kogito-runtimes/commit/53c18e5372e5306e0aa580f201f820b80359ad11)              | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
+
+
+![Raven](assets/images/raven.png)
