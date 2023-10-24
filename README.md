@@ -1,6 +1,8 @@
 # Raven - CI/CD Security Analyzer
 [![License](https://img.shields.io/badge/license-Apache%202.0-orange.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.2-blue)](https://github.com/CycodeLabs/raven/releases)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/CycodeLabs/raven?color=red)
+![GitHub stars](https://img.shields.io/github/stars/CycodeLabs/raven?color=yellow)
+
 
 **RAVEN (Risk Analysis and Vulnerability Enumeration for CI/CD)** is a powerful security tool designed to perform massive scans for GitHub Actions CI workflows and digest the discovered data into a Neo4j database.
 <br><br><br>
