@@ -9,7 +9,7 @@ GitHub Actions can be initiated based on an issue event. The workflow can access
 This issue arises when GitHub Actions workflows, triggered by issue events, process the issue details, such as the title or body, without proper input validation or sanitization.
 
 Let’s take the following workflow as an example:
-``` cypher
+``` yaml
 name: Issues Injections
 
 on:
