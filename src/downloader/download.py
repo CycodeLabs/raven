@@ -149,7 +149,7 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             # This actions might be a local action, or a docker action.
 
             if uses_string.startswith("./"):
-                log.info(
+                log.warning(
                     f"[-] Local action '{uses_string}' not found in '{repo}', skipping."
                 )
             elif uses_string_obj.type == UsesStringType.ACTION:
