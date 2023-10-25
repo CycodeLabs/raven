@@ -22,12 +22,12 @@ from src.config.config import (
     REDIS_HOST_DEFAULT,
     REDIS_PORT_DEFAULT,
     REDIS_CLEAN_DEFAULT,
-    REPORT_SLACK_DEFAULT,
     DOWNLOAD_COMMAND,
     DOWNLOAD_ORG_COMMAND,
     DOWNLOAD_CRAWL_COMMAND,
     INDEX_COMMAND,
     REPORT_COMMAND,
+    DETECTIONS_PATH_DEFAULT,
 )
 
 COMMAND_FUNCTIONS = {
@@ -175,24 +175,47 @@ def raven() -> None:
         parents=[redis_parser, neo4j_parser],
         help="Generate report from indexed Actions - Beta Version",
     )
+
     report_parser.add_argument(
-        "--slack",
-        "-s",
-        action="store_const",
-        default=REPORT_SLACK_DEFAULT,
-        const=True,
-        help=f"Send report to slack channel, default: {REPORT_SLACK_DEFAULT}",
+        "--tag",
+        "-t",
+        action="append",
+        type=str,
+        default=[],
+        help="Filter detections with spesific tag",
     )
     report_parser.add_argument(
-        "--slack-token",
-        "-st",
-        default="",
+        "--severity",
+        "-s",
+        type=str,
+        default=[],
+        help="Filter detections with spesific severity",
+    )
+    report_parser.add_argument(
+        "--detections-path",
+        "-dp",
+        default=DETECTIONS_PATH_DEFAULT,
+        help="Detections folder (defualt: library)",
+    )
+
+    slack_sub_parser = report_parser.add_subparsers(
+        dest="report_command",
+    )
+
+    slack_parser = slack_sub_parser.add_parser(
+        "slack",
         help="Send report to slack channel",
     )
-    report_parser.add_argument(
+    slack_parser.add_argument(
+        "--slack-token",
+        "-st",
+        required=True,
+        help="Send report to slack channel",
+    )
+    slack_parser.add_argument(
         "--channel-id",
         "-ci",
-        default="",
+        required=True,
         help="Send report to slack channel",
     )
 

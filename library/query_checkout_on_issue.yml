@@ -1,0 +1,35 @@
+id: checkout-on-issue
+
+info:
+  name: Checkout on new Issue
+  severity: critical
+  description: workflows triggered by issue events where a job involves checking out code from a repository ("actions/checkout") on issue event.
+  references:
+    - https://github.com/CycodeLabs/raven/tree/main/docs/issue_injections
+    - https://cycode.com/blog/github-actions-vulnerabilities/
+  tags:
+    - unauthenticated
+
+query: |
+  MATCH (w:Workflow)-[*]->(j:Job)
+  WHERE
+      (
+          "issue_comment" in w.trigger OR
+          "issues" in w.trigger
+      ) AND
+      EXISTS {
+          (j)-->(s:Step)-->(ca:CompositeAction)
+          WHERE (
+              ca.path = "actions/checkout" AND
+              ANY(param IN s.with WHERE 
+                  (
+                      param STARTS WITH "ref" and 
+                      (
+                          param contains "head.sha" OR
+                          param contains "head.ref"
+                      )
+                  )
+              )
+          )
+      }
+  RETURN DISTINCT w.path

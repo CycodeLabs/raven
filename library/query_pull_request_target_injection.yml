@@ -1,0 +1,34 @@
+id: pull-request-target-injection
+
+info:
+  name: Pull Request Target Injection
+  severity: critical
+  description: |
+    pull_request target runs in the context of the base repository, not the fork.
+  references:
+    - https://github.com/CycodeLabs/raven/tree/main/docs/pull_request_injections
+    - https://cycode.com/blog/github-actions-vulnerabilities/
+  tags:
+    - unauthenticated
+
+query: |
+  MATCH (w:Workflow)-[*]->(j:Job)
+  WHERE
+      w.permissions is null AND
+      "pull_request_target" in w.trigger AND
+      EXISTS {
+          (j)-->(s:Step)-->(ca:CompositeAction)
+          WHERE (
+              ca.path = "actions/checkout" AND
+              ANY(param IN s.with WHERE 
+                  (
+                      param STARTS WITH "ref" and 
+                      (
+                          param contains "head.sha" OR
+                          param contains "head.ref"
+                      )
+                  )
+              )
+          )
+      }
+  RETURN DISTINCT w.path;

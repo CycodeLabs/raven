@@ -1,0 +1,37 @@
+id: codesee-injection
+
+info:
+  name: CodeSee Injection
+  severity: info
+  description: CodeSee NPM package before v0.376.0 allowed code injection vulnerability. 
+  references:
+    - https://github.com/CycodeLabs/raven/tree/main/docs/codesee_injections
+    - https://cycode.com/blog/github-actions-vulnerabilities/
+  tags:
+    - unauthenticated
+    - injection
+    - fixed
+
+query: |
+  MATCH (w:Workflow)-[*]->(j:Job)
+  WHERE
+      (
+          "issue_comment" in w.trigger OR
+          "issues" in w.trigger
+      ) AND
+      EXISTS {
+          (j)-->(s:Step)-->(ca:CompositeAction)
+          WHERE (
+              ca.path = "actions/checkout" AND
+              ANY(param IN s.with WHERE 
+                  (
+                      param STARTS WITH "ref" and 
+                      (
+                          param contains "head.sha" OR
+                          param contains "head.ref"
+                      )
+                  )
+              )
+          )
+      }
+  RETURN DISTINCT w.path
