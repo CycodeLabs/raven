@@ -9,7 +9,7 @@ GitHub Actions can be initiated based on an issue event. The workflow can access
 This issue arises when GitHub Actions workflows, triggered by issue events, process the issue details, such as the title or body, without proper input validation or sanitization.
 
 Let’s take the following workflow as an example:
-``` cypher
+``` yaml
 name: Issues Injections
 
 on:
@@ -38,7 +38,7 @@ Threat actors can exploit this by injecting malicious payloads into the issue ti
 
 
 ### fauna/faunadb-js - 694 ⭐️
-* **Description**: This workflow runs when an issue is being opened. Lines 26 and 27 use the issue body and title at `create-jira-tickets.yml`.
+* **Description**: This workflow runs when an issue is being opened. Lines 26 and 27 use the issue body and title in an insecure manner, at `create-jira-tickets.yml`.
 * **Fix Commit Link**: [ee6f53f9c985bde41976743530e3846dee058587](https://github.com/fauna/faunadb-js/commit/ee6f53f9c985bde41976743530e3846dee058587)
 * **Remediation**: Removed the workflow.
 
@@ -78,7 +78,7 @@ WHERE
     (
         d.param IN ["github.event.issue.title", "github.event.issue.body"]
     )
-RETURN DISTINCT w.path;
+RETURN DISTINCT w.path, w.url;
 ```
 
 <img width="1180" alt="image" src="issue_injection.png">
@@ -109,5 +109,5 @@ WHERE
             )
         )
     }
-RETURN w.path
+RETURN w.path, w.url
 ```

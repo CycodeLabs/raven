@@ -242,10 +242,10 @@ For authenticated users, the next rate limiting applies:
 
 ## Knowledge Base
 
-- [Issue Injections](/docs/issue_injections/README.md)
-- [Pull Request Injections](/docs/pull_request_injections/README.md)
-- [Workflow Run Injections](/docs/workflow_run_injections/README.md)
-- [CodeSee Injections](/docs/codesee_injections/README.md)
+- [Issue Injections](/docs/Issue%20Injections/README.md)
+- [Pull Request Injections](/docs/Pull%20Request%20Injections/README.md)
+- [Workflow Run Injections](/docs/Multi%20Prerequisite%20Exploits/README.md)
+- [CodeSee Injections](/docs/Codesee%20Injections/README.md)
 
 ## Current Limitations
 

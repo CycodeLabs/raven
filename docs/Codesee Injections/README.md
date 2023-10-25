@@ -52,5 +52,5 @@ WHERE
             ca.path = "Codesee-io/codesee-map-action"
         )
     }
-RETURN DISTINCT w.path;
+RETURN DISTINCT w.path, w.url;
 ```
