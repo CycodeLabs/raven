@@ -39,10 +39,6 @@ jobs:
       run: |
         curl -s https://raw.githubusercontent.com/CycodeLabs/raven/f020094d175ab5cd0eb10442c6f7728485cc6903/install.sh | bash
 
-    - name: Build Package
-      working-directory: raven
-      run: python -m pip install .
-
     - name: Setup environment
       working-directory: raven
       run: make setup

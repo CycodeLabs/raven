@@ -195,7 +195,7 @@ def raven() -> None:
         "--detections-path",
         "-dp",
         default=DETECTIONS_PATH_DEFAULT,
-        help="Detections folder (defualt: library)",
+        help="Detections folder (default: library)",
     )
 
     slack_sub_parser = report_parser.add_subparsers(
