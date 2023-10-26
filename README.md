@@ -208,6 +208,11 @@ After finishing the download process or if interrupted using Ctrl+C, proceed to 
 raven index --debug
 ```
 
+Now, we can generate a report using our query library.
+```bash
+raven report --severity high --tag injection --tag unauthenticated
+```
+
 ## Rate Limiting
 
 For effective rate limiting, you should supply a Github token.

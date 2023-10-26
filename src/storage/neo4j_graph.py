@@ -4,8 +4,6 @@ from py2neo.data import Node
 from typing import Tuple, Optional
 import src.logger.log as log
 
-# from src.library import query_library
-
 
 class GraphDb(object):
     def __init__(self, uri, user, password):
