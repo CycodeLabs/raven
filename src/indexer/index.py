@@ -20,7 +20,7 @@ Constructor.add_constructor("tag:yaml.org,2002:bool", add_bool)
 
 
 def index_downloaded_workflows_and_actions() -> None:
-    if Config.clean_neo4j:
+    if Config.clean_neo4j or Config.graph.is_graph_empty():
         clean_index()
 
     index_downloaded_actions()

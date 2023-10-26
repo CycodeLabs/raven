@@ -10,6 +10,10 @@ class GraphDb(object):
     def __init__(self, uri, user, password):
         self.graph = Graph(uri, auth=(user, password))
 
+    def is_graph_empty(self) -> bool:
+        query = "MATCH (n) RETURN COUNT(n) as count"
+        return self.graph.run(query).data()[0]["count"] == 0
+
     def push_object(self, obj: GraphObject):
         self.graph.merge(obj)
 
