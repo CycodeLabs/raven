@@ -182,14 +182,14 @@ def raven() -> None:
         action="append",
         type=str,
         default=[],
-        help="Filter detections with spesific tag",
+        help="Filter detections with specific tag",
     )
     report_parser.add_argument(
         "--severity",
         "-s",
         type=str,
-        default=[],
-        help="Filter detections with spesific severity",
+        default="info",
+        help="Filter detections by severity level (default: info)",
     )
     report_parser.add_argument(
         "--detections-path",

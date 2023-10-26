@@ -186,9 +186,9 @@ options:
   --neo4j-pass NEO4J_PASS
                         Neo4j password, default: 123456789
   --clean-neo4j, -cn    Whether to clean cache, and index from scratch, default: False
-  --tag TAG, -t TAG     Filter detections with spesific tag
+  --tag TAG, -t TAG     Filter detections with specific tag
   --severity SEVERITY, -s SEVERITY
-                        Filter detections with spesific severity
+                        Filter detections with specific severity
   --detections-path DETECTIONS_PATH, -dp DETECTIONS_PATH
                         Detections folder (default: library)
 ```

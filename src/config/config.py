@@ -33,6 +33,13 @@ DOWNLOAD_ORG_COMMAND = "org"
 DOWNLOAD_CRAWL_COMMAND = "crawl"
 INDEX_COMMAND = "index"
 REPORT_COMMAND = "report"
+SEVERITY_LEVELS = {
+    "info": 0,
+    "low": 1,
+    "medium": 2,
+    "high": 3,
+    "critical": 4,
+}
 
 
 def load_downloader_config(args) -> None:
@@ -123,7 +130,7 @@ class Config:
 
     # Report Config Constants
     tags: list = []
-    severity: list = []
+    severity: str = None
     detections_path: str = DETECTIONS_PATH_DEFAULT
     slack: bool = REPORT_SLACK_DEFAULT
     slack_token: str = None

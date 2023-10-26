@@ -1,5 +1,4 @@
-from src.config.config import Config
-
+from src.config.config import Config, SEVERITY_LEVELS
 
 class Detection(object):
     def __init__(
@@ -22,13 +21,10 @@ class Detection(object):
         return self.filter_queries_by_tags() and self.filter_queries_by_severity()
 
     def filter_queries_by_severity(self):
-        if Config.severity:
-            if self.severity in Config.severity:
-                return True
-            else:
-                return False
-        else:
-            return True
+        severity_level = SEVERITY_LEVELS.get(Config.severity)
+        severity_levels = [severity for severity, level in SEVERITY_LEVELS.items() if level >= severity_level]
+
+        return self.severity in severity_levels
 
     def filter_queries_by_tags(self):
         if not Config.tags:
