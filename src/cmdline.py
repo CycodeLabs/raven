@@ -1,5 +1,4 @@
 import argparse
-
 import src.logger.log as log
 from src.downloader.download import (
     download_all_workflows_and_actions,
