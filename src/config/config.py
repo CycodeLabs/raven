@@ -6,7 +6,7 @@ MIN_STARS_DEFAULT = 1000
 REDIS_CLEAN_DEFAULT = False
 NEO4J_CLEAN_DEFAULT = False
 REPORT_SLACK_DEFAULT = False
-DETECTIONS_PATH_DEFAULT = "library"
+QUERIES_PATH_DEFAULT = "library"
 
 NEO4J_URI_DEFAULT = "neo4j://localhost:7687"
 NEO4J_USERNAME_DEFAULT = "neo4j"
@@ -90,7 +90,7 @@ def load_neo4j_config(args) -> None:
 def load_reporter_config(args):
     Config.tags = args.get("tag")
     Config.severity = args.get("severity")
-    Config.detections_path = args.get("detections_path")
+    Config.queries_path = args.get("queries_path")
     Config.slack = True if args.get("report_command") == "slack" else False
     Config.slack_token = args.get("slack_token")
     Config.channel_id = args.get("channel_id")
@@ -131,7 +131,7 @@ class Config:
     # Report Config Constants
     tags: list = []
     severity: str = None
-    detections_path: str = DETECTIONS_PATH_DEFAULT
+    queries_path: str = QUERIES_PATH_DEFAULT
     slack: bool = REPORT_SLACK_DEFAULT
     slack_token: str = None
     channel_id: str = None

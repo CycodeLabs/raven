@@ -159,14 +159,11 @@ options:
   --debug               Whether to print debug statements, default: False
 ```
 
-### Report - beta version
-<details>
-  <summary>expand</summary>
-    
+### Report
 ```bash
 usage: raven report [-h] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] [--neo4j-uri NEO4J_URI] [--neo4j-user NEO4J_USER] [--neo4j-pass NEO4J_PASS]
-                    [--clean-neo4j] [--tag TAG] [--severity SEVERITY] [--detections-path DETECTIONS_PATH]
-                    {slack} ...
+                      [--clean-neo4j] [--tag TAG] [--severity SEVERITY] [--queries-path QUERIES_PATH]
+                      {slack} ...
 
 positional arguments:
   {slack}
@@ -186,16 +183,12 @@ options:
   --neo4j-pass NEO4J_PASS
                         Neo4j password, default: 123456789
   --clean-neo4j, -cn    Whether to clean cache, and index from scratch, default: False
-  --tag TAG, -t TAG     Filter detections with specific tag
+  --tag TAG, -t TAG     Filter queries with specific tag
   --severity SEVERITY, -s SEVERITY
-                        Filter detections with specific severity
-  --detections-path DETECTIONS_PATH, -dp DETECTIONS_PATH
-                        Detections folder (default: library)
+                        Filter queries by severity level (default: info)
+  --queries-path QUERIES_PATH, -dp QUERIES_PATH
+                        Queries folder (default: library)
 ```
-
-  
-</details>
-
 
 ## Examples
 

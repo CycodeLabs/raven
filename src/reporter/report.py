@@ -4,44 +4,44 @@ from src.reporter import slack_reporter
 from os import listdir
 from os.path import join
 import yaml
-from src.detections import Detection
+from src.queries import Query
 from typing import List
 
 
-def get_detections() -> List[Detection]:
-    detections = []
-    for detection_file in listdir(Config.detections_path):
-        with open(join(Config.detections_path, detection_file), "r") as raw_detection:
-            yml_detection = yaml.safe_load(raw_detection)
-            detection_info = yml_detection.get("info")
+def get_queries() -> List[Query]:
+    queries = []
+    for query_file in listdir(Config.queries_path):
+        with open(join(Config.queries_path, query_file), "r") as raw_query:
+            yml_query = yaml.safe_load(raw_query)
+            detection_info = yml_query.get("info")
 
-            detection = Detection(
-                id=yml_detection.get("id"),
+            query = Query(
+                id=yml_query.get("id"),
                 name=detection_info.get("name"),
                 description=detection_info.get("description"),
                 tags=detection_info.get("tags"),
                 severity=detection_info.get("severity"),
-                query=yml_detection.get("query"),
+                query=yml_query.get("query"),
             )
 
-            if detection.filter():
-                detections.append(detection)
+            if query.filter():
+                queries.append(query)
 
-    return detections
+    return queries
 
 
 def generate() -> None:
     table_data = []
-    detections = get_detections()
-    for detection in detections:
-        workflows = detection.run()
+    queries = get_queries()
+    for query in queries:
+        workflows = query.run()
 
         for workflow in workflows:
             table_data.append(
                 [
-                    detection.name,
-                    detection.severity,
-                    detection.description,
+                    query.name,
+                    query.severity,
+                    query.description,
                     workflow,
                 ]
             )

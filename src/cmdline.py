@@ -27,7 +27,7 @@ from src.config.config import (
     DOWNLOAD_CRAWL_COMMAND,
     INDEX_COMMAND,
     REPORT_COMMAND,
-    DETECTIONS_PATH_DEFAULT,
+    QUERIES_PATH_DEFAULT,
 )
 
 COMMAND_FUNCTIONS = {
@@ -182,20 +182,20 @@ def raven() -> None:
         action="append",
         type=str,
         default=[],
-        help="Filter detections with specific tag",
+        help="Filter queries with specific tag",
     )
     report_parser.add_argument(
         "--severity",
         "-s",
         type=str,
         default="info",
-        help="Filter detections by severity level (default: info)",
+        help="Filter queries by severity level (default: info)",
     )
     report_parser.add_argument(
-        "--detections-path",
+        "--queries-path",
         "-dp",
-        default=DETECTIONS_PATH_DEFAULT,
-        help="Detections folder (default: library)",
+        default=QUERIES_PATH_DEFAULT,
+        help="Queries folder (default: library)",
     )
 
     slack_sub_parser = report_parser.add_subparsers(
