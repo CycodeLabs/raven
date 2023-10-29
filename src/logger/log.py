@@ -33,7 +33,7 @@ def catch_exit() -> None:
     from src.config.config import Config
 
     if Config.github_token:
-        print("""\n[x] Index results with: python main.py index""")
+        print("""\n[x] Index results with: raven index""")
 
     elif Config.neo4j_uri:
         neo4j_server = Config.neo4j_uri.split("//")[1].split(":")[0]
