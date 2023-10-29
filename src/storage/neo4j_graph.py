@@ -3,7 +3,6 @@ from py2neo.ogm import GraphObject
 from py2neo.data import Node
 from typing import Tuple, Optional
 import src.logger.log as log
-from src.library import query_library
 
 
 class GraphDb(object):
@@ -56,19 +55,5 @@ class GraphDb(object):
     def clean_graph(self):
         self.graph.delete_all()
 
-    def run_predefined_queries(self) -> list:
-        detection_results = []
-        for detection in query_library.PREDEFINED_DETECTIONS:
-            query = detection.get("query", "")
-            result = self.graph.run(query)
-            results = [record for record in result]
-
-            detection_results.append(
-                {
-                    "name": detection.get("name", ""),
-                    "description": detection.get("description", ""),
-                    "results": [dict(result) for result in results],
-                }
-            )
-
-        return detection_results
+    def run_query(self, query: str):
+        return self.graph.run(query)

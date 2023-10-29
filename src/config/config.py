@@ -6,6 +6,7 @@ MIN_STARS_DEFAULT = 1000
 REDIS_CLEAN_DEFAULT = False
 NEO4J_CLEAN_DEFAULT = False
 REPORT_SLACK_DEFAULT = False
+QUERIES_PATH_DEFAULT = "library"
 
 NEO4J_URI_DEFAULT = "neo4j://localhost:7687"
 NEO4J_USERNAME_DEFAULT = "neo4j"
@@ -32,6 +33,13 @@ DOWNLOAD_ORG_COMMAND = "org"
 DOWNLOAD_CRAWL_COMMAND = "crawl"
 INDEX_COMMAND = "index"
 REPORT_COMMAND = "report"
+SEVERITY_LEVELS = {
+    "info": 0,
+    "low": 1,
+    "medium": 2,
+    "high": 3,
+    "critical": 4,
+}
 
 
 def load_downloader_config(args) -> None:
@@ -80,7 +88,10 @@ def load_neo4j_config(args) -> None:
 
 
 def load_reporter_config(args):
-    Config.slack = args.get("slack")
+    Config.tags = args.get("tag")
+    Config.severity = args.get("severity")
+    Config.queries_path = args.get("queries_path")
+    Config.slack = True if args.get("report_command") == "slack" else False
     Config.slack_token = args.get("slack_token")
     Config.channel_id = args.get("channel_id")
 
@@ -116,6 +127,14 @@ class Config:
     action_download_history_set: str = REDIS_ACTION_DOWNLOAD_HISTORY_SET
     workflow_index_history_set: str = REDIS_WORKFLOW_INDEX_HISTORY_SET
     action_index_history_set: str = REDIS_ACTION_INDEX_HISTORY_SET
+
+    # Report Config Constants
+    tags: list = []
+    severity: str = None
+    queries_path: str = QUERIES_PATH_DEFAULT
+    slack: bool = REPORT_SLACK_DEFAULT
+    slack_token: str = None
+    channel_id: str = None
 
     # Neo4j Config
     neo4j_uri: str = None

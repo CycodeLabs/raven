@@ -64,13 +64,13 @@ cd raven
 
 or, you can download the latest release from `https://github.com/CycodeLabs/raven/releases/latest`
 
-**Step 2**: Create virtual environment
+**Step 2**: Create a virtual environment
 ``` bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-**Step 3**: Build containerized environment and install Raven
+**Step 3**: Build a containerized environment and install Raven
 ```bash
 sudo make setup
 ```
@@ -159,47 +159,36 @@ options:
   --debug               Whether to print debug statements, default: False
 ```
 
-### Report - beta version
-<details>
-  <summary>expand</summary>
-    
+### Report
 ```bash
-usage: raven report [-h] [--redis-host REDIS_HOST]
-      [--redis-port REDIS_PORT] [--clean-redis]
-      [--neo4j-uri NEO4J_URI]
-      [--neo4j-user NEO4J_USER]
-      [--neo4j-pass NEO4J_PASS] [--clean-neo4j]
-      [--slack] [--slack-token SLACK_TOKEN]
-        [--channel-id CHANNEL_ID]
+usage: raven report [-h] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] [--neo4j-uri NEO4J_URI] [--neo4j-user NEO4J_USER] [--neo4j-pass NEO4J_PASS]
+                      [--clean-neo4j] [--tag TAG] [--severity SEVERITY] [--queries-path QUERIES_PATH]
+                      {slack} ...
 
-optional arguments:
--h, --help            show this help message and exit
---redis-host REDIS_HOST
-                    Redis host, default: localhost
---redis-port REDIS_PORT
-                    Redis port, default: 6379
---clean-redis, -cr    Whether to clean cache in the redis,
-                    default: False
---neo4j-uri NEO4J_URI
-                    Neo4j URI endpoint, default:
-                    neo4j://localhost:7687
---neo4j-user NEO4J_USER
-                    Neo4j username, default: neo4j
---neo4j-pass NEO4J_PASS
-                    Neo4j password, default: 123456789
---clean-neo4j, -cn    Whether to clean cache, and index from
-                    scratch, default: False
---slack, -s           Send report to slack channel, default:
-                    False
---slack-token SLACK_TOKEN, -st SLACK_TOKEN
-                    Send report to slack channel
---channel-id CHANNEL_ID, -ci CHANNEL_ID
-                    Send report to slack channel
+positional arguments:
+  {slack}
+    slack               Send report to slack channel
+
+options:
+  -h, --help            show this help message and exit
+  --redis-host REDIS_HOST
+                        Redis host, default: localhost
+  --redis-port REDIS_PORT
+                        Redis port, default: 6379
+  --clean-redis, -cr    Whether to clean cache in the redis, default: False
+  --neo4j-uri NEO4J_URI
+                        Neo4j URI endpoint, default: neo4j://localhost:7687
+  --neo4j-user NEO4J_USER
+                        Neo4j username, default: neo4j
+  --neo4j-pass NEO4J_PASS
+                        Neo4j password, default: 123456789
+  --clean-neo4j, -cn    Whether to clean cache, and index from scratch, default: False
+  --tag TAG, -t TAG     Filter queries with specific tag
+  --severity SEVERITY, -s SEVERITY
+                        Filter queries by severity level (default: info)
+  --queries-path QUERIES_PATH, -dp QUERIES_PATH
+                        Queries folder (default: library)
 ```
-
-  
-</details>
-
 
 ## Examples
 
@@ -217,6 +206,11 @@ After finishing the download process or if interrupted using Ctrl+C, proceed to 
 
 ``` bash
 raven index --debug
+```
+
+Now, we can generate a report using our query library.
+```bash
+raven report --severity high --tag injection --tag unauthenticated
 ```
 
 ## Rate Limiting

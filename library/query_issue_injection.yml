@@ -1,0 +1,24 @@
+id: issue-body-title-injection
+
+info:
+  name: Issue Title/Body Injection
+  severity: critical
+  description: Issue Injection caused by github.event.issue.title/body.
+  references:
+    - https://github.com/CycodeLabs/raven/blob/main/docs/issue_injections/README.md
+    - https://cycode.com/blog/github-actions-vulnerabilities/
+  tags:
+    - unauthenticated
+    - injection
+
+query: |
+  MATCH (w:Workflow)-[*]->(d:StepCodeDependency)
+  WHERE
+      (
+          "issue_comment" in w.trigger OR
+          "issues" in w.trigger
+      ) AND
+      (
+          d.param IN ["github.event.issue.title", "github.event.issue.body"]
+      )
+  RETURN DISTINCT w.path;
