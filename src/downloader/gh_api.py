@@ -27,6 +27,9 @@ ORGANIZATION_REPOSITORY_URL = (
     BASE_URL + "/orgs/{organization_name}/repos?per_page=100&page={page}"
 )
 CONTENTS_URL = BASE_URL + "/repos/{repo_path}/contents/{file_path}"
+CONTENTS_BY_REF_URL = BASE_URL + "/repos/{repo_path}/contents/{file_path}?ref={ref}"
+TAG_URL = BASE_URL + "/repos/{repo_path}/git/refs/tags/{tag}"
+
 
 REPOSITORY_QUERY_MIN = "stars:>={min_stars}"
 REPOSITORY_QUERY_MIN_MAX = "stars:{min_stars}..{max_stars}"
@@ -190,24 +193,51 @@ def get_repository_workflows(repo: str) -> Dict[str, str]:
     return workflows
 
 
-def get_repository_composite_action(path: str) -> str:
+def get_repository_composite_action(path: str, tag: Optional[bool]) -> str:
     """Returns downloadble URL for a composite action in the specific path.
-
-    receives 'path_in_repo' relative path to the repository root to where search the action.yml.
-    It should be a directory and not a file. (if file this is a reusable workflow)
 
     Raises exception if network error occured.
     """
+
     path_splitted = path.split("/")
     repo = "/".join(path_splitted[:2])
     relative_path = "/".join(path_splitted[2:])
 
     headers["Authorization"] = f"Token {Config.github_token}"
 
+    if tag is not None:
+        # First we get the commit sha for the version tag to get the correct version of the action
+        r_tag = get(TAG_URL.format(repo_path=repo, tag=tag), headers=headers)
+        if r_tag.status_code != 200:
+            log.error(
+                f"Coudln't get commit sha for tag {tag} in repo {path}, tag not found. Status code: {r_tag.status_code}"
+            )
+            return
+        json_tag = r_tag.json()
+        if not isinstance(json_tag, list) and json_tag.get("object") is not None:
+            ref = r_tag.json()["object"]["sha"]
+        else:
+            # This comment marks a situation where the expected tag is missing.
+            # However, the provided reference is actually a branch name.
+            # We will access the latest version of the file by stating the branch name as the reference.
+            ref = tag
+
     for suffix in ["action.yml", "action.yaml"]:
         file_path = os.path.join(relative_path, suffix)
+
+        # If we have a tag, we need to use the contents by ref API to get the correct version of the action
+        if tag:
+            action_download_url = CONTENTS_BY_REF_URL.format(
+                repo_path=repo, file_path=file_path, ref=ref
+            )
+        # Otherwise, we can use the normal contents API
+        else:
+            action_download_url = CONTENTS_URL.format(
+                repo_path=repo, file_path=file_path
+            )
+
         r = get(
-            CONTENTS_URL.format(repo_path=repo, file_path=file_path),
+            action_download_url,
             headers=headers,
         )
         if r.status_code == 404:
