@@ -86,6 +86,7 @@ def index_action_file(action: str) -> None:
                 return
 
             obj["path"] = action
+            obj["tag"] = action.split("@")[-1] if "@" in action else None
             obj["url"] = url
             obj["is_public"] = is_public
 

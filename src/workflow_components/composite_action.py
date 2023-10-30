@@ -1,6 +1,7 @@
+from __future__ import annotations
 from typing import Optional
-from hashlib import md5
 
+from hashlib import md5
 from py2neo.ogm import GraphObject, RelatedTo, Property
 
 import src.workflow_components.workflow as workflow
@@ -12,7 +13,7 @@ from src.common.utils import (
 from src.workflow_components.dependency import UsesString, UsesStringType
 
 
-def get_or_create_composite_action(path: str) -> "CompositeAction":
+def get_or_create_composite_action(path: str) -> CompositeAction:
     """Used when need to create relations with another action.
     If action wasn't indexed yet, we create a stub node,
     that will be enriched eventually.
@@ -37,8 +38,8 @@ class CompositeActionStep(GraphObject):
     uses = Property()
     ref = Property()
     shell = Property()
-    url = Property()
     with_prop = Property("with")
+    tag = Property()
 
     action = RelatedTo("CompositeAction")
     reusable_workflow = RelatedTo(workflow.Workflow)
@@ -52,6 +53,9 @@ class CompositeActionStep(GraphObject):
     def from_dict(obj_dict) -> "CompositeActionStep":
         s = CompositeActionStep(_id=obj_dict["_id"], path=obj_dict["path"])
         s.url = obj_dict["url"]
+
+        if "tag" in obj_dict:
+            s.tag = obj_dict["tag"]
         if "id" in obj_dict:
             s.name = obj_dict["id"]
         if "run" in obj_dict:
@@ -72,7 +76,7 @@ class CompositeActionStep(GraphObject):
             uses_string_obj = UsesString.analyze(uses_string=s.uses)
             if uses_string_obj.type == UsesStringType.ACTION:
                 obj = get_or_create_composite_action(
-                    uses_string_obj.get_full_path(s.path)
+                    uses_string_obj.get_absolute_path(s.path)
                 )
                 s.action.add(obj)
 
@@ -96,6 +100,7 @@ class CompositeAction(GraphObject):
     image = Property()
     url = Property()
     is_public = Property()
+    tag = Property()
 
     steps = RelatedTo(CompositeActionStep)
 
@@ -110,6 +115,11 @@ class CompositeAction(GraphObject):
 
         ca.url = obj_dict["url"]
         ca.is_public = obj_dict["is_public"]
+
+        # Optional properties
+        if "tag" in obj_dict:
+            ca.tag = obj_dict["tag"]
+
         if "inputs" in obj_dict:
             ca.inputs = list(obj_dict["inputs"].keys())
 
@@ -127,6 +137,7 @@ class CompositeAction(GraphObject):
                     step["_id"] = md5(f"{ca._id}_{i}".encode()).hexdigest()
                     step["path"] = ca.path
                     step["url"] = ca.url
+                    step["tag"] = ca.tag
                     ca.steps.add(CompositeActionStep.from_dict(step))
 
         return ca
