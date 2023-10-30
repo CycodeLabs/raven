@@ -66,15 +66,17 @@ class UsesString(object):
     def get_absolute_path(self, file_path: str) -> str:
         """
         Calculates the full path for a given action or reusable workflow based on its relative path.
-        To do this, the current repository where the item resides is required.
+        The current repository where the item resides is used for this calculation.
         For composite actions, the applicable version will be appended to the path as well.
         """
-        abs_path = self.path if not self.ref else f"{self.path}@{self.ref}"
-        if not self.is_relative:
-            return abs_path
+        # Build the base path
+        base_path = f"{self.path}@{self.ref}" if self.ref else self.path
 
-        # We care only for the repository path, so we take the first two elements.
+        if not self.is_relative:
+            return base_path
+
+        # Extract repository path and evaluate relative path (e.g., "..", "./", etc.).
         repo = get_repo_name_from_path(file_path)
-        # This is a trick to evaluate the path (e.g., "..", "./", etc.)
         eval_path = os.path.relpath(os.path.abspath(os.path.join(repo, self.path)))
-        return eval_path if not self.ref else f"{eval_path}@{self.ref}"
+
+        return f"{eval_path}@{self.ref}" if self.ref else eval_path

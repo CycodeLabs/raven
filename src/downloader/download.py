@@ -133,7 +133,6 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
         is_public = 1
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-            # TODO: Isn't there more elegant way to do it?
             # If already scanned workflow - Have to check workflow db because only it contains the full workflow path.
             with RedisConnection(Config.redis_workflows_db) as workflows_db:
                 if (
