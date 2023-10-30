@@ -142,18 +142,23 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                     is not None
                 ):
                     return
-
-            url = get_repository_reusable_workflow(absolute_path)
+            workflow_path, tag = (
+                absolute_path.split("@")
+                if uses_string_obj.ref
+                else (absolute_path, None)
+            )
+            url = get_repository_reusable_workflow(workflow_path, tag)
         elif uses_string_obj.type == UsesStringType.ACTION:
             # If already scanned action
             if sets_db.exists_in_set(Config.action_download_history_set, absolute_path):
                 return
-            # TODO: Make pretier
-            if uses_string_obj.ref is None:
-                url = get_repository_composite_action(absolute_path, None)
-            else:
-                url = get_repository_composite_action(*absolute_path.split("@"))
 
+            action_path, tag = (
+                absolute_path.split("@")
+                if uses_string_obj.ref
+                else (absolute_path, None)
+            )
+            url = get_repository_composite_action(action_path, tag)
         else:
             # Can happen with docker references.
             return

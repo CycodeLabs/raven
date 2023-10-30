@@ -53,6 +53,7 @@ class Step(GraphObject):
     ref = Property()
     with_prop = Property("with")
     url = Property()
+    tag = Property()
 
     action = RelatedTo("src.workflow_components.composite_action.CompositeAction")
     reusable_workflow = RelatedTo("Workflow")
@@ -67,6 +68,9 @@ class Step(GraphObject):
     def from_dict(obj_dict) -> "Step":
         s = Step(_id=obj_dict["_id"], name=obj_dict.get("name"), path=obj_dict["path"])
         s.url = obj_dict["url"]
+
+        if "tag" in obj_dict:
+            s.tag = obj_dict["tag"]
         if "run" in obj_dict:
             s.run = obj_dict["run"]
 
@@ -108,6 +112,7 @@ class Job(GraphObject):
     ref = Property()
     url = Property()
     with_prop = Property("with")
+    tag = Property()
 
     steps = RelatedTo(Step)
     reusable_workflow = RelatedTo("Workflow")
@@ -120,6 +125,11 @@ class Job(GraphObject):
     @staticmethod
     def from_dict(obj_dict) -> "Job":
         j = Job(_id=obj_dict["_id"], name=obj_dict["name"], path=obj_dict["path"])
+
+        # Optional fields
+        if "tag" in obj_dict:
+            j.tag = obj_dict["tag"]
+
         if "uses" in obj_dict:
             j.uses = obj_dict["uses"]
             # Uses string is quite complex, and may reference to several types of nodes.
@@ -146,6 +156,7 @@ class Job(GraphObject):
                 step["_id"] = md5(f"{j._id}_{i}".encode()).hexdigest()
                 step["path"] = j.path
                 step["url"] = j.url
+                step["tag"] = j.tag
                 j.steps.add(Step.from_dict(step))
 
         return j
@@ -161,6 +172,7 @@ class Workflow(GraphObject):
     permissions = Property()
     url = Property()
     is_public = Property()
+    tag = Property()
 
     jobs = RelatedTo(Job)
     triggered_by = RelatedFrom("Workflow")
@@ -211,6 +223,9 @@ class Workflow(GraphObject):
         w.url = obj_dict["url"]
         w.is_public = obj_dict["is_public"]
 
+        if "tag" in obj_dict:
+            w.tag = obj_dict["tag"]
+
         if "permissions" in obj_dict:
             w.permissions = convert_dict_to_list(obj_dict["permissions"])
 
@@ -222,6 +237,7 @@ class Workflow(GraphObject):
             job["path"] = w.path
             job["name"] = job_name
             job["url"] = w.url
+            job["tag"] = w.tag
             w.jobs.add(Job.from_dict(job))
 
         return w

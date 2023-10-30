@@ -1,7 +1,7 @@
 import os
 import urllib
 from requests import get
-from typing import Dict, Any, Optional, Iterator, Optional
+from typing import Dict, Any, List, Optional, Iterator
 from http import HTTPStatus
 from src.config.config import Config
 import src.logger.log as log
@@ -34,6 +34,7 @@ TAGS_URL = BASE_URL + "/repos/{repo_path}/tags?per_page=9999"
 REPOSITORY_QUERY_MIN = "stars:>={min_stars}"
 REPOSITORY_QUERY_MIN_MAX = "stars:{min_stars}..{max_stars}"
 
+ACTION_SUFFIXES = ["action.yml", "action.yaml"]
 headers = {
     "Accept": "application/vnd.github+json",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.42",
@@ -193,41 +194,58 @@ def get_repository_workflows(repo: str) -> Dict[str, str]:
     return workflows
 
 
-def get_repository_composite_action(path: str, tag: Optional[bool]) -> str:
+def get_ref_of_tag(repo: str, tag: str) -> Optional[str]:
     """
-    Retrieves the downloadable URL for a specific composite action located at the given path.
+    This function is used to get the ref of a tag in a repository.
+    If the tag is not found, it will return the provided tag as is since it might be a branch name that should be used as tag
+    """
+    r_tags = get(TAGS_URL.format(repo_path=repo), headers=headers)
+    if r_tags.status_code != 200:
+        log.error(
+            f"Coudln't found tags for repository {repo}. status code: {r_tags.status_code}. Response: {r_tags.text}"
+        )
+        return
+
+    shas = [d["commit"]["sha"] for d in r_tags.json() if d["name"] == tag]
+
+    # Sometimes the tag is not found, but the provided reference is actually a branch name.
+    return shas[0] if len(shas) > 0 else tag
+
+
+def get_download_url(
+    path: str,
+    file_suffixes: Optional[List[str]] = None,
+    tag: Optional[str] = None,
+) -> Optional[str]:
+    """
+    Retrieves the downloadable URL for a GitHub resource located at the given path.
 
     Parameters:
-    - path (str): The repository path containing the action, in the format "owner/repo/relative_path_to_action".
-    - tag (Optional[bool]): The version tag of the action. If None, the latest version is used.
+    - path (str): The repository path containing the resource, formatted as "owner/repo/relative_path_to_resource".
+    - tag (Optional[str]): The version tag of the resource. If None, the latest version is used.
+    - file_suffixes (List[str]): List of possible file suffixes that the resource could have (e.g., ["action.yml", "action.yaml"]).
 
     Returns:
-    - str: The downloadable URL for the action. Returns None if the action is not found, or if a network error occurs.
+    - Optional[str]: The downloadable URL for the resource. Returns None if the resource is not found or if a network error occurs.
 
     Raises:
-    - Logs an error message if the request to GitHub API fails or if tags are not found in the repository.
+    - Logs an error message if the request to the GitHub API fails.
     """
     splitted_path = path.split("/")
     repo, relative_path = "/".join(splitted_path[:2]), "/".join(splitted_path[2:])
 
     headers["Authorization"] = f"Token {Config.github_token}"
 
-    if tag is not None:
-        r_tags = get(TAGS_URL.format(repo_path=repo), headers=headers)
-        if r_tags.status_code != 200:
-            log.error(
-                f"Coudln't found tags for repository {repo}. status code: {r_tags.status_code}. Response: {r_tags.text}"
-            )
-            return
+    # Get ref of commit if tag is provided
+    ref = get_ref_of_tag(repo, tag) if tag else None
 
-        shas = [d["commit"]["sha"] for d in r_tags.json() if d["name"] == tag]
+    files_to_try = (
+        [os.path.join(relative_path, fs) for fs in file_suffixes]
+        if file_suffixes
+        else [relative_path]
+    )
 
-        # Sometimes the tag is not found, but the provided reference is actually a branch name.
-        ref = shas[0] if len(shas) > 0 else tag
-
-    for suffix in ["action.yml", "action.yaml"]:
-        file_path = os.path.join(relative_path, suffix)
-
+    for file_path in files_to_try:
         # If we have a tag, we need to use the contents by ref API to get the correct version of the action.
         # Otherwise, we can use the normal contents API
         action_download_url = (
@@ -238,7 +256,6 @@ def get_repository_composite_action(path: str, tag: Optional[bool]) -> str:
 
         r = get(action_download_url, headers=headers)
         if r.status_code == 404:
-            # can be both yml and yaml
             continue
 
         if r.status_code != 200:
@@ -248,25 +265,15 @@ def get_repository_composite_action(path: str, tag: Optional[bool]) -> str:
         return r.json()["download_url"]
 
 
-def get_repository_reusable_workflow(path: str) -> str:
-    """Returns downlodable URL for a reusable workflows in the specific path.
-
-    Raises exception if network error occured.
+def get_repository_composite_action(path: str, tag: Optional[str]) -> str:
     """
-    path_splitted = path.split("/")
-    repo = "/".join(path_splitted[:2])
-    relative_path = "/".join(path_splitted[2:])
+    Retrieves the downloadable URL for a specific composite action located at the given path.
+    """
+    return get_download_url(path, tag=tag, file_suffixes=ACTION_SUFFIXES)
 
-    headers["Authorization"] = f"Token {Config.github_token}"
 
-    r = get(
-        CONTENTS_URL.format(repo_path=repo, file_path=relative_path),
-        headers=headers,
-    )
-    if r.status_code == 404:
-        return
-    if r.status_code != 200:
-        log.error(f"status code: {r.status_code}. Response: {r.text}")
-        return
-
-    return r.json()["download_url"]
+def get_repository_reusable_workflow(path: str, tag: str) -> str:
+    """
+    Retrieves the downloadable URL for a specific reusable workflow located at the given path.
+    """
+    return get_download_url(path, tag=tag, file_suffixes=[])

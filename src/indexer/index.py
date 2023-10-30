@@ -141,6 +141,7 @@ def index_workflow_file(workflow: str) -> None:
                 return
 
             obj["path"] = workflow
+            obj["tag"] = workflow.split("@")[-1] if "@" in workflow else None
             obj["url"] = url
             obj["is_public"] = is_public
 
