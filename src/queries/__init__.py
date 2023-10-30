@@ -1,4 +1,9 @@
 from src.config.config import Config, SEVERITY_LEVELS
+import json
+from colorama import Fore, Style, init
+import textwrap
+
+init()
 
 
 class Query(object):
@@ -17,6 +22,7 @@ class Query(object):
         self.tags = tags
         self.severity = severity
         self.query = query
+        self.result = None
 
     def filter(self) -> bool:
         return self.filter_queries_by_tags() and self.filter_queries_by_severity()
@@ -52,4 +58,34 @@ class Query(object):
         and will return the matching workflow paths
         """
         result = Config.graph.run_query(self.query)
-        return [dict(record).get("url") for record in result]
+        self.result = [dict(record).get("url") for record in result]
+
+    def to_raw(self) -> str:
+        report = ""
+        description_length = 80
+
+        report += f"{Fore.CYAN}Name:{Style.RESET_ALL} {self.name}\n"
+        report += f"{Fore.CYAN}Severity:{Style.RESET_ALL} {self.severity}\n"
+
+        wrapped_description = textwrap.fill(self.description, width=description_length)
+        report += f"{Fore.CYAN}Description:{Style.RESET_ALL} {wrapped_description}\n"
+        report += f"{Fore.CYAN}Tags:{Style.RESET_ALL} {self.tags}\n"
+
+        report += f"{Fore.CYAN}Workflow URLS:{Style.RESET_ALL}\n"
+        for url in self.result:
+            report += f"- {url}\n"
+
+        return report
+
+    def to_json(self) -> str:
+        return self._to_dict()
+
+    def _to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "tags": self.tags,
+            "severity": self.severity,
+            "result": self.result,
+        }

@@ -6,9 +6,14 @@ class Client(object):
     def __init__(self, token) -> None:
         self.client = WebClient(token=token)
 
-    def send_message(self, channel_id, message):
+    def send_report(self, channel_id, message):
         try:
-            self.client.chat_postMessage(channel=channel_id, text=message)
+            self.client.files_upload_v2(
+                channel=channel_id,
+                filename=f"raven_report",
+                content=message,
+                initial_comment="RAVEN Security Report",
+            )
             print(f"[x] Report sent successfully")
 
         except SlackApiError as e:

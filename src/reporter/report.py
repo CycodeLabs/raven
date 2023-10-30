@@ -1,11 +1,30 @@
-from src.config.config import Config
-from tabulate import tabulate
+from src.config.config import (
+    Config,
+    REPORT_RAW_FORMAT,
+    REPORT_JSON_FORMAT,
+    SLACK_REPORTER,
+)
 from src.reporter import slack_reporter
+from src.logger.log import success_exit
 from os import listdir
 from os.path import join
 import yaml
+import json
 from src.queries import Query
 from typing import List
+
+
+def raw_reporter(queries: List[Query]) -> str:
+    report = "\n"
+
+    for query in queries:
+        report += f"{query.to_raw()}\n"
+
+    return report
+
+
+def json_reporter(queries: List[Query]) -> str:
+    return json.dumps([query.to_json() for query in queries], indent=4)
 
 
 def get_queries() -> List[Query]:
@@ -31,33 +50,29 @@ def get_queries() -> List[Query]:
 
 
 def generate() -> None:
-    table_data = []
     queries = get_queries()
     for query in queries:
-        workflows = query.run()
+        query.run()
 
-        for workflow in workflows:
-            table_data.append(
-                [
-                    query.name,
-                    query.severity,
-                    query.description,
-                    workflow,
-                ]
-            )
+    filtered_queries = [query for query in queries if query.result]
+    report = ""
+    if Config.format == REPORT_RAW_FORMAT:
+        report = raw_reporter(filtered_queries)
+    elif Config.format == REPORT_JSON_FORMAT:
+        report = json_reporter(filtered_queries)
 
-    headers = ["Detection", "Severity", "Description", "Workflow File"]
-    table = tabulate(table_data, headers=headers, tablefmt="github")
-
-    print(f"{table}\n")
-
-    if Config.slack:
+    if Config.reporter == SLACK_REPORTER:
         if Config.slack_token and Config.channel_id:
             client = slack_reporter.Client(Config.slack_token)
-            message = f"RAVEN Security Report\n```\n{table}\n```"
-            client.send_message(Config.channel_id, message)
+            message = f"\n{report}\n"
+            client.send_report(Config.channel_id, message)
 
         else:
             print(
                 "[x] Please provide slack token and channel id to send report to slack."
             )
+
+    else:
+        print(report)
+
+    success_exit()

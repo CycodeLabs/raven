@@ -4,6 +4,7 @@ info:
   name: Checkout on new Issue
   severity: critical
   description: workflows triggered by issue events where a job involves checking out code from a repository ("actions/checkout") on issue event.
+  full-description:
   references:
     - https://github.com/CycodeLabs/raven/tree/main/docs/issue_injections
     - https://cycode.com/blog/github-actions-vulnerabilities/

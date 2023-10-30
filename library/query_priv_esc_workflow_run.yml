@@ -21,7 +21,7 @@ query: |
   WHERE (
       (
           "pull_request" in w.trigger OR
-          "pull_request_target" in w.trigger OR
+          "pull_request_target" in w.trigger
       ) AND
       (
           "workflow_run" in w2.trigger

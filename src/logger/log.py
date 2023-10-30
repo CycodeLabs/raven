@@ -44,3 +44,7 @@ def catch_exit() -> None:
 
 def fail_exit() -> None:
     sys.exit(1)
+
+
+def success_exit() -> None:
+    sys.exit(0)
