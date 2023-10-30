@@ -1,0 +1,41 @@
+id: priv-esc-workflow-run
+
+info:
+  name: Privilege Escalation Workflow Run
+  severity: critical
+  description: Injection of malicious code that triggers a workflow run pipeline can lead to privilege escalation.
+  full-description: |
+    Pull request pipeline runs without access to secrets.
+    However, if a workflow run is triggered by a pull request, the workflow run will have access to secrets.
+    Meaning, if an attacker can inject malicious code into the PR workflow and pass the malicious code to the workflow run,
+    the attacker can gain access to secrets even though the original workflow did not have access to secrets.
+  references:
+    - https://www.legitsecurity.com/blog/github-privilege-escalation-vulnerability
+  tags:
+    - unauthenticated
+    - injection
+    - priv-esc
+
+query: |
+  MATCH (w:Workflow)-[*]->(w2:Workflow)
+  WHERE (
+      (
+          "pull_request" in w.trigger OR
+          "pull_request_target" in w.trigger OR
+      ) AND
+      (
+          "workflow_run" in w2.trigger
+      )
+  ) AND EXISTS {
+          (w)-[*]->(d:StepCodeDependency)
+          WHERE (
+              d.param IN [
+                  "github.event.pull_request.title",
+                  "github.event.pull_request.body",
+                  "github.event.pull_request.head.ref",
+                  "github.event.pull_request.head.label",
+                  "github.event.pull_request.head.repo.default_branch"
+              ]
+          )
+      }
+  RETURN DISTINCT w.url AS url;

@@ -1,0 +1,32 @@
+id: message-injection
+
+info:
+  name: Message Context Injection
+  severity: high
+  description: Commit Injection is caused by using commit message variables in inline scripts
+  full-description: |
+    Commit messages can contain any text and special characters.
+    By using a commit message variable in an inline script, an attacker can inject arbitrary code
+    into the build process.
+    Examples:
+      - github.event.head_commit.message
+  references:
+    - https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
+  tags:
+    - injection
+    - unauthenticated
+
+query: |
+  MATCH (w:Workflow)-[*]->(d:StepCodeDependency)
+    WHERE (
+        "issues" in w.trigger OR
+        "issue_comment" in w.trigger OR
+        "pull_request_target" in w.trigger
+    ) AND
+      (
+          d.param IN [
+            "github.event.head_commit.message",
+            "github.event.merge_group.head_commit.message"
+          ]
+      )
+  RETURN DISTINCT w.url AS url;

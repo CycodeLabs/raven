@@ -52,4 +52,4 @@ class Query(object):
         and will return the matching workflow paths
         """
         result = Config.graph.run_query(self.query)
-        return [dict(record).get("w.path") for record in result]
+        return [dict(record).get("url") for record in result]

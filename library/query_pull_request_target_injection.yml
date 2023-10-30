@@ -31,4 +31,4 @@ query: |
               )
           )
       }
-  RETURN DISTINCT w.path;
+  RETURN DISTINCT w.url AS url;

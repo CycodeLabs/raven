@@ -1,0 +1,25 @@
+id: unpinnable-action
+
+info:
+  name: Unpinnable Action
+  severity: medium
+  description: Unpinnable actions can lead to software supply chain attacks.
+  full-description: |
+    Actions can be pinned to a specific version to ensure that the same version is used
+    every time the workflow is run. Even if the action is pinned, if that action itself
+    uses an unpinned Docker Image or GitHub Action, the action can be updated without
+    the workflow being updated. This can lead to software supply chain attacks.
+  references:
+    - https://www.paloaltonetworks.com/blog/prisma-cloud/unpinnable-actions-github-security/
+  tags:
+    - supply-chain
+
+query: |
+  MATCH (ca:CompositeAction)
+  WHERE (
+      ca.using = "docker" AND (
+          ca.image = "Dockerfile" OR
+          ca.image ENDS WITH "latest"
+      )
+  )
+  RETURN DISTINCT ca.url AS url;

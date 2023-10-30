@@ -1,0 +1,30 @@
+id: email-injection
+
+info:
+  name: Email Context Injection
+  severity: high
+  description: Email Injection is caused by using email variables in inline scripts
+  full-description: |
+    GitHub allows creating accounts with email addresses that contain special characters,
+    such as `+`, `@` and `"`. By using an email variable in an inline script, an attacker
+    can inject arbitrary code into the build process.
+  references:
+    - https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
+  tags:
+    - injection
+    - unauthenticated
+
+query: |
+  MATCH (w:Workflow)-[*]->(d:StepCodeDependency)
+    WHERE (
+        "issues" in w.trigger OR
+        "issue_comment" in w.trigger OR
+        "pull_request_target" in w.trigger
+    ) AND
+      (
+          d.param IN [
+            "github.event.comment.author.email",
+            "github.event.head_commit.committer.email"
+          ]
+      )
+  RETURN DISTINCT w.url AS url;
