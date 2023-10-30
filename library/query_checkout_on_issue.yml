@@ -1,7 +1,7 @@
-id: checkout-on-issue
+id: RP-2
 
 info:
-  name: Checkout on new Issue
+  name: Checkout On New Issue
   severity: critical
   description: workflows triggered by issue events where a job involves checking out code from a repository ("actions/checkout") on issue event.
   full-description:
