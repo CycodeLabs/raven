@@ -202,7 +202,7 @@ def get_ref_of_tag(repo: str, tag: str) -> Optional[str]:
     r_tags = get(TAGS_URL.format(repo_path=repo), headers=headers)
     if r_tags.status_code != 200:
         log.error(
-            f"Coudln't found tags for repository {repo}. status code: {r_tags.status_code}. Response: {r_tags.text}"
+            f"Coudln't found tags for repository {repo} even though tag {tag} is required. status code: {r_tags.status_code}. Response: {r_tags.text}"
         )
         return
 

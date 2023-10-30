@@ -19,6 +19,7 @@ def test_job_from_dict_steps():
         "_id": "6347a06af34cc01c884c110fd9db8964",
         "path": "electron/electron/.github/workflows/issue-commented.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
+        "tag": "v1",
     }
 
     job = workflow.Job.from_dict(job_d)
@@ -31,6 +32,7 @@ def test_job_from_dict_steps():
     assert job.ref is None
     assert job.with_prop is None
     assert job.url == job_d["url"]
+    assert job.tag == job_d["tag"]
     assert len(job.steps) == 1
     assert len(job.reusable_workflow) == 0
 
@@ -102,6 +104,7 @@ def test_step_from_dict_uses():
         "_id": "9a42f7bb6c8e5be00c1d36d54ac7bdb6",
         "path": "electron/electron/.github/workflows/issue-commented.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
+        "tag": "v1",
     }
 
     step = workflow.Step.from_dict(step_d)
@@ -112,6 +115,7 @@ def test_step_from_dict_uses():
     assert step.run is None
     assert step.uses == step_d["uses"]
     assert step.url == step_d["url"]
+    assert step.tag == step_d["tag"]
     assert step.ref == "cc6751b3b5e4edc5b9a4ad0a021ac455653b6dc8"
     assert step.with_prop == ["creds:${{ secrets.ISSUE_TRIAGE_GH_APP_CREDS }}"]
 
