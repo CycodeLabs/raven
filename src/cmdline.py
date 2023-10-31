@@ -185,7 +185,7 @@ def raven() -> None:
         "--tag",
         "-t",
         action="append",
-        type=list,
+        type=str,
         default=[],
         choices=QUERY_TAGS,
         help="Filter queries with specific tag",
