@@ -86,13 +86,13 @@ def download_workflows_and_actions(repo: str) -> None:
             return
 
         workflows = get_repository_workflows(repo)
-        visability = PUBLIC_REPOSITORY
+        visibility = PUBLIC_REPOSITORY
 
         log.debug(f"[+] Found {len(workflows)} workflows for {repo}")
         for name, url in workflows.items():
             if is_url_contains_arguments(url):
                 log.debug(f"[+] URL contains token argument - private repository")
-                visability = PRIVATE_REPOSITORY
+                visibility = PRIVATE_REPOSITORY
 
             log.debug(f"[+] Fetching {name}")
             resp = get(url, timeout=10)
@@ -119,8 +119,8 @@ def download_workflows_and_actions(repo: str) -> None:
                 )
                 workflows_db.insert_to_hash(
                     workflow_unix_path,
-                    Config.redis_visability_hash_field_name,
-                    visability,
+                    Config.redis_visibility_hash_field_name,
+                    visibility,
                 )
 
         sets_db.insert_to_set(Config.workflow_download_history_set, repo)
@@ -135,7 +135,7 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
     with RedisConnection(Config.redis_sets_db) as sets_db:
         uses_string_obj = UsesString.analyze(uses_string=uses_string)
         full_path = uses_string_obj.get_full_path(repo)
-        visability = PUBLIC_REPOSITORY
+        visibility = PUBLIC_REPOSITORY
 
         # If already scanned action
         if sets_db.exists_in_set(Config.action_download_history_set, full_path):
@@ -181,7 +181,7 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
 
         if is_url_contains_arguments(url):
             log.debug(f"[+] URL contains token argument - private repository")
-            visability = PRIVATE_REPOSITORY
+            visibility = PRIVATE_REPOSITORY
 
         resp = get(url, timeout=10)
         if resp.status_code != 200:
@@ -214,8 +214,8 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 )
                 workflows_db.insert_to_hash(
                     full_path,
-                    Config.redis_visability_hash_field_name,
-                    visability,
+                    Config.redis_visibility_hash_field_name,
+                    visibility,
                 )
         else:  # UsesStringType.ACTION
             sets_db.insert_to_set(Config.action_download_history_set, full_path)
@@ -230,6 +230,6 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 )
                 actions_db.insert_to_hash(
                     full_path,
-                    Config.redis_visability_hash_field_name,
-                    visability,
+                    Config.redis_visibility_hash_field_name,
+                    visibility,
                 )

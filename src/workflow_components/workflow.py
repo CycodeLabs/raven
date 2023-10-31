@@ -203,6 +203,7 @@ class Workflow(GraphObject):
 
         w.trigger = trigger
         w.url = obj_dict["url"]
+        w.visibility = obj_dict["visibility"]
 
         if "permissions" in obj_dict:
             w.permissions = convert_dict_to_list(obj_dict["permissions"])

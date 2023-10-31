@@ -42,7 +42,7 @@ def test_composite_action_from_dist_node():
     assert ca.inputs == list(ca_d["inputs"].keys())
     assert ca.using == "node16"
     assert ca.url == ca_d["url"]
-    assert ca.visability == ca_d["visibility"]
+    assert ca.visibility == ca_d["visibility"]
     assert ca.image is None
     assert len(ca.steps) == 0
 
@@ -74,7 +74,7 @@ def test_composite_action_from_dict_dockerfile():
     assert ca.using == "docker"
     assert ca.image == "Dockerfile"
     assert ca.url == ca_d["url"]
-    assert ca.visability == ca_d["visibility"]
+    assert ca.visibility == ca_d["visibility"]
     assert len(ca.steps) == 0
 
 
@@ -108,7 +108,7 @@ def test_composite_action_from_dict_image():
     assert ca.inputs == list(ca_d["inputs"].keys())
     assert ca.using == "docker"
     assert ca.url == ca_d["url"]
-    assert ca.visability == ca_d["visibility"]
+    assert ca.visibility == ca_d["visibility"]
     assert ca.image == "docker://ghcr.io/calibreapp/image-actions/image-actions:main"
     assert len(ca.steps) == 0
 
@@ -153,7 +153,7 @@ def test_composite_action_from_dict_steps():
     assert ca.inputs == list(ca_d["inputs"].keys())
     assert ca.using == "composite"
     assert ca.url == ca_d["url"]
-    assert ca.visability == ca_d["visibility"]
+    assert ca.visibility == ca_d["visibility"]
     assert ca.image is None
     assert len(ca.steps) == 1
 

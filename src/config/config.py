@@ -25,7 +25,7 @@ REDIS_ACTION_INDEX_HISTORY_SET = "action_index_history"
 # Field names to use in the hash of Actions and Workflows in the DB
 REDIS_DATA_HASH_FIELD_NAME = "data"
 REDIS_URL_HASH_FIELD_NAME = "url"
-REDIS_VISABILITY_HASH_FIELD_NAME = "visability"
+REDIS_VISIBILITY_HASH_FIELD_NAME = "visibility"
 PRIVATE_REPOSITORY = "private"
 PUBLIC_REPOSITORY = "public"
 REDIS_SETS_DB = 0
@@ -137,7 +137,7 @@ class Config:
     redis_actions_db: int = REDIS_ACTIONS_DB
     redis_data_hash_field_name: str = REDIS_DATA_HASH_FIELD_NAME
     redis_url_hash_field_name: str = REDIS_URL_HASH_FIELD_NAME
-    redis_visability_hash_field_name: str = REDIS_VISABILITY_HASH_FIELD_NAME
+    redis_visibility_hash_field_name: str = REDIS_VISIBILITY_HASH_FIELD_NAME
     workflow_download_history_set: str = REDIS_WORKFLOW_DOWNLOAD_HISTORY_SET
     action_download_history_set: str = REDIS_ACTION_DOWNLOAD_HISTORY_SET
     workflow_index_history_set: str = REDIS_WORKFLOW_INDEX_HISTORY_SET
