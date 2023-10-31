@@ -199,14 +199,14 @@ def get_ref_of_tag(repo: str, tag: str) -> Optional[str]:
     This function is used to get the ref of a tag in a repository.
     If the tag is not found, it will return the provided tag as is since it might be a branch name that should be used as tag
     """
-    r_tags = get(TAGS_URL.format(repo_path=repo), headers=headers)
-    if r_tags.status_code != 200:
+    r = get(TAGS_URL.format(repo_path=repo), headers=headers)
+    if r.status_code != 200:
         log.error(
-            f"Coudln't found tags for repository {repo} even though tag {tag} is required. status code: {r_tags.status_code}. Response: {r_tags.text}"
+            f"Coudln't found tags for repository {repo} even though tag {tag} is required. status code: {r.status_code}. Response: {r.text}"
         )
         return
 
-    shas = [d["commit"]["sha"] for d in r_tags.json() if d["name"] == tag]
+    shas = [d["commit"]["sha"] for d in r.json() if d["name"] == tag]
 
     # Sometimes the tag is not found, but the provided reference is actually a branch name.
     return shas[0] if len(shas) > 0 else tag
@@ -215,14 +215,14 @@ def get_ref_of_tag(repo: str, tag: str) -> Optional[str]:
 def get_download_url(
     path: str,
     file_suffixes: Optional[List[str]] = None,
-    tag: Optional[str] = None,
+    ref: Optional[str] = None,
 ) -> Optional[str]:
     """
     Retrieves the downloadable URL for a GitHub resource located at the given path.
 
     Parameters:
     - path (str): The repository path containing the resource, formatted as "owner/repo/relative_path_to_resource".
-    - tag (Optional[str]): The version tag of the resource. If None, the latest version is used.
+    - ref (Optional[str]): The ref or the tag of the resource. If None, the latest version is used.
     - file_suffixes (List[str]): List of possible file suffixes that the resource could have (e.g., ["action.yml", "action.yaml"]).
 
     Returns:
@@ -237,7 +237,7 @@ def get_download_url(
     headers["Authorization"] = f"Token {Config.github_token}"
 
     # Get ref of commit if tag is provided
-    ref = get_ref_of_tag(repo, tag) if tag else None
+    ref = get_ref_of_tag(repo, ref) if ref else None
 
     files_to_try = (
         [os.path.join(relative_path, fs) for fs in file_suffixes]
@@ -250,7 +250,7 @@ def get_download_url(
         # Otherwise, we can use the normal contents API
         action_download_url = (
             CONTENTS_BY_REF_URL.format(repo_path=repo, file_path=file_path, ref=ref)
-            if tag
+            if ref
             else CONTENTS_URL.format(repo_path=repo, file_path=file_path)
         )
 
@@ -265,15 +265,15 @@ def get_download_url(
         return r.json()["download_url"]
 
 
-def get_repository_composite_action(path: str, tag: Optional[str]) -> str:
+def get_repository_composite_action(path: str, ref: Optional[str]) -> str:
     """
     Retrieves the downloadable URL for a specific composite action located at the given path.
     """
-    return get_download_url(path, tag=tag, file_suffixes=ACTION_SUFFIXES)
+    return get_download_url(path, ref=ref, file_suffixes=ACTION_SUFFIXES)
 
 
-def get_repository_reusable_workflow(path: str, tag: str) -> str:
+def get_repository_reusable_workflow(path: str, ref: str) -> str:
     """
     Retrieves the downloadable URL for a specific reusable workflow located at the given path.
     """
-    return get_download_url(path, tag=tag, file_suffixes=[])
+    return get_download_url(path, ref=ref, file_suffixes=[])

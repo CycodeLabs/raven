@@ -129,7 +129,6 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
     """
     with RedisConnection(Config.redis_sets_db) as sets_db:
         uses_string_obj = UsesString.analyze(uses_string=uses_string)
-        absolute_path = uses_string_obj.get_absolute_path(repo)
         is_public = 1
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
@@ -137,28 +136,24 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             with RedisConnection(Config.redis_workflows_db) as workflows_db:
                 if (
                     workflows_db.get_value_from_hash(
-                        absolute_path, Config.redis_data_hash_field_name
+                        uses_string_obj.absolute_path_with_ref,
+                        Config.redis_data_hash_field_name,
                     )
                     is not None
                 ):
                     return
-            workflow_path, tag = (
-                absolute_path.split("@")
-                if uses_string_obj.ref
-                else (absolute_path, None)
-            )
-            url = get_repository_reusable_workflow(workflow_path, tag)
+            workflow_path, ref = uses_string_obj.absolute_path, uses_string_obj.ref
+            url = get_repository_reusable_workflow(workflow_path, ref)
         elif uses_string_obj.type == UsesStringType.ACTION:
             # If already scanned action
-            if sets_db.exists_in_set(Config.action_download_history_set, absolute_path):
+            if sets_db.exists_in_set(
+                Config.action_download_history_set,
+                uses_string_obj.absolute_path_with_ref,
+            ):
                 return
 
-            action_path, tag = (
-                absolute_path.split("@")
-                if uses_string_obj.ref
-                else (absolute_path, None)
-            )
-            url = get_repository_composite_action(action_path, tag)
+            action_path, ref = uses_string_obj.absolute_path, uses_string_obj.ref
+            url = get_repository_composite_action(action_path, ref)
         else:
             # Can happen with docker references.
             return
@@ -194,14 +189,14 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
 
         # We look for dependant external actions.
         uses_strings = find_uses_strings(resp.text)
-        new_repo = get_repo_name_from_path(absolute_path)
+        new_repo = get_repo_name_from_path(uses_string_obj.absolute_path)
 
         for new_uses_string in uses_strings:
             # Some infinite loop I met in several repositories
-            new_full_path = UsesString.analyze(new_uses_string).get_absolute_path(
-                new_repo
-            )
-            if new_full_path == absolute_path:
+            if (
+                UsesString.analyze(new_uses_string).absolute_path_with_ref
+                == uses_string_obj.absolute_path
+            ):
                 continue
 
             download_action_or_reusable_workflow(
@@ -209,13 +204,18 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             )
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-            sets_db.insert_to_set(Config.workflow_download_history_set, absolute_path)
+            sets_db.insert_to_set(
+                Config.workflow_download_history_set,
+                uses_string_obj.absolute_path_with_ref,
+            )
             with RedisConnection(Config.redis_workflows_db) as workflows_db:
                 workflows_db.insert_to_hash(
-                    absolute_path, Config.redis_data_hash_field_name, resp.text
+                    uses_string_obj.absolute_path_with_ref,
+                    Config.redis_data_hash_field_name,
+                    resp.text,
                 )
                 workflows_db.insert_to_hash(
-                    absolute_path,
+                    uses_string_obj.absolute_path_with_ref,
                     Config.redis_url_hash_field_name,
                     convert_raw_github_url_to_github_com_url(url),
                 )
@@ -225,13 +225,18 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                     is_public,
                 )
         else:  # UsesStringType.ACTION
-            sets_db.insert_to_set(Config.action_download_history_set, absolute_path)
+            sets_db.insert_to_set(
+                Config.action_download_history_set,
+                uses_string_obj.absolute_path_with_ref,
+            )
             with RedisConnection(Config.redis_actions_db) as actions_db:
                 actions_db.insert_to_hash(
-                    absolute_path, Config.redis_data_hash_field_name, resp.text
+                    uses_string_obj.absolute_path_with_ref,
+                    Config.redis_data_hash_field_name,
+                    resp.text,
                 )
                 actions_db.insert_to_hash(
-                    absolute_path,
+                    uses_string_obj.absolute_path_with_ref,
                     Config.redis_url_hash_field_name,
                     convert_raw_github_url_to_github_com_url(url),
                 )

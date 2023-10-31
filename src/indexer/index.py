@@ -2,7 +2,7 @@ import io
 
 import yaml
 from yaml.constructor import Constructor
-
+from src.workflow_components.dependency import UsesString
 from src.storage.redis_connection import RedisConnection
 from src.config.config import Config
 from src.workflow_components.workflow import Workflow
@@ -86,7 +86,7 @@ def index_action_file(action: str) -> None:
                 return
 
             obj["path"] = action
-            obj["tag"] = action.split("@")[-1] if "@" in action else None
+            obj["ref"] = UsesString.get_ref_from_path_string(action)
             obj["url"] = url
             obj["is_public"] = is_public
 
@@ -141,7 +141,7 @@ def index_workflow_file(workflow: str) -> None:
                 return
 
             obj["path"] = workflow
-            obj["tag"] = workflow.split("@")[-1] if "@" in workflow else None
+            obj["ref"] = UsesString.get_ref_from_path_string(workflow)
             obj["url"] = url
             obj["is_public"] = is_public
 

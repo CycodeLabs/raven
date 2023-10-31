@@ -11,20 +11,33 @@ class UsesStringType(Enum):
     DOCKER = 3
 
 
-class UsesString(object):
-    type: UsesStringType
-    path: str  # E.g., actions/checkout, ./.github/actions/action-setup
-    ref: Optional[str] = None  # E.g., v3. Can be a branch name, tag name, or commit SHA
-    is_relative: bool
+class UsesString:
+    def __init__(
+        self,
+        path: str,
+        type: UsesStringType,
+        is_relative: bool = False,
+        ref: Optional[str] = None,
+    ):
+        self.type = type
+        self.path = path
+        self.ref = ref
+        self.is_relative = is_relative
+        self.absolute_path = self.get_absolute_path_with_repo(
+            self.path, self.is_relative
+        )
+
+    @property
+    def absolute_path_with_ref(self):
+        """
+        If the resource has a ref, it will be appended to the path.
+        """
+        return f"{self.absolute_path}@{self.ref}" if self.ref else self.absolute_path
 
     @staticmethod
     def analyze(uses_string: str) -> "UsesString":
-        """Parses the uses string, and extract relevant information:
-        - Whether path is relative or absolute
-        - Reference type (reusable workflow/action/docker)
-        - path and ref
-
-        If analyzed path is relative, the full path should be fetched using `get_absolute_path`.
+        """
+        Parses the uses string to extract relevant information.
 
         The uses string could point to:
         - uses: actions/checkout@v3 (normal usage of external action)
@@ -34,49 +47,54 @@ class UsesString(object):
         - uses: ./.github/actions/build.yml (reusable workflow in local directory)
         - uses: octo-org/this-repo/.github/workflows/workflow-1.yml@latest (reusable workflow in other directory)
         - uses: docker://docker.io/library/golang:1.17.1-alpine@sha256:... (nothing to download)
+
+        Parameters:
+        - uses_string (str): The input uses string from a workflow file.
+
+        Returns:
+        - UsesString: An object containing the parsed information.
         """
-        uses_string_obj = UsesString()
-        uses_string_obj.is_relative = False
+        path, ref = UsesString.split_path_and_ref(uses_string)
+        type = UsesString.determine_type(path)
+        is_relative = path.startswith("./")
 
-        uses_string_splitted = uses_string.split("@")
-        uses_string_obj.path = uses_string_splitted[0]
-        if len(uses_string_splitted) > 1:
-            uses_string_obj.ref = uses_string_splitted[1]
+        return UsesString(path, type, is_relative=is_relative, ref=ref)
 
-        # Get rid of the irrelevant cases
-        if uses_string_obj.path.startswith("docker://"):
-            uses_string_obj.type = UsesStringType.DOCKER
-            return uses_string_obj
+    @staticmethod
+    def split_path_and_ref(uses_string: str) -> (str, Optional[str]):
+        """Split the uses string into path and reference."""
+        parts = uses_string.split("@")
+        ref = parts[1] if len(parts) > 1 else None
+        return (parts[0], ref)
 
-        if uses_string_obj.path.endswith(".yml") or uses_string_obj.path.endswith(
-            ".yaml"
-        ):
-            uses_string_obj.type = UsesStringType.REUSABLE_WORKFLOW
-        else:
-            uses_string_obj.type = UsesStringType.ACTION
+    @staticmethod
+    def determine_type(path: str) -> UsesStringType:
+        """Determine the type based on the path."""
+        if path.startswith("docker://"):
+            return UsesStringType.DOCKER
+        if path.endswith((".yml", ".yaml")):
+            return UsesStringType.REUSABLE_WORKFLOW
+        return UsesStringType.ACTION
 
-        if uses_string_obj.path.startswith("./"):
-            # local action or local reusable workflow
-            uses_string_obj.is_relative = True
-            return uses_string_obj
-
-        # remote action or remote reusable workflow
-        return uses_string_obj
-
-    def get_absolute_path(self, file_path: str) -> str:
+    @staticmethod
+    def get_absolute_path_with_repo(file_path: str, is_relative: bool) -> str:
         """
-        Calculates the full path for a given action or reusable workflow based on its relative path.
-        The current repository where the item resides is used for this calculation.
-        For composite actions, the applicable version will be appended to the path as well.
+        Calculates the full path for a given action or reusable workflow.
+        It will get rid of the relative path (e.g., "..", "./", etc.) and return the full path.
+        It will include the repo if the path is relative.
         """
-        # Build the base path
-        base_path = f"{self.path}@{self.ref}" if self.ref else self.path
 
-        if not self.is_relative:
-            return base_path
+        if not is_relative:
+            return file_path
 
         # Extract repository path and evaluate relative path (e.g., "..", "./", etc.).
         repo = get_repo_name_from_path(file_path)
-        eval_path = os.path.relpath(os.path.abspath(os.path.join(repo, self.path)))
+        return os.path.relpath(os.path.abspath(os.path.join(repo, file_path)))
 
-        return f"{eval_path}@{self.ref}" if self.ref else eval_path
+    @staticmethod
+    def get_ref_from_path_string(path: str) -> Optional[str]:
+        """
+        Extracts the ref from a path string.
+        """
+        parts = path.split("@")
+        return parts[-1] if len(parts) > 1 else None

@@ -50,10 +50,9 @@ class Step(GraphObject):
     path = Property()
     run = Property()
     uses = Property()
-    ref = Property()
     with_prop = Property("with")
     url = Property()
-    tag = Property()
+    ref = Property()
 
     action = RelatedTo("src.workflow_components.composite_action.CompositeAction")
     reusable_workflow = RelatedTo("Workflow")
@@ -69,8 +68,8 @@ class Step(GraphObject):
         s = Step(_id=obj_dict["_id"], name=obj_dict.get("name"), path=obj_dict["path"])
         s.url = obj_dict["url"]
 
-        if "tag" in obj_dict:
-            s.tag = obj_dict["tag"]
+        if "ref" in obj_dict:
+            s.ref = obj_dict["ref"]
         if "run" in obj_dict:
             s.run = obj_dict["run"]
 
@@ -89,15 +88,12 @@ class Step(GraphObject):
                 import src.workflow_components.composite_action as composite_action
 
                 obj = composite_action.get_or_create_composite_action(
-                    uses_string_obj.get_absolute_path(s.path)
+                    uses_string_obj.absolute_path_with_ref
                 )
                 s.action.add(obj)
 
             if "with" in obj_dict:
                 s.with_prop = convert_dict_to_list(obj_dict["with"])
-
-            if len(s.uses.split("@")) > 1:
-                s.ref = s.uses.split("@")[1]
         return s
 
 
@@ -109,10 +105,9 @@ class Job(GraphObject):
     path = Property()
     machine = Property()
     uses = Property()
-    ref = Property()
     url = Property()
     with_prop = Property("with")
-    tag = Property()
+    ref = Property()
 
     steps = RelatedTo(Step)
     reusable_workflow = RelatedTo("Workflow")
@@ -127,8 +122,8 @@ class Job(GraphObject):
         j = Job(_id=obj_dict["_id"], name=obj_dict["name"], path=obj_dict["path"])
 
         # Optional fields
-        if "tag" in obj_dict:
-            j.tag = obj_dict["tag"]
+        if "ref" in obj_dict:
+            j.ref = obj_dict["ref"]
 
         if "uses" in obj_dict:
             j.uses = obj_dict["uses"]
@@ -136,14 +131,11 @@ class Job(GraphObject):
             # In the case of jobs, it may only reference reusable workflows.
             uses_string_obj = UsesString.analyze(uses_string=j.uses)
             if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-                obj = get_or_create_workflow(uses_string_obj.get_absolute_path(j.path))
+                obj = get_or_create_workflow(uses_string_obj.absolute_path_with_ref)
                 j.reusable_workflow.add(obj)
 
             if "with" in obj_dict:
                 j.with_prop = convert_dict_to_list(obj_dict["with"])
-
-            if len(j.uses.split("@")) > 1:
-                j.ref = j.uses.split("@")[1]
 
         j.url = obj_dict["url"]
         if "steps" in obj_dict:
@@ -156,7 +148,7 @@ class Job(GraphObject):
                 step["_id"] = md5(f"{j._id}_{i}".encode()).hexdigest()
                 step["path"] = j.path
                 step["url"] = j.url
-                step["tag"] = j.tag
+                step["ref"] = j.ref
                 j.steps.add(Step.from_dict(step))
 
         return j
@@ -172,7 +164,7 @@ class Workflow(GraphObject):
     permissions = Property()
     url = Property()
     is_public = Property()
-    tag = Property()
+    ref = Property()
 
     jobs = RelatedTo(Job)
     triggered_by = RelatedFrom("Workflow")
@@ -223,8 +215,8 @@ class Workflow(GraphObject):
         w.url = obj_dict["url"]
         w.is_public = obj_dict["is_public"]
 
-        if "tag" in obj_dict:
-            w.tag = obj_dict["tag"]
+        if "ref" in obj_dict:
+            w.ref = obj_dict["ref"]
 
         if "permissions" in obj_dict:
             w.permissions = convert_dict_to_list(obj_dict["permissions"])
@@ -237,7 +229,7 @@ class Workflow(GraphObject):
             job["path"] = w.path
             job["name"] = job_name
             job["url"] = w.url
-            job["tag"] = w.tag
+            job["ref"] = w.ref
             w.jobs.add(Job.from_dict(job))
 
         return w

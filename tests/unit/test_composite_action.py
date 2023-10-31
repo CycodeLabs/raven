@@ -33,7 +33,7 @@ def test_composite_action_from_dist_node():
         "path": "data/actions/peter-evans|create-issue-from-file|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
         "is_public": True,
-        "tag": "v3",
+        "ref": "v3",
     }
 
     ca = composite_action.CompositeAction.from_dict(ca_d)
@@ -44,7 +44,7 @@ def test_composite_action_from_dist_node():
     assert ca.using == "node16"
     assert ca.url == ca_d["url"]
     assert ca.is_public == ca_d["is_public"]
-    assert ca.tag == ca_d["tag"]
+    assert ca.ref == ca_d["ref"]
     assert ca.image is None
     assert len(ca.steps) == 0
 
@@ -146,7 +146,7 @@ def test_composite_action_from_dict_steps():
         "path": "data/actions/taiki-e|install-action|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
         "is_public": True,
-        "tag": "v1",
+        "ref": "v1",
     }
 
     ca = composite_action.CompositeAction.from_dict(ca_d)
@@ -157,7 +157,7 @@ def test_composite_action_from_dict_steps():
     assert ca.using == "composite"
     assert ca.url == ca_d["url"]
     assert ca.is_public == ca_d["is_public"]
-    assert ca.tag == ca_d["tag"]
+    assert ca.ref == ca_d["ref"]
     assert ca.image is None
     assert len(ca.steps) == 1
 
@@ -170,7 +170,7 @@ def test_composite_action_step_from_dict_run():
         "_id": "4eba12855ade10f6e8dda0456946ffa1",
         "path": "data/actions/dtolnay|rust-toolchain|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
-        "tag": "v1",
+        "ref": "v1",
     }
 
     step = composite_action.CompositeActionStep.from_dict(step_d)
@@ -184,7 +184,7 @@ def test_composite_action_step_from_dict_run():
     assert step.shell == step_d["shell"]
     assert step.with_prop is None
     assert step.url == step_d["url"]
-    assert step.tag == step_d["tag"]
+    assert step.ref == step_d["ref"]
     assert len(step.action) == 0
     assert len(step.reusable_workflow) == 0
     assert len(step.using_param) == 0
@@ -201,7 +201,7 @@ def test_composite_action_step_from_dict_run_dependency():
         "_id": "f85b9778e35a1273d88c7dabdb210eaf",
         "path": "data/actions/ytdl-org|setup-python|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
-        "tag": "v1",
+        "ref": "v1",
     }
 
     step = composite_action.CompositeActionStep.from_dict(step_d)
@@ -214,7 +214,7 @@ def test_composite_action_step_from_dict_run_dependency():
     assert step.ref is None
     assert step.shell == step_d["shell"]
     assert step.url == step_d["url"]
-    assert step.tag == step_d["tag"]
+    assert step.ref == step_d["ref"]
     assert step.with_prop is None
     assert len(step.action) == 0
     assert len(step.reusable_workflow) == 0
@@ -237,7 +237,7 @@ def test_composite_action_step_from_dict_using():
         "_id": "11e15e6b7424478c2e32fd22ed477c21",
         "path": "data/actions/ytdl-org|setup-python|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
-        "tag": "v1",
+        "ref": "v1",
     }
 
     step = composite_action.CompositeActionStep.from_dict(step_d)
@@ -249,7 +249,7 @@ def test_composite_action_step_from_dict_using():
     assert step.ref == "bd6b4b6205c4dbad673328db7b31b7fab9e241c0"
     assert step.shell is None
     assert step.url == step_d["url"]
-    assert step.tag == step_d["tag"]
+    assert step.ref == step_d["ref"]
     assert step.with_prop == [
         "python-version:${{ steps.build.outputs.python-version }}",
         "cache:${{ inputs.cache }}",
