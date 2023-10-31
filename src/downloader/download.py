@@ -1,6 +1,6 @@
 from requests import get
 
-from src.config.config import Config
+from src.config.config import Config, PRIVATE_REPOSITORY, PUBLIC_REPOSITORY
 from src.storage.redis_connection import RedisConnection
 from src.storage.redis_utils import clean_redis_db
 from src.downloader.gh_api import (
@@ -15,6 +15,7 @@ from src.common.utils import (
     convert_workflow_to_unix_path,
     get_repo_name_from_path,
     convert_raw_github_url_to_github_com_url,
+    is_url_contains_arguments,
 )
 from src.workflow_components.dependency import UsesString, UsesStringType
 import src.logger.log as log
@@ -85,11 +86,17 @@ def download_workflows_and_actions(repo: str) -> None:
             return
 
         workflows = get_repository_workflows(repo)
-        log.debug(f"[+] Found {len(workflows)} workflows for {repo}")
+        visability = PUBLIC_REPOSITORY
 
+        log.debug(f"[+] Found {len(workflows)} workflows for {repo}")
         for name, url in workflows.items():
+            if is_url_contains_arguments(url):
+                log.debug(f"[+] URL contains token argument - private repository")
+                visability = PRIVATE_REPOSITORY
+
             log.debug(f"[+] Fetching {name}")
             resp = get(url, timeout=10)
+
             if resp.status_code != 200:
                 raise Exception(
                     f"status code: {resp.status_code}. Response: {resp.text}"
@@ -110,6 +117,11 @@ def download_workflows_and_actions(repo: str) -> None:
                     Config.redis_url_hash_field_name,
                     convert_raw_github_url_to_github_com_url(url),
                 )
+                workflows_db.insert_to_hash(
+                    workflow_unix_path,
+                    Config.redis_visability_hash_field_name,
+                    visability,
+                )
 
         sets_db.insert_to_set(Config.workflow_download_history_set, repo)
 
@@ -123,6 +135,7 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
     with RedisConnection(Config.redis_sets_db) as sets_db:
         uses_string_obj = UsesString.analyze(uses_string=uses_string)
         full_path = uses_string_obj.get_full_path(repo)
+        visability = PUBLIC_REPOSITORY
 
         # If already scanned action
         if sets_db.exists_in_set(Config.action_download_history_set, full_path):
@@ -166,6 +179,10 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 )
             return
 
+        if is_url_contains_arguments(url):
+            log.debug(f"[+] URL contains token argument - private repository")
+            visability = PRIVATE_REPOSITORY
+
         resp = get(url, timeout=10)
         if resp.status_code != 200:
             raise Exception(f"status code: {resp.status_code}. Response: {resp.text}")
@@ -195,6 +212,11 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                     Config.redis_url_hash_field_name,
                     convert_raw_github_url_to_github_com_url(url),
                 )
+                workflows_db.insert_to_hash(
+                    full_path,
+                    Config.redis_visability_hash_field_name,
+                    visability,
+                )
         else:  # UsesStringType.ACTION
             sets_db.insert_to_set(Config.action_download_history_set, full_path)
             with RedisConnection(Config.redis_actions_db) as actions_db:
@@ -205,4 +227,9 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                     full_path,
                     Config.redis_url_hash_field_name,
                     convert_raw_github_url_to_github_com_url(url),
+                )
+                actions_db.insert_to_hash(
+                    full_path,
+                    Config.redis_visability_hash_field_name,
+                    visability,
                 )

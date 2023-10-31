@@ -154,6 +154,7 @@ class Workflow(GraphObject):
     trigger = Property()
     permissions = Property()
     url = Property()
+    visibility = Property()
 
     jobs = RelatedTo(Job)
     triggered_by = RelatedFrom("Workflow")

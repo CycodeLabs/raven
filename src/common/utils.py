@@ -34,6 +34,9 @@ def convert_raw_github_url_to_github_com_url(raw_url: str):
     """
 
     tree_url = raw_url.replace("raw.githubusercontent.com", "github.com")
+    if is_url_contains_arguments(tree_url):
+        tree_url = tree_url.split("?")[0]
+
     parts = tree_url.split("/")
     parts.insert(5, "tree")
     return "/".join(parts)
@@ -105,3 +108,18 @@ def get_all(node_type: str) -> list[Node]:
     Returns all node_type nodes in the graph.
     """
     return Config.graph.get_all(node_type)
+
+
+def is_url_contains_arguments(url) -> list:
+    """
+    Checks if the url contains arguments.
+    E.g.:
+    is_url_contains_arguments("https://raw.githubusercontent.com/RavenDemo/astro/main/.github/workflows/ci.yml?token=AAABBBCCC")
+        >> True
+    is_url_contains_arguments("https://raw.githubusercontent.com/RavenDemo/astro/main/.github/workflows/ci.yml")
+        >> False
+    """
+    if len(url.split("?")) > 1:
+        return True
+
+    return False
