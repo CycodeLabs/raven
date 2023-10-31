@@ -1,4 +1,4 @@
-id: RP-9
+id: RQ-9
 
 info:
   name: Branch Context Injection
@@ -9,6 +9,7 @@ info:
     By using a ref/default_branch variable in an inline script, an attacker can inject arbitrary code into the build process.
   references:
     - https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
+    - https://cycode.com/blog/ci-story-how-we-found-critical-vulnerabilities-in-storybook-project/
   tags:
     - injection
     - unauthenticated

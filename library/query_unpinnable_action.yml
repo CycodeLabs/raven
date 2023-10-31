@@ -1,8 +1,8 @@
-id: RP-12
+id: RQ-12
 
 info:
   name: Unpinnable Action
-  severity: medium
+  severity: low
   description: Unpinnable actions can lead to software supply chain attacks.
   full-description: |
     Actions can be pinned to a specific version to ensure that the same version is used
@@ -13,13 +13,13 @@ info:
     - https://www.paloaltonetworks.com/blog/prisma-cloud/unpinnable-actions-github-security/
   tags:
     - supply-chain
+    - best-practice
 
 query: |
   MATCH (ca:CompositeAction)
   WHERE (
       ca.using = "docker" AND (
-          ca.image = "Dockerfile" OR
-          ca.image ENDS WITH "latest"
+          NOT ca.image CONTAINS "@sha256:"
       )
   )
   RETURN DISTINCT ca.url AS url;

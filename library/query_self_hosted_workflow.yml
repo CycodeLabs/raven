@@ -1,8 +1,8 @@
-id: RP-10
+id: RQ-10
 
 info:
-  name: Self Hosted Run
-  severity: high
+  name: Self Hosted Runner
+  severity: medium
   description: Self Hosted runners should not be used for public repositories.
   full-description: |
     Self Hosted runners do not have the same security controls as GitHub Hosted runners and
@@ -12,14 +12,11 @@ info:
     - https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners
   tags:
     - unauthenticated
+    - best-practice
 
 query: |
   MATCH (w:Workflow)-[*]->(j:Job)
     WHERE (
-        "issues" in w.trigger OR
-        "issue_comment" in w.trigger OR
-        "pull_request_target" in w.trigger
-    ) AND (
         j.machine = "self-hosted"
     )
   RETURN DISTINCT w.url AS url;
