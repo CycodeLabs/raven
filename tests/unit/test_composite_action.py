@@ -32,6 +32,7 @@ def test_composite_action_from_dist_node():
         "branding": {"icon": "alert-circle", "color": "orange"},
         "path": "data/actions/peter-evans|create-issue-from-file|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
+        "visibility": "public",
     }
 
     ca = composite_action.CompositeAction.from_dict(ca_d)
@@ -41,6 +42,7 @@ def test_composite_action_from_dist_node():
     assert ca.inputs == list(ca_d["inputs"].keys())
     assert ca.using == "node16"
     assert ca.url == ca_d["url"]
+    assert ca.visability == ca_d["visibility"]
     assert ca.image is None
     assert len(ca.steps) == 0
 
@@ -61,6 +63,7 @@ def test_composite_action_from_dict_dockerfile():
         "branding": {"icon": "git-pull-request", "color": "purple"},
         "path": "data/actions/cirrus-actions|rebase|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
+        "visibility": "public",
     }
 
     ca = composite_action.CompositeAction.from_dict(ca_d)
@@ -71,6 +74,7 @@ def test_composite_action_from_dict_dockerfile():
     assert ca.using == "docker"
     assert ca.image == "Dockerfile"
     assert ca.url == ca_d["url"]
+    assert ca.visability == ca_d["visibility"]
     assert len(ca.steps) == 0
 
 
@@ -94,6 +98,7 @@ def test_composite_action_from_dict_image():
         "branding": {"icon": "image", "color": "green"},
         "path": "data/actions/calibreapp|image-actions|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
+        "visibility": "public",
     }
 
     ca = composite_action.CompositeAction.from_dict(ca_d)
@@ -103,6 +108,7 @@ def test_composite_action_from_dict_image():
     assert ca.inputs == list(ca_d["inputs"].keys())
     assert ca.using == "docker"
     assert ca.url == ca_d["url"]
+    assert ca.visability == ca_d["visibility"]
     assert ca.image == "docker://ghcr.io/calibreapp/image-actions/image-actions:main"
     assert len(ca.steps) == 0
 
@@ -137,6 +143,7 @@ def test_composite_action_from_dict_steps():
         },
         "path": "data/actions/taiki-e|install-action|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
+        "visibility": "public",
     }
 
     ca = composite_action.CompositeAction.from_dict(ca_d)
@@ -146,6 +153,7 @@ def test_composite_action_from_dict_steps():
     assert ca.inputs == list(ca_d["inputs"].keys())
     assert ca.using == "composite"
     assert ca.url == ca_d["url"]
+    assert ca.visability == ca_d["visibility"]
     assert ca.image is None
     assert len(ca.steps) == 1
 
