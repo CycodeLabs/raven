@@ -21,9 +21,6 @@ Constructor.add_constructor("tag:yaml.org,2002:bool", add_bool)
 
 
 def index_downloaded_workflows_and_actions() -> None:
-    if Config.clean_neo4j or Config.graph.is_graph_empty():
-        clean_index()
-
     index_downloaded_actions()
     index_downloaded_workflows()
 
@@ -151,10 +148,3 @@ def index_workflow_file(workflow: str) -> None:
 
     except Exception as e:
         log.error(f"[-] Error while indexing {workflow}. {e}")
-
-
-def clean_index() -> None:
-    Config.graph.clean_graph()
-    with RedisConnection(Config.redis_sets_db) as sets_db:
-        sets_db.delete_key(Config.workflow_index_history_set)
-        sets_db.delete_key(Config.action_index_history_set)
