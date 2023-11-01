@@ -115,9 +115,9 @@ def is_url_contains_a_token(url) -> bool:
     """
     Checks if the url contains arguments.
     E.g.:
-    is_url_contains_a_token("https://raw.githubusercontent.com/RavenDemo/astro/main/.github/workflows/ci.yml?token=AAABBBCCC")
+    is_url_contains_a_token("https://raw.githubusercontent.com/RavenIntegrationTests/astro/main/.github/workflows/ci.yml?token=AAABBBCCC")
         >> True
-    is_url_contains_a_token("https://raw.githubusercontent.com/RavenDemo/astro/main/.github/workflows/ci.yml")
+    is_url_contains_a_token("https://raw.githubusercontent.com/RavenIntegrationTests/astro/main/.github/workflows/ci.yml")
         >> False
     """
     parsed_url = urlparse(url)
