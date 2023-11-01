@@ -50,6 +50,7 @@ QUERY_TAGS = [
     "priv-esc",
     "supply-chain",
     "best-practice",
+    "endoflife",
 ]
 
 
