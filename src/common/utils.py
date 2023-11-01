@@ -8,6 +8,7 @@ from py2neo.data import Node
 from src.storage.redis_connection import RedisConnection
 from src.config.config import Config
 import src.logger.log as log
+from urllib.parse import urlparse, parse_qs
 
 
 def get_dependencies_in_code(code: str) -> List[str]:
@@ -34,6 +35,9 @@ def convert_raw_github_url_to_github_com_url(raw_url: str):
     """
 
     tree_url = raw_url.replace("raw.githubusercontent.com", "github.com")
+    if is_url_contains_a_token(tree_url):
+        tree_url = tree_url.split("?")[0]
+
     parts = tree_url.split("/")
     parts.insert(5, "tree")
     return "/".join(parts)
@@ -105,3 +109,22 @@ def get_all(node_type: str) -> list[Node]:
     Returns all node_type nodes in the graph.
     """
     return Config.graph.get_all(node_type)
+
+
+def is_url_contains_a_token(url) -> bool:
+    """
+    Checks if the url contains arguments.
+    E.g.:
+    is_url_contains_a_token("https://raw.githubusercontent.com/RavenDemo/astro/main/.github/workflows/ci.yml?token=AAABBBCCC")
+        >> True
+    is_url_contains_a_token("https://raw.githubusercontent.com/RavenDemo/astro/main/.github/workflows/ci.yml")
+        >> False
+    """
+    parsed_url = urlparse(url)
+    query_parameters = parse_qs(parsed_url.query)
+
+    return "token" in query_parameters
+
+
+def str_to_bool(s: str) -> bool:
+    return bool(int(s))

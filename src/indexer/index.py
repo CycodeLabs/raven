@@ -9,6 +9,7 @@ from src.workflow_components.workflow import Workflow
 from src.workflow_components.composite_action import CompositeAction
 from tqdm import tqdm
 import src.logger.log as log
+from src.common.utils import str_to_bool
 
 
 # A hack to deny PyYAML to convert "on" tags into Python boolean values.
@@ -56,6 +57,11 @@ def index_action_file(action: str) -> None:
                 url = actions_db.get_value_from_hash(
                     action, Config.redis_url_hash_field_name
                 ).decode()
+                is_public = str_to_bool(
+                    actions_db.get_value_from_hash(
+                        action, Config.redis_is_public_hash_field_name
+                    ).decode()
+                )
 
             # PyYAML has issues with tabs.
             content = content.replace("\t", "  ")
@@ -84,6 +90,7 @@ def index_action_file(action: str) -> None:
 
             obj["path"] = action
             obj["url"] = url
+            obj["is_public"] = is_public
 
             Config.graph.push_object(CompositeAction.from_dict(obj))
             sets_db.insert_to_set(Config.action_index_history_set, action)
@@ -104,6 +111,11 @@ def index_workflow_file(workflow: str) -> None:
                 url = workflows_db.get_value_from_hash(
                     workflow, Config.redis_url_hash_field_name
                 ).decode()
+                is_public = str_to_bool(
+                    workflows_db.get_value_from_hash(
+                        workflow, Config.redis_is_public_hash_field_name
+                    ).decode()
+                )
 
             # PyYAML has issues with tabs.
             content = content.replace("\t", "  ")
@@ -132,6 +144,7 @@ def index_workflow_file(workflow: str) -> None:
 
             obj["path"] = workflow
             obj["url"] = url
+            obj["is_public"] = is_public
 
             Config.graph.push_object(Workflow.from_dict(obj))
             sets_db.insert_to_set(Config.workflow_index_history_set, workflow)

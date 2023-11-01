@@ -1,0 +1,34 @@
+id: RQ-1
+
+info:
+  name: Body Context Injection
+  severity: critical
+  description: Body Injection is caused by using body variables in inline scripts
+  full-description: |
+    Issues, comments, discussions and PR bodies can contain any text and special characters.
+    By using a body variable in an inline script, an attacker can inject arbitrary code
+    into the build process.
+  references:
+    - https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
+    - https://cycode.com/blog/github-actions-vulnerabilities/
+    - https://github.com/CycodeLabs/raven/blob/main/docs/issue_injections/README.md
+  tags:
+    - injection
+    - unauthenticated
+
+query: |
+  MATCH (w:Workflow)-[*]->(d:StepCodeDependency)
+    WHERE (
+        "issues" in w.trigger OR
+        "issue_comment" in w.trigger OR
+        "pull_request_target" in w.trigger
+    ) AND
+      (
+          d.param IN [
+            "github.event.comment.body",
+            "github.event.issue.body",
+            "github.event.discussion.body",
+            "github.event.pull_request.body"
+          ]
+      )
+  RETURN DISTINCT w.url AS url;

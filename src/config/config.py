@@ -5,8 +5,10 @@ DEBUG_DEFAULT = False
 MIN_STARS_DEFAULT = 1000
 REDIS_CLEAN_DEFAULT = False
 NEO4J_CLEAN_DEFAULT = False
-REPORT_SLACK_DEFAULT = False
 QUERIES_PATH_DEFAULT = "library"
+REPORT_RAW_FORMAT = "raw"
+REPORT_JSON_FORMAT = "json"
+SLACK_REPORTER = "slack"
 
 NEO4J_URI_DEFAULT = "neo4j://localhost:7687"
 NEO4J_USERNAME_DEFAULT = "neo4j"
@@ -23,6 +25,7 @@ REDIS_ACTION_INDEX_HISTORY_SET = "action_index_history"
 # Field names to use in the hash of Actions and Workflows in the DB
 REDIS_DATA_HASH_FIELD_NAME = "data"
 REDIS_URL_HASH_FIELD_NAME = "url"
+REDIS_IS_PUBLIC_HASH_FIELD_NAME = "is_public"
 REDIS_SETS_DB = 0
 REDIS_WORKFLOWS_DB = 1
 REDIS_ACTIONS_DB = 2
@@ -40,6 +43,14 @@ SEVERITY_LEVELS = {
     "high": 3,
     "critical": 4,
 }
+QUERY_TAGS = [
+    "injection",
+    "unauthenticated",
+    "fixed",
+    "priv-esc",
+    "supply-chain",
+    "best-practice",
+]
 
 
 def load_downloader_config(args) -> None:
@@ -91,7 +102,8 @@ def load_reporter_config(args):
     Config.tags = args.get("tag")
     Config.severity = args.get("severity")
     Config.queries_path = args.get("queries_path")
-    Config.slack = True if args.get("report_command") == "slack" else False
+    Config.format = args.get("format")
+    Config.reporter = args.get("report_command")
     Config.slack_token = args.get("slack_token")
     Config.channel_id = args.get("channel_id")
 
@@ -123,6 +135,7 @@ class Config:
     redis_actions_db: int = REDIS_ACTIONS_DB
     redis_data_hash_field_name: str = REDIS_DATA_HASH_FIELD_NAME
     redis_url_hash_field_name: str = REDIS_URL_HASH_FIELD_NAME
+    redis_is_public_hash_field_name: str = REDIS_IS_PUBLIC_HASH_FIELD_NAME
     workflow_download_history_set: str = REDIS_WORKFLOW_DOWNLOAD_HISTORY_SET
     action_download_history_set: str = REDIS_ACTION_DOWNLOAD_HISTORY_SET
     workflow_index_history_set: str = REDIS_WORKFLOW_INDEX_HISTORY_SET
@@ -131,8 +144,9 @@ class Config:
     # Report Config Constants
     tags: list = []
     severity: str = None
+    format: str = None
     queries_path: str = QUERIES_PATH_DEFAULT
-    slack: bool = REPORT_SLACK_DEFAULT
+    reporter: str = None
     slack_token: str = None
     channel_id: str = None
 

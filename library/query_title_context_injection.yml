@@ -1,0 +1,33 @@
+id: RQ-11
+
+info:
+  name: Title Context Injection
+  severity: critical
+  description: Title Injection is caused by using title variables in inline scripts
+  full-description: |
+    Issues, comments, discussions and PR titles can contain any text and special characters.
+    By using a body variable in an inline script, an attacker can inject arbitrary code
+    into the build process.
+  references:
+    - https://github.com/CycodeLabs/raven/blob/main/docs/issue_injections/README.md
+    - https://cycode.com/blog/github-actions-vulnerabilities/
+    - https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions
+  tags:
+    - injection
+    - unauthenticated
+
+query: |
+  MATCH (w:Workflow)-[*]->(d:StepCodeDependency)
+    WHERE (
+        "issues" in w.trigger OR
+        "issue_comment" in w.trigger OR
+        "pull_request_target" in w.trigger
+    ) AND
+      (
+          d.param IN [
+            "github.event.issue.title",
+            "github.event.pull_request.title",
+            "github.event.pull_request.milestone.title"
+          ]
+      )
+  RETURN DISTINCT w.url AS url;

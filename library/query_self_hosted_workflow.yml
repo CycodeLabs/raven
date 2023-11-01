@@ -1,0 +1,23 @@
+id: RQ-10
+
+info:
+  name: Self Hosted Runner
+  severity: medium
+  description: Self Hosted runners should not be used for public repositories.
+  full-description: |
+    Self Hosted runners do not have the same security controls as GitHub Hosted runners and
+    do not have the guarantees of a clean ephemeral environment. Self Hosted runners should
+    only be used for private repositories.
+  references:
+    - https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners
+  tags:
+    - unauthenticated
+    - best-practice
+
+query: |
+  MATCH (w:Workflow)-[*]->(j:Job)
+    WHERE (
+        w.is_public = TRUE AND
+        j.machine = "self-hosted"
+    )
+  RETURN DISTINCT w.url AS url;

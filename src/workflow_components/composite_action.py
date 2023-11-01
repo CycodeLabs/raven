@@ -95,6 +95,7 @@ class CompositeAction(GraphObject):
     using = Property()
     image = Property()
     url = Property()
+    is_public = Property()
 
     steps = RelatedTo(CompositeActionStep)
 
@@ -108,6 +109,7 @@ class CompositeAction(GraphObject):
         ca = CompositeAction(name=obj_dict.get("name"), path=obj_dict["path"])
 
         ca.url = obj_dict["url"]
+        ca.is_public = obj_dict["is_public"]
         if "inputs" in obj_dict:
             ca.inputs = list(obj_dict["inputs"].keys())
 

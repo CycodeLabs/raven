@@ -27,6 +27,10 @@ from src.config.config import (
     INDEX_COMMAND,
     REPORT_COMMAND,
     QUERIES_PATH_DEFAULT,
+    REPORT_RAW_FORMAT,
+    REPORT_JSON_FORMAT,
+    SEVERITY_LEVELS,
+    QUERY_TAGS,
 )
 
 COMMAND_FUNCTIONS = {
@@ -67,6 +71,7 @@ def raven() -> None:
     )
     redis_parser.add_argument(
         "--redis-port",
+        type=int,
         help=f"Redis port, default: {REDIS_PORT_DEFAULT}",
         default=REDIS_PORT_DEFAULT,
     )
@@ -139,10 +144,11 @@ def raven() -> None:
     )
 
     crawl_download_parser.add_argument(
-        "--max-stars", help="Maximum number of stars for a repository"
+        "--max-stars", type=int, help="Maximum number of stars for a repository"
     )
     crawl_download_parser.add_argument(
         "--min-stars",
+        type=int,
         default=MIN_STARS_DEFAULT,
         help=f"Minimum number of stars for a repository, default: {MIN_STARS_DEFAULT}",
     )
@@ -181,6 +187,7 @@ def raven() -> None:
         action="append",
         type=str,
         default=[],
+        choices=QUERY_TAGS,
         help="Filter queries with specific tag",
     )
     report_parser.add_argument(
@@ -188,6 +195,7 @@ def raven() -> None:
         "-s",
         type=str,
         default="info",
+        choices=SEVERITY_LEVELS.keys(),
         help="Filter queries by severity level (default: info)",
     )
     report_parser.add_argument(
@@ -196,12 +204,19 @@ def raven() -> None:
         default=QUERIES_PATH_DEFAULT,
         help="Queries folder (default: library)",
     )
+    report_parser.add_argument(
+        "--format",
+        "-f",
+        default=REPORT_RAW_FORMAT,
+        choices=[REPORT_RAW_FORMAT, REPORT_JSON_FORMAT],
+        help="Report format (default: raw)",
+    )
 
-    slack_sub_parser = report_parser.add_subparsers(
+    format_sub_parser = report_parser.add_subparsers(
         dest="report_command",
     )
 
-    slack_parser = slack_sub_parser.add_parser(
+    slack_parser = format_sub_parser.add_parser(
         "slack",
         help="Send report to slack channel",
     )

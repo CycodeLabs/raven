@@ -16,8 +16,8 @@ redis==5.0.0
 requests==2.31.0
 six==1.16.0
 slack-sdk==3.22.0
-tabulate==0.9.0
 tqdm==4.66.1
 urllib3==2.0.7
+colorama==0.4.6
 
 py2neo @ git+https://github.com/elad-pticha/py2neo.git@d684901abeeb1484e5b396d4b6cef491c4bd8271#egg=py2neo

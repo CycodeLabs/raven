@@ -161,9 +161,11 @@ options:
 
 ### Report
 ```bash
-usage: raven report [-h] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] [--neo4j-uri NEO4J_URI] [--neo4j-user NEO4J_USER] [--neo4j-pass NEO4J_PASS]
-                      [--clean-neo4j] [--tag TAG] [--severity SEVERITY] [--queries-path QUERIES_PATH]
-                      {slack} ...
+usage: raven report [-h] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] [--neo4j-uri NEO4J_URI]
+                    [--neo4j-user NEO4J_USER] [--neo4j-pass NEO4J_PASS] [--clean-neo4j]
+                    [--tag {injection,unauthenticated,fixed,priv-esc,supply-chain}]
+                    [--severity {info,low,medium,high,critical}] [--queries-path QUERIES_PATH] [--format {raw,json}]
+                    {slack} ...
 
 positional arguments:
   {slack}
@@ -183,11 +185,14 @@ options:
   --neo4j-pass NEO4J_PASS
                         Neo4j password, default: 123456789
   --clean-neo4j, -cn    Whether to clean cache, and index from scratch, default: False
-  --tag TAG, -t TAG     Filter queries with specific tag
-  --severity SEVERITY, -s SEVERITY
+  --tag {injection,unauthenticated,fixed,priv-esc,supply-chain}, -t {injection,unauthenticated,fixed,priv-esc,supply-chain}
+                        Filter queries with specific tag
+  --severity {info,low,medium,high,critical}, -s {info,low,medium,high,critical}
                         Filter queries by severity level (default: info)
   --queries-path QUERIES_PATH, -dp QUERIES_PATH
                         Queries folder (default: library)
+  --format {raw,json}, -f {raw,json}
+                        Report format (default: raw)
 ```
 
 ## Examples

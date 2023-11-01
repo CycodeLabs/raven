@@ -154,6 +154,7 @@ class Workflow(GraphObject):
     trigger = Property()
     permissions = Property()
     url = Property()
+    is_public = Property()
 
     jobs = RelatedTo(Job)
     triggered_by = RelatedFrom("Workflow")
@@ -202,6 +203,7 @@ class Workflow(GraphObject):
 
         w.trigger = trigger
         w.url = obj_dict["url"]
+        w.is_public = obj_dict["is_public"]
 
         if "permissions" in obj_dict:
             w.permissions = convert_dict_to_list(obj_dict["permissions"])

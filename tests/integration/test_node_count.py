@@ -20,6 +20,7 @@ def test_all_workflows() -> None:
     for node in nodes_details:
         assert node.get("name") == "run"
         assert node.get("trigger") == ["workflow_dispatch"]
+        assert node.get("is_public") == True
 
     assert indexed_workflows == 4
 
@@ -35,7 +36,10 @@ def test_all_jobs() -> None:
 
 
 def test_all_composite_actions() -> None:
-    indexed_composite_actions, _ = get_nodes("CompositeAction")
+    indexed_composite_actions, nodes_details = get_nodes("CompositeAction")
+
+    for node in nodes_details:
+        assert node.get("is_public") == True
 
     assert indexed_composite_actions == 0
 
