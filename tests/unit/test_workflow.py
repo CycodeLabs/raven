@@ -55,6 +55,7 @@ def test_workflow_from_dict():
         },
         "path": "twbs/bootstrap/.github/workflows/release-notes.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
+        "is_public": True,
     }
 
     wf = workflow.Workflow.from_dict(workflow_d)

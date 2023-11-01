@@ -1,6 +1,6 @@
 from requests import get
 
-from src.config.config import Config, PRIVATE_REPOSITORY, PUBLIC_REPOSITORY
+from src.config.config import Config
 from src.storage.redis_connection import RedisConnection
 from src.storage.redis_utils import clean_redis_db
 from src.downloader.gh_api import (
@@ -15,7 +15,7 @@ from src.common.utils import (
     convert_workflow_to_unix_path,
     get_repo_name_from_path,
     convert_raw_github_url_to_github_com_url,
-    is_url_contains_arguments,
+    is_url_contains_a_token,
 )
 from src.workflow_components.dependency import UsesString, UsesStringType
 import src.logger.log as log
@@ -86,13 +86,16 @@ def download_workflows_and_actions(repo: str) -> None:
             return
 
         workflows = get_repository_workflows(repo)
-        visibility = PUBLIC_REPOSITORY
+        is_public = 1
 
         log.debug(f"[+] Found {len(workflows)} workflows for {repo}")
         for name, url in workflows.items():
-            if is_url_contains_arguments(url):
+            if is_url_contains_a_token(url):
+                """
+                If the URL contains a token, it means it is a private repository.
+                """
                 log.debug(f"[+] URL contains token argument - private repository")
-                visibility = PRIVATE_REPOSITORY
+                is_public = 0
 
             log.debug(f"[+] Fetching {name}")
             resp = get(url, timeout=10)
@@ -119,8 +122,8 @@ def download_workflows_and_actions(repo: str) -> None:
                 )
                 workflows_db.insert_to_hash(
                     workflow_unix_path,
-                    Config.redis_visibility_hash_field_name,
-                    visibility,
+                    Config.redis_is_public_hash_field_name,
+                    is_public,
                 )
 
         sets_db.insert_to_set(Config.workflow_download_history_set, repo)
@@ -135,7 +138,7 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
     with RedisConnection(Config.redis_sets_db) as sets_db:
         uses_string_obj = UsesString.analyze(uses_string=uses_string)
         full_path = uses_string_obj.get_full_path(repo)
-        visibility = PUBLIC_REPOSITORY
+        is_public = 1
 
         # If already scanned action
         if sets_db.exists_in_set(Config.action_download_history_set, full_path):
@@ -179,9 +182,9 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 )
             return
 
-        if is_url_contains_arguments(url):
+        if is_url_contains_a_token(url):
             log.debug(f"[+] URL contains token argument - private repository")
-            visibility = PRIVATE_REPOSITORY
+            is_public = 0
 
         resp = get(url, timeout=10)
         if resp.status_code != 200:
@@ -214,8 +217,8 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 )
                 workflows_db.insert_to_hash(
                     full_path,
-                    Config.redis_visibility_hash_field_name,
-                    visibility,
+                    Config.redis_is_public_hash_field_name,
+                    is_public,
                 )
         else:  # UsesStringType.ACTION
             sets_db.insert_to_set(Config.action_download_history_set, full_path)
@@ -230,6 +233,6 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 )
                 actions_db.insert_to_hash(
                     full_path,
-                    Config.redis_visibility_hash_field_name,
-                    visibility,
+                    Config.redis_is_public_hash_field_name,
+                    is_public,
                 )

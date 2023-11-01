@@ -17,7 +17,7 @@ info:
 query: |
   MATCH (w:Workflow)-[*]->(j:Job)
     WHERE (
-        w.visibility = "public" AND
+        w.is_public = TRUE AND
         j.machine = "self-hosted"
     )
   RETURN DISTINCT w.url AS url;
