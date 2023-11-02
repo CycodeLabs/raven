@@ -31,9 +31,11 @@ def get_or_create_workflow(path: str) -> "Workflow":
 class StepCodeDependency(GraphObject):
     param = Property()
     url = Property()
+    path = Property()
 
-    def __init__(self, param: str):
+    def __init__(self, param: str, path: str):
         self.param = param
+        self.path = path
 
 
 class Step(GraphObject):
@@ -66,7 +68,7 @@ class Step(GraphObject):
 
             # Adding ${{...}} dependencies as an entity.
             for code_dependency in get_dependencies_in_code(s.run):
-                param = StepCodeDependency(code_dependency)
+                param = StepCodeDependency(code_dependency, s.path)
                 param.url = s.url
                 s.using_param.add(param)
         elif "uses" in obj_dict:

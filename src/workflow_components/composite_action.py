@@ -59,7 +59,7 @@ class CompositeActionStep(GraphObject):
 
             # Adding ${{...}} dependencies as an entity.
             for code_dependency in get_dependencies_in_code(s.run):
-                param = workflow.StepCodeDependency(code_dependency)
+                param = workflow.StepCodeDependency(code_dependency, s.path)
                 param.url = s.url
                 s.using_param.add(param)
 
