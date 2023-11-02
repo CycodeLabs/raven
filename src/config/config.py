@@ -66,6 +66,11 @@ def load_downloader_config(args) -> None:
 
     load_redis_config(args)
 
+    if Config.clean_redis:
+        from src.storage.redis_utils import clean_redis_db
+
+        clean_redis_db()
+
 
 def load_indexer_config(args) -> None:
     """Loading indexer subcommand config.
@@ -78,6 +83,13 @@ def load_indexer_config(args) -> None:
     load_redis_config(args)
     load_neo4j_config(args)
     load_reporter_config(args)
+
+    if Config.clean_neo4j or Config.graph.is_graph_empty():
+        from src.storage.redis_utils import clean_index
+        from src.storage.neo4j_utils import clean_graph
+
+        clean_graph()
+        clean_index()
 
 
 def load_redis_config(args) -> None:

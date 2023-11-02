@@ -40,10 +40,6 @@ def download_org_workflows_and_actions() -> None:
         log.debug(f"[+] Scanning {organization}")
         generator = get_organization_repository_generator(organization)
 
-        # Clean redis
-        if Config.clean_redis:
-            clean_redis_db()
-
         for repo in generator:
             download_workflows_and_actions(repo)
 
@@ -64,10 +60,6 @@ def download_all_workflows_and_actions() -> None:
 
     log.info("[+] Starting repository iterator")
     generator = get_repository_generator(Config.min_stars, Config.max_stars)
-
-    # Clean redis
-    if Config.clean_redis:
-        clean_redis_db()
 
     for repo in generator:
         download_workflows_and_actions(repo)
