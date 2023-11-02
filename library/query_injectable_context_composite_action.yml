@@ -1,13 +1,13 @@
-id: RQ-13
+id: RQ-15
 
 info:
-  name: Injectable Composite Action
+  name: Injectable Composite Action (github context)
   severity: high
-  description: Composite Actions that use input parameters in inline scripts can be used to inject arbitrary code.
+  description: Composite Actions that use injectable github context parameters in inline scripts can be used to inject arbitrary code.
   full-description: |
-    Composite Actions can get input parameters from the workflow file.
-    If these input parameters are used in inline scripts, an attacker can 
-    inject arbitrary code into the build process.
+    Composite Actions can access the github context parameters.
+    Some of these parameters can be controlled by the user, such as the commit message, the issue title, etc.
+    If these parameters are used in inline scripts, an attacker can inject arbitrary code into the build process.
   references:
     - https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
     - https://cycode.com/blog/cycode-secures-thousands-of-open-source-projects/
@@ -16,20 +16,14 @@ info:
     - unauthenticated
 
 query: |
-  MATCH (w:Workflow)-[*]->(s:Step)-->(ca:CompositeAction)-->(cas:CompositeActionStep)-->(d:StepCodeDependency)
+  MATCH (w:Workflow)-[*]->(ca:CompositeAction)-->(cas:CompositeActionStep)
   WHERE (
       (
           "issues" in w.trigger OR
           "issue_comment" in w.trigger OR
           "pull_request_target" in w.trigger
-      ) AND (
-          ca.using = "composite" AND
-          NOT cas.run is null AND
-          d.param STARTS WITH "inputs."
-      ) AND (
-          ANY(input IN s.with WHERE
-              ANY (
-                  pattern IN [
+      ) AND
+      ANY(input IN [
                       "github.event.issue.title",
                       "github.event.issue.body",
                       "github.event.pull_request.title",
@@ -48,9 +42,6 @@ query: |
                       "github.event.pull_request.head.label",
                       "github.event.pull_request.head.repo.default_branch",
                       "github.head_ref"
-                  ] WHERE input CONTAINS pattern
-              )
-          )
-      )
+                    ] WHERE cas.run CONTAINS input )
   )
-  RETURN DISTINCT s.url AS url;
+  RETURN DISTINCT w.url AS url;
