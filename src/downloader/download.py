@@ -65,6 +65,24 @@ def download_all_workflows_and_actions() -> None:
         download_workflows_and_actions(repo)
 
 
+def download_repo_workflows_and_actions() -> None:
+    """Download single repository
+
+    We enumerating the .github/workflows directory and download all the workflows.
+    In addition if the repository contains action.yml file, it means it is a composite action,
+    so we download it as well.
+
+    For each such workflow we also scan if it uses additional external actions.
+    If so, we download these as well.
+
+    We are trying to cache the downloads as much as we can to reduce redundant download attempts.
+    """
+    log.debug(f"[+] Scanning single repository")
+
+    for repository in Config.repo_name:
+        download_workflows_and_actions(repository)
+
+
 def download_workflows_and_actions(repo: str) -> None:
     """The flow is the following:
 

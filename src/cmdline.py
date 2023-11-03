@@ -3,6 +3,7 @@ import src.logger.log as log
 from src.downloader.download import (
     download_all_workflows_and_actions,
     download_org_workflows_and_actions,
+    download_repo_workflows_and_actions,
 )
 from src.indexer.index import index_downloaded_workflows_and_actions
 from src.reporter.report import generate
@@ -24,6 +25,7 @@ from src.config.config import (
     DOWNLOAD_COMMAND,
     DOWNLOAD_ORG_COMMAND,
     DOWNLOAD_CRAWL_COMMAND,
+    DOWNLOAD_REPO_COMMAND,
     INDEX_COMMAND,
     REPORT_COMMAND,
     QUERIES_PATH_DEFAULT,
@@ -37,6 +39,7 @@ COMMAND_FUNCTIONS = {
     DOWNLOAD_COMMAND: {
         DOWNLOAD_CRAWL_COMMAND: download_all_workflows_and_actions,
         DOWNLOAD_ORG_COMMAND: download_org_workflows_and_actions,
+        DOWNLOAD_REPO_COMMAND: download_repo_workflows_and_actions,
     },
     INDEX_COMMAND: index_downloaded_workflows_and_actions,
     REPORT_COMMAND: generate,
@@ -143,6 +146,12 @@ def raven() -> None:
         parents=[download_parser_options, redis_parser],
     )
 
+    repo_download_parser = download_sub_parser.add_parser(
+        "repo",
+        help="Download specific GitHub repository",
+        parents=[download_parser_options, redis_parser],
+    )
+
     crawl_download_parser.add_argument(
         "--max-stars", type=int, help="Maximum number of stars for a repository"
     )
@@ -160,6 +169,15 @@ def raven() -> None:
         type=str,
         help="Organization name to download the workflows",
     )
+
+    repo_download_parser.add_argument(
+        "--repo-name",
+        required=True,
+        action="append",
+        type=str,
+        help="Repository to download the workflows",
+    )
+
 
     # Index action
     index_parser = subparsers.add_parser(

@@ -34,6 +34,7 @@ REDIS_ACTIONS_DB = 2
 DOWNLOAD_COMMAND = "download"
 DOWNLOAD_ORG_COMMAND = "org"
 DOWNLOAD_CRAWL_COMMAND = "crawl"
+DOWNLOAD_REPO_COMMAND = "repo"
 INDEX_COMMAND = "index"
 REPORT_COMMAND = "report"
 SEVERITY_LEVELS = {
@@ -62,6 +63,7 @@ def load_downloader_config(args) -> None:
     Config.min_stars = args.get("min_stars", MIN_STARS_DEFAULT)
     Config.max_stars = args.get("max_stars")
     Config.org_name = args.get("org_name")
+    Config.repo_name = args.get("repo_name")
     Config.clean_redis = args.get("clean_redis", REDIS_CLEAN_DEFAULT)
 
     load_redis_config(args)
