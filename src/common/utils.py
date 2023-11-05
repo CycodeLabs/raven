@@ -1,6 +1,6 @@
 import re
 import io
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
 import yaml
 from py2neo.data import Node
@@ -104,11 +104,11 @@ def find_uses_strings(workflow_content: str) -> List[str]:
     return [match.group(1) for match in re.finditer(re_fmt, workflow_content)]
 
 
-def get_all(node_type: str) -> list[Node]:
+def get_all_nodes(node_type: str) -> List[Node]:
     """
     Returns all node_type nodes in the graph.
     """
-    return Config.graph.get_all(node_type)
+    return Config.graph.get_all_nodes(node_type)
 
 
 def is_url_contains_a_token(url) -> bool:

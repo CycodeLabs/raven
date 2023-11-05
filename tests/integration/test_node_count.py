@@ -1,12 +1,13 @@
 from tests.utils import get_nodes_as_dicts
 
+from tests.integration.integration_consts import DEMO_WORKFLOW_PATHS
 
-DEMO_WORKFLOW_PATHS = [
-    "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
-    "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
-    "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
-    "RavenIntegrationTests/Demo-4/.github/workflows/demo-workflow.yml",
-]
+
+def test_node_count() -> None:
+    test_all_workflows()
+    test_all_jobs()
+    test_all_steps()
+    test_all_composite_actions()
 
 
 def test_all_workflows() -> None:

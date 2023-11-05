@@ -85,6 +85,9 @@ target/
 profile_default/
 ipython_config.py
 
+# Local debugging - Run tests outside containers
+temp_test_raven.py
+
 # pyenv
 .python-version
 
