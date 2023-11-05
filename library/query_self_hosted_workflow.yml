@@ -18,6 +18,6 @@ query: |
   MATCH (w:Workflow)-[*]->(j:Job)
     WHERE (
         w.is_public = TRUE AND
-        j.machine = "self-hosted"
+        "self-hosted" in j.machine
     )
   RETURN DISTINCT w.url AS url;
