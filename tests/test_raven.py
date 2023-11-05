@@ -4,13 +4,7 @@ import src.logger.log as log
 from src.downloader.download import download_org_workflows_and_actions
 from src.indexer.index import index_downloaded_workflows_and_actions
 from src.config.config import load_downloader_config, load_indexer_config
-
-from tests.integration.test_node_count import (
-    test_all_workflows,
-    test_all_jobs,
-    test_all_composite_actions,
-    test_all_steps,
-)
+from tests.integration.test_graph_structures import test_graph_tree
 
 
 def load_integration_tests_config() -> None:
@@ -19,6 +13,7 @@ def load_integration_tests_config() -> None:
             "debug": False,
             "token": getenv("GITHUB_TOKEN"),
             "org_name": ["RavenIntegrationTests"],
+            "clean_redis": False,
         }
     )
 
@@ -44,17 +39,10 @@ def init_env():
 
 
 def test():
-    log.info("[x] Starting Integration testing")
     init_env()
-    tests = [
-        test_all_workflows,
-        test_all_jobs,
-        test_all_composite_actions,
-        test_all_steps,
-    ]
 
-    for test in tests:
-        test()
+    log.info("[x] Starting Integration testing")
+    test_graph_tree()
 
     log.info("[x] Starting unit testing")
     pytest.main(["-v", "tests/unit"])

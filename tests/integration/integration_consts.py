@@ -25,11 +25,12 @@ INTEGRAION_1_NODES_PATHS = [
     "RavenIntegrationTests/CompositeAction-Mock",
 ]
 
-### Node Count ###
-
-DEMO_WORKFLOW_PATHS = [
+## Demo-X Repos
+DEMO_X_JSON_PATH = "tests/integration/structures_json/demo-x.json"
+DEMO_X_WORKFLOW_PATHS = [
     "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
     "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
     "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
     "RavenIntegrationTests/Demo-4/.github/workflows/demo-workflow.yml",
+    "actions/checkout",
 ]

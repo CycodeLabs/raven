@@ -78,6 +78,21 @@ def get_graph_structure(nodes_query: str, relationships_query: str) -> Dict:
     return {"nodes": nodes, "relationships": relationships}
 
 
+def get_sorted_lists_of_nodes_and_relationships(
+    graph_structure: Dict,
+) -> Tuple[List, List]:
+    """
+    Recieves a graph structure and returns sorted lists of nodes and relationships.
+    """
+    nodes = graph_structure.get("nodes")
+    relationships = graph_structure.get("relationships")
+
+    nodes.sort(key=lambda x: x.get("_id"))
+    relationships.sort(key=lambda x: (x.get("start_node"), x.get("end_node")))
+
+    return nodes, relationships
+
+
 def assert_graph_structures(graph_structure: Dict, snapshot_path: str) -> None:
     """
     Recieves a graph structure and a path to a json file containing a graph structure snapshot.
@@ -85,27 +100,21 @@ def assert_graph_structures(graph_structure: Dict, snapshot_path: str) -> None:
     with open(snapshot_path, "r") as f:
         snapshot_structure = json.load(f)
 
-    assert graph_structure.keys() == snapshot_structure.keys(), (
-        f"Keys are not equal.\n"
-        f"Graph structure keys: {list(graph_structure.keys())}\n"
-        f"Backup structure keys: {list(snapshot_structure.keys())}"
+    snapshot_nodes, snapshot_relations = get_sorted_lists_of_nodes_and_relationships(
+        snapshot_structure
+    )
+    graph_nodes, graph_relations = get_sorted_lists_of_nodes_and_relationships(
+        graph_structure
     )
 
-    for category in graph_structure.keys():
-        graph_category = graph_structure.get(category)
-        backup_category = snapshot_structure.get(category)
+    # Asserting nodes
+    for node in snapshot_nodes:
+        assert (
+            node == graph_nodes[snapshot_nodes.index(node)]
+        ), f"Node {node}\nin snapshot is not equal to graph node on the same index\n{graph_nodes[snapshot_nodes.index(node)]}"
 
-        if graph_category != backup_category:
-            if type(graph_category) == dict:
-                for key, graph_value in graph_category.items():
-                    backup_value = backup_category.get(key, "Key not found in backup")
-                    assert graph_value == backup_value, (
-                        f"Values for key '{key}' in category '{category}' do not match.\n"
-                        f"Graph structure value: {graph_value}\n"
-                        f"Backup structure value: {backup_value}"
-                    )
-            else:
-                for obj in graph_category:
-                    assert (
-                        obj == backup_category[graph_category.index(obj)]
-                    ), f"Object {obj} in category {category} is not equal to backup object {backup_category[graph_category.index(obj)]}"
+    # Asserting relationships
+    for relationship in snapshot_relations:
+        assert (
+            relationship == graph_relations[snapshot_relations.index(relationship)]
+        ), f"Relationship {relationship}\nin snapshot is not equal to graph relationship on the same index\n{graph_relations[snapshot_relations.index(relationship)]}"
