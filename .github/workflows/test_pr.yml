@@ -49,7 +49,7 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          title_prefix="^(feat|fix|refactor|chore|docs|test|library): [a-z0-9._-]+$"
+          title_prefix="^(feat|fix|refactor|chore|docs|test|library): [a-zA-Z0-9._ ]*$"
 
           if [[ ! $PR_TITLE =~ $title_prefix ]]
           then
