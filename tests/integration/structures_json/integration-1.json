@@ -1,0 +1,157 @@
+{
+    "nodes": [
+        {
+            "path": "RavenIntegrationTests/CompositeAction-Mock",
+            "using": "composite",
+            "inputs": [
+                "param1"
+            ],
+            "name": "Example composite GitHub action",
+            "is_public": true,
+            "_id": "0cedc4763c9b12640b59748858f52ecb",
+            "url": "https://github.com/RavenIntegrationTests/CompositeAction-Mock/tree/main/action.yml",
+            "labels": [
+                "CompositeAction"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/CompositeAction-Mock",
+            "shell": "bash",
+            "name": "context",
+            "run": "echo \"action-result=${{ inputs.param1 }}\" >> $GITHUB_OUTPUT\n",
+            "_id": "db50f26195dcd8ca600a046df26f0a3a",
+            "url": "https://github.com/RavenIntegrationTests/CompositeAction-Mock/tree/main/action.yml",
+            "labels": [
+                "CompositeActionStep"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/CompositeAction-Mock",
+            "param": "inputs.param1",
+            "_id": "004b8c21e56d8fbd8c089dfc0de3f70a",
+            "url": "https://github.com/RavenIntegrationTests/CompositeAction-Mock/tree/main/action.yml",
+            "labels": [
+                "StepCodeDependency"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
+            "name": "integration_workflow",
+            "is_public": true,
+            "_id": "d65c066b4fe60e52c419b3e7043d297e",
+            "trigger": [
+                "pull_request"
+            ],
+            "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
+            "labels": [
+                "Workflow"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
+            "machine": "ubuntu-latest",
+            "name": "first_job",
+            "_id": "2007449e2ba101423871ac669de5b750",
+            "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
+            "labels": [
+                "Job"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
+            "ref": "v1",
+            "uses": "RavenIntegrationTests/CompositeAction-Mock@v1",
+            "_id": "88e6517ba8d71f0851e6f3b33ae2e51b",
+            "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
+            "labels": [
+                "Step"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
+            "name": "print_env",
+            "run": "print_env",
+            "_id": "a7957c48867f1f675ab6c9e4f1828c14",
+            "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
+            "labels": [
+                "Step"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
+            "machine": "ubuntu-latest",
+            "name": "second_job",
+            "_id": "57e4ebfad3aa1f852f256d59d7c7e982",
+            "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
+            "labels": [
+                "Job"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
+            "name": "print_pull_request_title",
+            "run": "echo \"Pull request title is ${{ github.event.pull_request.title }}\"",
+            "_id": "813206f991310b30c1405955aeefb00e",
+            "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
+            "labels": [
+                "Step"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
+            "param": "github.event.pull_request.title",
+            "_id": "62cded2b531643f4d784c4e2e5c614d1",
+            "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
+            "labels": [
+                "StepCodeDependency"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "start_node": "db50f26195dcd8ca600a046df26f0a3a",
+            "type": "USING_PARAM",
+            "end_node": "004b8c21e56d8fbd8c089dfc0de3f70a"
+        },
+        {
+            "start_node": "0cedc4763c9b12640b59748858f52ecb",
+            "type": "STEPS",
+            "end_node": "db50f26195dcd8ca600a046df26f0a3a"
+        },
+        {
+            "start_node": "88e6517ba8d71f0851e6f3b33ae2e51b",
+            "type": "ACTION",
+            "end_node": "0cedc4763c9b12640b59748858f52ecb"
+        },
+        {
+            "start_node": "2007449e2ba101423871ac669de5b750",
+            "type": "STEPS",
+            "end_node": "88e6517ba8d71f0851e6f3b33ae2e51b"
+        },
+        {
+            "start_node": "2007449e2ba101423871ac669de5b750",
+            "type": "STEPS",
+            "end_node": "a7957c48867f1f675ab6c9e4f1828c14"
+        },
+        {
+            "start_node": "813206f991310b30c1405955aeefb00e",
+            "type": "USING_PARAM",
+            "end_node": "62cded2b531643f4d784c4e2e5c614d1"
+        },
+        {
+            "start_node": "57e4ebfad3aa1f852f256d59d7c7e982",
+            "type": "STEPS",
+            "end_node": "813206f991310b30c1405955aeefb00e"
+        },
+        {
+            "start_node": "d65c066b4fe60e52c419b3e7043d297e",
+            "type": "JOBS",
+            "end_node": "2007449e2ba101423871ac669de5b750"
+        },
+        {
+            "start_node": "d65c066b4fe60e52c419b3e7043d297e",
+            "type": "JOBS",
+            "end_node": "57e4ebfad3aa1f852f256d59d7c7e982"
+        }
+    ]
+}

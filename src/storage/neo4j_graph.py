@@ -1,7 +1,7 @@
 from py2neo import Graph
 from py2neo.ogm import GraphObject
 from py2neo.data import Node
-from typing import Tuple, Optional
+from typing import List, Tuple, Optional
 import src.logger.log as log
 
 
@@ -41,19 +41,14 @@ class GraphDb(object):
         else:
             return matched_obj.first(), True
 
-    def get_all(self, node_type: str) -> list[Node]:
+    def get_all_nodes(self, node_type: str) -> List[Node]:
         """
         Returns all nodeTypes nodes in the graph.
-        NodeType:
-            1) Job
-            2) CompositeAction
-            3) Workflow
-            4) Step
         """
         return list(self.graph.nodes.match(node_type))
 
     def clean_graph(self):
         self.graph.delete_all()
 
-    def run_query(self, query: str):
-        return self.graph.run(query)
+    def run_query(self, query: str) -> List[Node]:
+        return list(self.graph.run(query))

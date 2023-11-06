@@ -29,6 +29,9 @@ def get_or_create_workflow(path: str) -> "Workflow":
 
 
 class StepCodeDependency(GraphObject):
+    __primarykey__ = "_id"
+
+    _id = Property()
     param = Property()
     url = Property()
     path = Property()
@@ -36,6 +39,7 @@ class StepCodeDependency(GraphObject):
     def __init__(self, param: str, path: str):
         self.param = param
         self.path = path
+        self._id = md5(f"{param}_{path}".encode()).hexdigest()
 
 
 class Step(GraphObject):

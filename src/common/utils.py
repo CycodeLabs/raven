@@ -1,6 +1,6 @@
 import re
 import io
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
 import yaml
 from py2neo.data import Node
@@ -104,20 +104,13 @@ def find_uses_strings(workflow_content: str) -> List[str]:
     return [match.group(1) for match in re.finditer(re_fmt, workflow_content)]
 
 
-def get_all(node_type: str) -> list[Node]:
-    """
-    Returns all node_type nodes in the graph.
-    """
-    return Config.graph.get_all(node_type)
-
-
 def is_url_contains_a_token(url) -> bool:
     """
     Checks if the url contains arguments.
     E.g.:
-    is_url_contains_a_token("https://raw.githubusercontent.com/RavenDemo/astro/main/.github/workflows/ci.yml?token=AAABBBCCC")
+    is_url_contains_a_token("https://raw.githubusercontent.com/RavenIntegrationTests/astro/main/.github/workflows/ci.yml?token=AAABBBCCC")
         >> True
-    is_url_contains_a_token("https://raw.githubusercontent.com/RavenDemo/astro/main/.github/workflows/ci.yml")
+    is_url_contains_a_token("https://raw.githubusercontent.com/RavenIntegrationTests/astro/main/.github/workflows/ci.yml")
         >> False
     """
     parsed_url = urlparse(url)
