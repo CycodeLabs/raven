@@ -4,7 +4,7 @@ import src.logger.log as log
 from src.downloader.download import download_org_workflows_and_actions
 from src.indexer.index import index_downloaded_workflows_and_actions
 from src.config.config import load_downloader_config, load_indexer_config
-from tests.integration.test_graph_structures import test_graph_tree
+from tests.integration.test_graph_structures import test_graph_structure
 
 
 def load_integration_tests_config() -> None:
@@ -39,13 +39,12 @@ def init_env():
 
 
 def test():
-    init_env()
-
     log.info("[x] Starting unit testing")
     pytest.main(["-v", "tests/unit"])
 
     log.info("[x] Starting Integration testing")
-    test_graph_tree()
+    init_env()
+    test_graph_structure()
 
 
 if __name__ == "__main__":
