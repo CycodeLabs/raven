@@ -57,7 +57,6 @@ jobs:
           fi
           exit 0
 
-      
   test_raven:
     runs-on: ubuntu-latest
     steps:
