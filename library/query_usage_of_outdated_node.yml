@@ -1,0 +1,17 @@
+id: RQ-14
+
+info:
+  name: Usage of Outdated Node Version
+  severity: low
+  description: Using composite action that uses an outdated Node version.
+  full-description: |
+    Node12 active support ended at 20 Oct 2020 and ended security support at 30 Apr 2022.
+  references:
+    - https://endoflife.date/nodejs
+  tags:
+    - endoflife
+
+query: |
+  MATCH (w:Workflow)-[*]->(ca:CompositeAction)
+  WHERE ca.using = "node12"
+  RETURN DISTINCT w.url AS url;
