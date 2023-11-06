@@ -3,7 +3,6 @@ import json
 
 from src.config.config import Config
 from typing import Tuple, List, Dict, Optional
-import src.common.utils as utils
 
 
 class GraphDbMock(object):
@@ -31,7 +30,7 @@ def get_nodes_as_dicts(node_type: str, paths: Optional[List[str]] = []) -> List[
 
     Returns A list of nodes as dictionaries that match the given type and paths.
     """
-    nodes = utils.get_all_nodes(node_type)
+    nodes = Config.graph.get_all_nodes(node_type)
     if paths:
         return [dict(node) for node in nodes if node.get("path") in paths]
     else:

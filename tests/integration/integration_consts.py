@@ -1,6 +1,3 @@
-### General Consts ###
-RELATIONSHIP_TYPES = ["STEPS", "JOBS", "ACTION", "USING_PARAM"]
-
 ### Integration Consts ###
 
 ## Queries
@@ -25,9 +22,9 @@ INTEGRAION_1_NODES_PATHS = [
     "RavenIntegrationTests/CompositeAction-Mock",
 ]
 
-## Demo-X Repos
-DEMO_X_JSON_PATH = "tests/integration/structures_json/demo-x.json"
-DEMO_X_WORKFLOW_PATHS = [
+## Demo-Index Repos
+DEMO_INDEX_REPOS_JSON_PATH = "tests/integration/structures_json/demo-index.json"
+DEMO_INDEX_REPOS_WORKFLOW_PATHS = [
     "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
     "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
     "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",

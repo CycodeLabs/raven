@@ -41,11 +41,11 @@ def init_env():
 def test():
     init_env()
 
-    log.info("[x] Starting Integration testing")
-    test_graph_tree()
-
     log.info("[x] Starting unit testing")
     pytest.main(["-v", "tests/unit"])
+
+    log.info("[x] Starting Integration testing")
+    test_graph_tree()
 
 
 if __name__ == "__main__":
