@@ -1,8 +1,10 @@
 setup:
 	@echo "Building Services..."
 	docker compose -p raven --file deployment/docker-compose.yml up -d
-	@echo "Building raven..."
-	pip3 install .
+
+clean-setup:
+	@echo "Stopping Services..."
+	docker compose -p raven --file deployment/docker-compose.yml down
 
 stop:
 	@echo "Stopping Services..."

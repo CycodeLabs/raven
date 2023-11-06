@@ -14,6 +14,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    volumes:
+      - raven-neo4j:/data
 
   redis:
     image: redis:7.2.1
@@ -28,3 +30,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    volumes:
+      - raven-redis:/data
+
+volumes:
+  raven-redis:
+  raven-neo4j:
