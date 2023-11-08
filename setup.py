@@ -1,8 +1,12 @@
+from os import getenv
 from setuptools import find_packages
 from setuptools import setup
 from distutils import log
 import pathlib
 import sys
+
+
+__version__ = getenv("RAVEN_VERSION", "0.0.0")
 
 HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
@@ -15,12 +19,15 @@ if CURRENT_PYTHON < REQUIRED_PYTHON:
 
 
 setup(
-    name="raven",
-    description="",
+    name="raven-cycode",
+    version=__version__,
+    description="RAVEN (Risk Analysis and Vulnerability Enumeration for CI/CD)",
     long_description=README,
+    readme="README.md",
     url="https://github.com/CycodeLabs/raven",
     project_urls={"Source": "https://github.com/CycodeLabs/raven"},
-    author="Cycode",
+    author=["Cycode <research@cycode.com>"],
+    keywords=["cycode", "raven", "security", "ci/cd"],
     license="Apache License 2.0",
     python_requires=">=3.9",
     classifiers=[
@@ -28,6 +35,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3 :: Only",
         "Operating System :: Unix",
         "Operating System :: MacOS",
