@@ -26,7 +26,7 @@ def test_job_from_dict_steps():
     assert job._id == job_d["_id"]
     assert job.name == job_d["name"]
     assert job.path == job_d["path"]
-    assert job.machine == job_d["runs-on"]
+    assert job.machine == [job_d["runs-on"]]
     assert job.uses is None
     assert job.ref is None
     assert job.with_prop is None

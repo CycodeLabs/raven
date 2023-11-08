@@ -37,7 +37,7 @@ jobs:
         env:
           BRANCH_NAME: ${{ github.head_ref }}
         run: |
-          branch_prefix="^(feature|bugfix|hotfix|test)\/[a-z0-9._-]+$"
+          branch_prefix="^(feat|fix|refactor|chore|docs|test|library)\/[a-z0-9._-]+$"
 
           if [[ ! $BRANCH_NAME =~ $branch_prefix ]]
           then

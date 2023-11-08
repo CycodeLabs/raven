@@ -49,7 +49,7 @@
         },
         {
             "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
-            "machine": "ubuntu-latest",
+            "machine": ["ubuntu-latest"],
             "name": "first_job",
             "_id": "2007449e2ba101423871ac669de5b750",
             "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
@@ -79,7 +79,7 @@
         },
         {
             "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
-            "machine": "ubuntu-latest",
+            "machine": ["ubuntu-latest"],
             "name": "second_job",
             "_id": "57e4ebfad3aa1f852f256d59d7c7e982",
             "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",

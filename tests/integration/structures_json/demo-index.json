@@ -18,7 +18,7 @@
         "labels": ["Workflow"]
     }, {
         "path": "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
-        "machine": "ubuntu-latest",
+        "machine": ["ubuntu-latest"],
         "name": "demo_test",
         "_id": "77ef9503ba52c912546d499c4e05f557",
         "url": "https://github.com/RavenIntegrationTests/Demo-2/tree/main/.github/workflows/demo-workflow.yml",
@@ -47,7 +47,7 @@
         "labels": ["Workflow"]
     }, {
         "path": "RavenIntegrationTests/Demo-4/.github/workflows/demo-workflow.yml",
-        "machine": "ubuntu-latest",
+        "machine": ["ubuntu-latest"],
         "name": "demo_test",
         "_id": "fecf155691da067f7da9db40a66bcb5b",
         "url": "https://github.com/RavenIntegrationTests/Demo-4/tree/main/.github/workflows/demo-workflow.yml",
@@ -76,7 +76,7 @@
         "labels": ["Workflow"]
     }, {
         "path": "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
-        "machine": "ubuntu-latest",
+        "machine": ["ubuntu-latest"],
         "name": "demo_test",
         "_id": "672e94911c5b6ad0af76aa61413d236c",
         "url": "https://github.com/RavenIntegrationTests/Demo-3/tree/main/.github/workflows/demo-workflow.yml",
@@ -105,7 +105,7 @@
         "labels": ["Workflow"]
     }, {
         "path": "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
-        "machine": "ubuntu-latest",
+        "machine": ["ubuntu-latest"],
         "name": "demo_test",
         "_id": "ec3b1d0fd5ec71b9f43547f026f579fd",
         "url": "https://github.com/RavenIntegrationTests/Demo-1/tree/main/.github/workflows/demo-workflow.yml",
