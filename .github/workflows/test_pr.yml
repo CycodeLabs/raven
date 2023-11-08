@@ -139,3 +139,4 @@ jobs:
         run: |
           raven download org --token $GITHUB_TOKEN --org-name RavenIntegrationTests
           raven index
+          raven report --format json | jq > /dev/null

@@ -40,7 +40,7 @@
             "is_public": true,
             "_id": "d65c066b4fe60e52c419b3e7043d297e",
             "trigger": [
-                "pull_request"
+                "pull_request_target"
             ],
             "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
             "labels": [
