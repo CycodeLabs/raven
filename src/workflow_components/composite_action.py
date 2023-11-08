@@ -8,6 +8,7 @@ from src.config.config import Config
 from src.common.utils import (
     get_dependencies_in_code,
     convert_dict_to_list,
+    raw_str_to_bool,
 )
 from src.workflow_components.dependency import UsesString, UsesStringType
 
@@ -25,6 +26,42 @@ def get_or_create_composite_action(path: str) -> "CompositeAction":
         Config.graph.push_object(ca)
         obj = ca
     return obj
+
+
+class CompositeActionInput(GraphObject):
+    __primarykey__ = "_id"
+
+    _id = Property()
+    name = Property()
+    default = Property()
+    description = Property()
+    required = Property()
+    url = Property()
+    action = RelatedTo("CompositeAction")
+
+    def __init__(self, _id: str, name: str, url: str):
+        self._id = _id
+        self.name = name
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj_dict) -> "CompositeActionInput":
+        s = CompositeActionInput(
+            _id=obj_dict["_id"], name=obj_dict["name"], url=obj_dict["url"]
+        )
+
+        if "default" in obj_dict:
+            s.default = obj_dict["default"]
+
+        if "description" in obj_dict:
+            s.description = obj_dict["description"]
+
+        if "required" in obj_dict:
+            s.required = raw_str_to_bool(obj_dict["required"])
+        else:
+            s.required = False
+
+        return s
 
 
 class CompositeActionStep(GraphObject):
@@ -91,12 +128,12 @@ class CompositeAction(GraphObject):
     _id = Property()
     name = Property()
     path = Property()
-    inputs = Property()
     using = Property()
     image = Property()
     url = Property()
     is_public = Property()
 
+    inputs = RelatedTo(CompositeActionInput)
     steps = RelatedTo(CompositeActionStep)
 
     def __init__(self, name: Optional[str], path: str):
@@ -111,7 +148,11 @@ class CompositeAction(GraphObject):
         ca.url = obj_dict["url"]
         ca.is_public = obj_dict["is_public"]
         if "inputs" in obj_dict:
-            ca.inputs = list(obj_dict["inputs"].keys())
+            for name, input in obj_dict["inputs"].items():
+                input["_id"] = md5(f"{ca._id}_{name}".encode()).hexdigest()
+                input["name"] = name
+                input["url"] = ca.url
+                ca.inputs.add(CompositeActionInput.from_dict(input))
 
         if "runs" in obj_dict:
             d_runs = obj_dict["runs"]
