@@ -51,6 +51,7 @@ QUERY_TAGS = [
     "supply-chain",
     "best-practice",
     "endoflife",
+    "reconnaissance",
 ]
 
 

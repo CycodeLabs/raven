@@ -1,0 +1,27 @@
+id: RQ-16
+
+info:
+  name: Entreprise GitHub Server
+  severity: info
+  description: Checking out code from GitHub Enterprise repository.
+  full-description: |
+    GitHub Enterprise Server is the on-premises version of GitHub, which you can deploy and manage in your own, secure environment.
+    Checking out code from GitHub Enterprise Server Combined with command injection,
+    may lead to data exfiltration from private repositories hosted on GitHub Enterprise Server.
+  references:
+    - https://github.com/actions/checkout
+  tags:
+    - reconnaissance
+
+query: |
+  MATCH (w:Workflow)-[*]->(s:Step)-[*]->(ca:CompositeAction)
+  WHERE (
+      ca.path = "actions/checkout" AND
+      any ( server IN s.with WHERE (
+          server CONTAINS "github-server-url" AND
+          NOT server ENDS WITH "github.com"
+          )
+      )
+  )
+
+  RETURN DISTINCT w.url AS url
