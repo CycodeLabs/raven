@@ -92,6 +92,19 @@ def get_sorted_lists_of_nodes_and_relationships(
     return nodes, relationships
 
 
+def get_dicts_differences(dict1: Dict, dict2: Dict) -> Dict:
+    """
+    Recieves two dictionaries and returns the differences between them.
+    """
+    keys = set(dict1.keys()).union(set(dict2.keys()))
+    differences = {}
+    for key in keys:
+        if dict1.get(key) != dict2.get(key):
+            differences[key] = [dict1.get(key), dict2.get(key)]
+
+    return differences
+
+
 def assert_graph_structures(graph_structure: Dict, snapshot_path: str) -> None:
     """
     Recieves a graph structure and a path to a json file containing a graph structure snapshot.
@@ -110,10 +123,10 @@ def assert_graph_structures(graph_structure: Dict, snapshot_path: str) -> None:
     for node in snapshot_nodes:
         assert (
             node == graph_nodes[snapshot_nodes.index(node)]
-        ), f"Node {node}\nin snapshot is not equal to graph node on the same index\n{graph_nodes[snapshot_nodes.index(node)]}"
+        ), f"Properties of nodes on the same index is not equal\n{get_dicts_differences(node, graph_nodes[snapshot_nodes.index(node)])}\n\nIn snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}"
 
     # Asserting relationships
     for relationship in snapshot_relations:
         assert (
             relationship == graph_relations[snapshot_relations.index(relationship)]
-        ), f"Relationship {relationship}\nin snapshot is not equal to graph relationship on the same index\n{graph_relations[snapshot_relations.index(relationship)]}"
+        ), f"Properties of relationships on the same index of graph and snapshot is not equal\n\n{get_dicts_differences(relationship, graph_relations[snapshot_relations.index(relationship)])}\nIn snapshot:\n{relationship}\nIn graph:\n{graph_relations[snapshot_relations.index(relationship)]}"
