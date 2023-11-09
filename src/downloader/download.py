@@ -2,7 +2,7 @@ from requests import get
 
 from src.config.config import Config
 from src.storage.redis_connection import RedisConnection
-from src.storage.redis_utils import clean_redis_db
+from src.downloader.utils import insert_workflow_or_action_to_redis
 from src.downloader.gh_api import (
     get_repository_generator,
     get_repository_workflows,
@@ -102,21 +102,16 @@ def download_workflows_and_actions(repo: str) -> None:
             for uses_string in uses_strings:
                 download_action_or_reusable_workflow(uses_string=uses_string, repo=repo)
 
-            with RedisConnection(Config.redis_workflows_db) as workflows_db:
-                workflow_unix_path = convert_workflow_to_unix_path(repo, name)
-                workflows_db.insert_to_hash(
-                    workflow_unix_path, Config.redis_data_hash_field_name, resp.text
-                )
-                workflows_db.insert_to_hash(
-                    workflow_unix_path,
-                    Config.redis_url_hash_field_name,
-                    convert_raw_github_url_to_github_com_url(url),
-                )
-                workflows_db.insert_to_hash(
-                    workflow_unix_path,
-                    Config.redis_is_public_hash_field_name,
-                    is_public,
-                )
+            workflow_unix_path = convert_workflow_to_unix_path(repo, name)
+            github_url = convert_raw_github_url_to_github_com_url(url)
+
+            insert_workflow_or_action_to_redis(
+                db=Config.redis_workflows_db,
+                object_path=workflow_unix_path,
+                data=resp.text,
+                github_url=github_url,
+                is_public=is_public,
+            )
 
         sets_db.insert_to_set(Config.workflow_download_history_set, repo)
 
@@ -198,33 +193,20 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
             sets_db.insert_to_set(Config.workflow_download_history_set, full_path)
-            with RedisConnection(Config.redis_workflows_db) as workflows_db:
-                workflows_db.insert_to_hash(
-                    full_path, Config.redis_data_hash_field_name, resp.text
-                )
-                workflows_db.insert_to_hash(
-                    full_path,
-                    Config.redis_url_hash_field_name,
-                    convert_raw_github_url_to_github_com_url(url),
-                )
-                workflows_db.insert_to_hash(
-                    full_path,
-                    Config.redis_is_public_hash_field_name,
-                    is_public,
-                )
+
+            insert_workflow_or_action_to_redis(
+                db=Config.redis_workflows_db,
+                object_path=full_path,
+                data=resp.text,
+                github_url=convert_raw_github_url_to_github_com_url(url),
+                is_public=is_public,
+            )
         else:  # UsesStringType.ACTION
             sets_db.insert_to_set(Config.action_download_history_set, full_path)
-            with RedisConnection(Config.redis_actions_db) as actions_db:
-                actions_db.insert_to_hash(
-                    full_path, Config.redis_data_hash_field_name, resp.text
-                )
-                actions_db.insert_to_hash(
-                    full_path,
-                    Config.redis_url_hash_field_name,
-                    convert_raw_github_url_to_github_com_url(url),
-                )
-                actions_db.insert_to_hash(
-                    full_path,
-                    Config.redis_is_public_hash_field_name,
-                    is_public,
-                )
+            insert_workflow_or_action_to_redis(
+                db=Config.redis_actions_db,
+                object_path=full_path,
+                data=resp.text,
+                github_url=convert_raw_github_url_to_github_com_url(url),
+                is_public=is_public,
+            )
