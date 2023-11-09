@@ -25,7 +25,11 @@ class Query(object):
         self.result = None
 
     def filter(self) -> bool:
-        return self.filter_queries_by_tags() and self.filter_queries_by_severity()
+        return (
+            self.filter_queries_by_tags()
+            and self.filter_queries_by_severity()
+            and self.filter_queries_by_query_id()
+        )
 
     def filter_queries_by_severity(self):
         severity_level = SEVERITY_LEVELS.get(Config.severity, 0)
@@ -50,6 +54,15 @@ class Query(object):
 
         # If no detections found with the input tags
         # skip this detection
+        return False
+
+    def filter_queries_by_query_id(self):
+        if not Config.query_ids:
+            return True
+
+        if self.id in Config.query_ids:
+            return True
+
         return False
 
     def run(self) -> list:
