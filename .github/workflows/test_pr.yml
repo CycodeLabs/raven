@@ -57,6 +57,8 @@ jobs:
           fi
           exit 0
 
+  # A job that runs integration tests in an isolated environment against
+  # a predefined organization: RavenIntegrationTests
   test_raven:
     runs-on: ubuntu-latest
     steps:
@@ -96,6 +98,8 @@ jobs:
         run: |
           make test-build
 
+  # A job for testing the setup process and unit tests of RAVEN against
+  # different versions of Python
   test_raven_package:
     runs-on: ubuntu-latest
 
@@ -152,4 +156,6 @@ jobs:
           raven download org --token $GITHUB_TOKEN --org-name RavenIntegrationTests
           raven index
           raven report --format json | jq > /dev/null
-          pytest -v tests/unit
+
+      - name: Run Unit Tests
+        run: pytest -v tests/unit

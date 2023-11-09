@@ -12,46 +12,267 @@
             ]
         },
         {
-            "path": "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
+            "path": "actions/checkout",
+            "default": "${{ github.repository }}",
+            "name": "repository",
+            "description": "Repository name with owner. For example, actions/checkout",
+            "_id": "775c9f7b8b404a9df37b16c9d4d8f336",
+            "required": false,
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "name": "ref",
+            "description": "The branch, tag or SHA to checkout. When checking out the repository that triggered a workflow, this defaults to the reference or SHA for that event.  Otherwise, uses the default branch.\n",
+            "_id": "6bf31cd9bee2b2c9a0fd9a8d3c578903",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": "${{ github.token }}",
+            "name": "token",
+            "description": "Personal access token (PAT) used to fetch the repository. The PAT is configured with the local git config, which enables your scripts to run authenticated git commands. The post-job step removes the PAT.\n\nWe recommend using a service account with the least permissions necessary. Also when generating a new PAT, select the least scopes necessary.\n\n[Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)\n",
+            "_id": "5f4fa35f28767a9155a5813b2cc934d5",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "name": "ssh-key",
+            "description": "SSH key used to fetch the repository. The SSH key is configured with the local git config, which enables your scripts to run authenticated git commands. The post-job step removes the SSH key.\n\nWe recommend using a service account with the least permissions necessary.\n\n[Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)\n",
+            "_id": "c53d6fe7a19a576c8bfefe6cfa80870b",
+            "required": false,
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "name": "ssh-known-hosts",
+            "description": "Known hosts in addition to the user and global host key database. The public SSH keys for a host may be obtained using the utility `ssh-keyscan`. For example, `ssh-keyscan github.com`. The public key for github.com is always implicitly added.\n",
+            "_id": "145d5c9a78c4d7564f7b79ec495b6ff2",
+            "required": false,
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": "true",
+            "name": "ssh-strict",
+            "description": "Whether to perform strict host key checking. When true, adds the options `StrictHostKeyChecking=yes` and `CheckHostIP=no` to the SSH command line. Use the input `ssh-known-hosts` to configure additional hosts.\n",
+            "_id": "ec56ff9d7ca004ba974a2fca1b01f2c5",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": "true",
+            "name": "persist-credentials",
+            "description": "Whether to configure the token or SSH key with the local git config",
+            "_id": "fe19be86972043c79c7ad0f618559ade",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "name": "path",
+            "description": "Relative path under $GITHUB_WORKSPACE to place the repository",
+            "_id": "3470907d9833db0f15032d1aadd1dbc2",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": "true",
+            "name": "clean",
+            "description": "Whether to execute `git clean -ffdx && git reset --hard HEAD` before fetching",
+            "_id": "a8d8ef152d8986d297b84bc2faf66d1e",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "name": "filter",
+            "description": "Partially clone against a given filter. Overrides sparse-checkout if set.\n",
+            "_id": "974202e17cde42b352e662c9c55df9ff",
+            "required": false,
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "name": "sparse-checkout",
+            "description": "Do a sparse checkout on given patterns. Each pattern should be separated with new lines.\n",
+            "_id": "c626f387aeac44aa82b5e27f4cbaca54",
+            "required": false,
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": "true",
+            "name": "sparse-checkout-cone-mode",
+            "description": "Specifies whether to use cone-mode when doing a sparse checkout.\n",
+            "_id": "90aa405b4e4278ac32892e1e1756b807",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": 1,
+            "name": "fetch-depth",
+            "description": "Number of commits to fetch. 0 indicates all history for all branches and tags.",
+            "_id": "00fb2bfc353337457e5be8ea01e27984",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": "false",
+            "name": "fetch-tags",
+            "description": "Whether to fetch tags, even if fetch-depth > 0.",
+            "_id": "a32f4c2bbd5fb33b56c7b2634b343e62",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": "true",
+            "name": "show-progress",
+            "description": "Whether to show progress status output when fetching.",
+            "_id": "c871387fa99df881290dbd906bae83a6",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": "false",
+            "name": "lfs",
+            "description": "Whether to download Git-LFS files",
+            "_id": "99f82cfda3b119fcf2b38ebc651dc0a8",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": "false",
+            "name": "submodules",
+            "description": "Whether to checkout submodules: `true` to checkout submodules or `recursive` to recursively checkout submodules.\n\nWhen the `ssh-key` input is not provided, SSH URLs beginning with `git@github.com:` are converted to HTTPS.\n",
+            "_id": "7cdf94b14af56d70417e7b6d92ff316e",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "default": "true",
+            "name": "set-safe-directory",
+            "description": "Add repository path as safe.directory for Git global config by running `git config --global --add safe.directory <path>`",
+            "_id": "98aaa1fa6903184fa592300457546c9e",
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "required": false,
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
+            "name": "github-server-url",
+            "description": "The base URL for the GitHub instance that you are trying to clone from, will use environment defaults to fetch from the same instance that the workflow is running from unless specified. Example URLs are https://github.com or https://my-ghes-server.example.com",
+            "_id": "e8f0d587842e43432e7c96ddcf2ef5e8",
+            "required": false,
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
             "is_public": true,
             "name": "run",
-            "_id": "22137cee99760506f369934d49f719f8",
+            "_id": "d142a4f8137ab3cb3316a8d45a8406a7",
             "trigger": [
                 "workflow_dispatch"
             ],
-            "url": "https://github.com/RavenIntegrationTests/Demo-1/tree/main/.github/workflows/demo-workflow.yml",
+            "url": "https://github.com/RavenIntegrationTests/Demo-2/tree/main/.github/workflows/demo-workflow.yml",
             "labels": [
                 "Workflow"
             ]
         },
         {
-            "path": "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
+            "path": "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
             "machine": [
                 "ubuntu-latest"
             ],
             "name": "demo_test",
-            "_id": "ec3b1d0fd5ec71b9f43547f026f579fd",
-            "url": "https://github.com/RavenIntegrationTests/Demo-1/tree/main/.github/workflows/demo-workflow.yml",
+            "_id": "77ef9503ba52c912546d499c4e05f557",
+            "url": "https://github.com/RavenIntegrationTests/Demo-2/tree/main/.github/workflows/demo-workflow.yml",
             "labels": [
                 "Job"
             ]
         },
         {
-            "path": "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
+            "path": "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
             "ref": "v4",
             "uses": "actions/checkout@v4",
-            "_id": "c1306c77e3af9cdedcedee69c59c96c1",
-            "url": "https://github.com/RavenIntegrationTests/Demo-1/tree/main/.github/workflows/demo-workflow.yml",
+            "_id": "83b34c58d9a3220059a67e3671ff97f2",
+            "url": "https://github.com/RavenIntegrationTests/Demo-2/tree/main/.github/workflows/demo-workflow.yml",
             "labels": [
                 "Step"
             ]
         },
         {
-            "path": "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
+            "path": "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
             "name": "PrintEnv",
             "run": "printenv",
-            "_id": "6f76bec5bf9d4e683ef736d3ffe8b842",
-            "url": "https://github.com/RavenIntegrationTests/Demo-1/tree/main/.github/workflows/demo-workflow.yml",
+            "_id": "4a6d2fcdd26ea9a8949530cd9b61eb9b",
+            "url": "https://github.com/RavenIntegrationTests/Demo-2/tree/main/.github/workflows/demo-workflow.yml",
             "labels": [
                 "Step"
             ]
@@ -147,46 +368,46 @@
             ]
         },
         {
-            "path": "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
+            "path": "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
             "is_public": true,
             "name": "run",
-            "_id": "d142a4f8137ab3cb3316a8d45a8406a7",
+            "_id": "22137cee99760506f369934d49f719f8",
             "trigger": [
                 "workflow_dispatch"
             ],
-            "url": "https://github.com/RavenIntegrationTests/Demo-2/tree/main/.github/workflows/demo-workflow.yml",
+            "url": "https://github.com/RavenIntegrationTests/Demo-1/tree/main/.github/workflows/demo-workflow.yml",
             "labels": [
                 "Workflow"
             ]
         },
         {
-            "path": "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
+            "path": "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
             "machine": [
                 "ubuntu-latest"
             ],
             "name": "demo_test",
-            "_id": "77ef9503ba52c912546d499c4e05f557",
-            "url": "https://github.com/RavenIntegrationTests/Demo-2/tree/main/.github/workflows/demo-workflow.yml",
+            "_id": "ec3b1d0fd5ec71b9f43547f026f579fd",
+            "url": "https://github.com/RavenIntegrationTests/Demo-1/tree/main/.github/workflows/demo-workflow.yml",
             "labels": [
                 "Job"
             ]
         },
         {
-            "path": "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
+            "path": "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
             "ref": "v4",
             "uses": "actions/checkout@v4",
-            "_id": "83b34c58d9a3220059a67e3671ff97f2",
-            "url": "https://github.com/RavenIntegrationTests/Demo-2/tree/main/.github/workflows/demo-workflow.yml",
+            "_id": "c1306c77e3af9cdedcedee69c59c96c1",
+            "url": "https://github.com/RavenIntegrationTests/Demo-1/tree/main/.github/workflows/demo-workflow.yml",
             "labels": [
                 "Step"
             ]
         },
         {
-            "path": "RavenIntegrationTests/Demo-2/.github/workflows/demo-workflow.yml",
+            "path": "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
             "name": "PrintEnv",
             "run": "printenv",
-            "_id": "4a6d2fcdd26ea9a8949530cd9b61eb9b",
-            "url": "https://github.com/RavenIntegrationTests/Demo-2/tree/main/.github/workflows/demo-workflow.yml",
+            "_id": "6f76bec5bf9d4e683ef736d3ffe8b842",
+            "url": "https://github.com/RavenIntegrationTests/Demo-1/tree/main/.github/workflows/demo-workflow.yml",
             "labels": [
                 "Step"
             ]
@@ -289,24 +510,24 @@
             "end_node": "e8f0d587842e43432e7c96ddcf2ef5e8"
         },
         {
-            "start_node": "c1306c77e3af9cdedcedee69c59c96c1",
+            "start_node": "83b34c58d9a3220059a67e3671ff97f2",
             "type": "ACTION",
             "end_node": "d35e7df441120da9624b8c11e36151be"
         },
         {
-            "start_node": "ec3b1d0fd5ec71b9f43547f026f579fd",
+            "start_node": "77ef9503ba52c912546d499c4e05f557",
             "type": "STEPS",
-            "end_node": "c1306c77e3af9cdedcedee69c59c96c1"
+            "end_node": "83b34c58d9a3220059a67e3671ff97f2"
         },
         {
-            "start_node": "ec3b1d0fd5ec71b9f43547f026f579fd",
+            "start_node": "77ef9503ba52c912546d499c4e05f557",
             "type": "STEPS",
-            "end_node": "6f76bec5bf9d4e683ef736d3ffe8b842"
+            "end_node": "4a6d2fcdd26ea9a8949530cd9b61eb9b"
         },
         {
-            "start_node": "22137cee99760506f369934d49f719f8",
+            "start_node": "d142a4f8137ab3cb3316a8d45a8406a7",
             "type": "JOBS",
-            "end_node": "ec3b1d0fd5ec71b9f43547f026f579fd"
+            "end_node": "77ef9503ba52c912546d499c4e05f557"
         },
         {
             "start_node": "8f8cdae1f2db6f6feb3aed267ef5bc34",
@@ -349,24 +570,24 @@
             "end_node": "672e94911c5b6ad0af76aa61413d236c"
         },
         {
-            "start_node": "83b34c58d9a3220059a67e3671ff97f2",
+            "start_node": "c1306c77e3af9cdedcedee69c59c96c1",
             "type": "ACTION",
             "end_node": "d35e7df441120da9624b8c11e36151be"
         },
         {
-            "start_node": "77ef9503ba52c912546d499c4e05f557",
+            "start_node": "ec3b1d0fd5ec71b9f43547f026f579fd",
             "type": "STEPS",
-            "end_node": "83b34c58d9a3220059a67e3671ff97f2"
+            "end_node": "c1306c77e3af9cdedcedee69c59c96c1"
         },
         {
-            "start_node": "77ef9503ba52c912546d499c4e05f557",
+            "start_node": "ec3b1d0fd5ec71b9f43547f026f579fd",
             "type": "STEPS",
-            "end_node": "4a6d2fcdd26ea9a8949530cd9b61eb9b"
+            "end_node": "6f76bec5bf9d4e683ef736d3ffe8b842"
         },
         {
-            "start_node": "d142a4f8137ab3cb3316a8d45a8406a7",
+            "start_node": "22137cee99760506f369934d49f719f8",
             "type": "JOBS",
-            "end_node": "77ef9503ba52c912546d499c4e05f557"
+            "end_node": "ec3b1d0fd5ec71b9f43547f026f579fd"
         }
     ]
 }

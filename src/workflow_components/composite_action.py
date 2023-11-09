@@ -37,31 +37,32 @@ class CompositeActionInput(GraphObject):
     description = Property()
     required = Property()
     url = Property()
+    path = Property()
     action = RelatedTo("CompositeAction")
 
-    def __init__(self, _id: str, name: str, url: str):
+    def __init__(self, _id: str, path: str):
         self._id = _id
-        self.name = name
-        self.url = url
+        self.path = path
 
     @staticmethod
     def from_dict(obj_dict) -> "CompositeActionInput":
-        s = CompositeActionInput(
-            _id=obj_dict["_id"], name=obj_dict["name"], url=obj_dict["url"]
+        i = CompositeActionInput(
+            _id=obj_dict["_id"],
+            path=obj_dict["path"],
         )
 
+        i.name = obj_dict["name"]
+        i.url = obj_dict["url"]
+
         if "default" in obj_dict:
-            s.default = obj_dict["default"]
+            i.default = obj_dict["default"]
 
         if "description" in obj_dict:
-            s.description = obj_dict["description"]
+            i.description = obj_dict["description"]
 
-        if "required" in obj_dict:
-            s.required = raw_str_to_bool(obj_dict["required"])
-        else:
-            s.required = False
+        i.required = raw_str_to_bool(obj_dict.get("required", "false"))
 
-        return s
+        return i
 
 
 class CompositeActionStep(GraphObject):
@@ -152,6 +153,7 @@ class CompositeAction(GraphObject):
                 input["_id"] = md5(f"{ca._id}_{name}".encode()).hexdigest()
                 input["name"] = name
                 input["url"] = ca.url
+                input["path"] = ca.path
                 ca.inputs.add(CompositeActionInput.from_dict(input))
 
         if "runs" in obj_dict:

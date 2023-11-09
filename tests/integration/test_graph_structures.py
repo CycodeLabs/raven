@@ -4,15 +4,15 @@ from tests.utils import (
     assert_graph_structures,
 )
 from tests.integration.integration_consts import TESTS_CONFIGS
-from tests.utils import init_integration_env
+from tests.tests_init import init_integration_env
 
 
 def test_graph_structure() -> None:
-    init_integration_env()
     """
     Tests the graph structure of the integration tests.
     It will loop over each test config dictionary on TESTS_CONFIGS list and assert the graph structure is as expected.
     """
+    init_integration_env()
     for test_config in TESTS_CONFIGS:
         print(
             f"{Fore.CYAN}Running integration test: {test_config['test_name']}.{Style.RESET_ALL}"

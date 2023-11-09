@@ -13,6 +13,18 @@
         },
         {
             "path": "RavenIntegrationTests/CompositeAction-Mock",
+            "default": "true",
+            "name": "param1",
+            "description": "Input parameter placeholder",
+            "_id": "e0e8b6ca1b9aab6e0dd0e1fe70c88a08",
+            "required": true,
+            "url": "https://github.com/RavenIntegrationTests/CompositeAction-Mock/tree/main/action.yml",
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/CompositeAction-Mock",
             "shell": "bash",
             "name": "context",
             "run": "echo \"action-result=${{ inputs.param1 }}\" >> $GITHUB_OUTPUT\n",

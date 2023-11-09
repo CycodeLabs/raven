@@ -1,17 +1,11 @@
-from os import getenv
 from py2neo.ogm import GraphObject
 import json
 from src.config.config import Config
 from src.workflow_components.composite_action import CompositeAction
 from typing import Tuple, List, Dict, Optional
-from src.config.config import load_downloader_config, load_indexer_config
-from src.downloader.download import download_org_workflows_and_actions
-from src.indexer.index import index_downloaded_workflows_and_actions
+from tests.integration.integration_consts import START_NODE_INDEX, DEST_NODE_INDEX
 from src.common.utils import raw_str_to_bool
 from hashlib import md5
-
-START_NODE_INDEX = 0
-DEST_NODE_INDEX = 2
 
 
 class GraphDbMock(object):
@@ -26,39 +20,6 @@ class GraphDbMock(object):
 
     def get_or_create(self, obj: GraphObject) -> Tuple[GraphObject, bool]:
         return None, True
-
-
-def init_integration_env():
-    load_integration_tests_config()
-    download_org_workflows_and_actions()
-    index_downloaded_workflows_and_actions()
-
-
-def load_integration_tests_config() -> None:
-    load_downloader_config(
-        {
-            "debug": False,
-            "token": getenv("GITHUB_TOKEN"),
-            "org_name": ["RavenIntegrationTests"],
-            "redis_host": "raven-redis-test",
-            "redis_port": 6379,
-            "clean_redis": False,
-        }
-    )
-
-    load_indexer_config(
-        {
-            "debug": False,
-            "redis_host": "raven-redis-test",
-            "redis_port": 6379,
-            "clean_redis": False,
-            "neo4j_uri": "neo4j://raven-neo4j-test:7687",
-            "neo4j_user": "neo4j",
-            "neo4j_pass": "123456789",
-            "threads": 1,
-            "clean_neo4j": False,
-        }
-    )
 
 
 def load_test_config() -> None:
@@ -175,6 +136,20 @@ def assert_graph_structures(graph_structure: Dict, snapshot_path: str) -> None:
 
 
 def assert_action_inputs(ca: CompositeAction, ca_d: Dict):
+    """
+    This function asserts that the action inputs are equal to those in the JSON file.
+    Each composite action is connected to multiple action inputs.
+    Each input contains different properties such as name, default, description, and required.
+
+    Using `ca.inputs.triples()`, we are iterating over all the inputs of the composite action.
+    For each input, we check the following:
+    1) The ID, name, and URL of the composite action are equal to the ID, name, and URL of the input.
+    2) The id of the composite action input is the md5 hash of the composite action id and the input name.
+    3) Check that the default, description, and required properties are equal to those in the JSON file.
+
+    Each input is a tuple containing a source node (that will always be the composite action in this case)
+    the relation type and the destination node - will be the different action inputs.
+    """
     for input in ca.inputs.triples():
         ca_d_input = ca_d["inputs"][input[2].name]
 
