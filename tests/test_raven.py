@@ -1,4 +1,10 @@
-from os import getenv
+import os
+import sys
+
+# Set root path to enable imports from src
+raven_root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, raven_root_path)
+
 import pytest
 import src.logger.log as log
 from src.downloader.download import download_org_workflows_and_actions
@@ -11,7 +17,7 @@ def load_integration_tests_config() -> None:
     load_downloader_config(
         {
             "debug": False,
-            "token": getenv("GITHUB_TOKEN"),
+            "token": os.getenv("GITHUB_TOKEN"),
             "org_name": ["RavenIntegrationTests"],
             "clean_redis": False,
         }
