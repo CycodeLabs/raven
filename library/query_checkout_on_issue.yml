@@ -3,7 +3,7 @@ id: RQ-2
 info:
   name: Checkout On New Issue
   severity: critical
-  description: Workflows triggered by issue events where a job involves checking out code from a repository ("actions/checkout") on issue event.
+  description: Workflows triggered by issue events, where a job involves checking out code from a repository ("actions/checkout") on an issue event.
   full-description:
   references:
     - https://github.com/CycodeLabs/raven/tree/main/docs/issue_injections
