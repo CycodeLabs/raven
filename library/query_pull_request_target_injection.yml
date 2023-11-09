@@ -3,7 +3,7 @@ id: RQ-8
 info:
   name: Pull Request Target Injection
   severity: critical
-  description: pull_request target runs in the context of the base repository, not the fork.
+  description: The pull_request target runs in the context of the base repository, not the fork.
   full-description: |
     A pull request target operates within the context of the base repository,
     which means that any tampering with the build process can potentially lead 
