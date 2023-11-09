@@ -1,5 +1,5 @@
 import src.workflow_components.composite_action as composite_action
-from tests.utils import load_test_config
+from tests.utils import load_test_config, assert_action_inputs
 
 load_test_config()
 
@@ -12,6 +12,7 @@ def test_composite_action_from_dist_node():
             "token": {
                 "description": "The GitHub authentication token",
                 "default": "${{ github.token }}",
+                "required": True,
             },
             "repository": {
                 "description": "The target GitHub repository",
@@ -39,12 +40,13 @@ def test_composite_action_from_dist_node():
 
     assert ca.name == ca_d["name"]
     assert ca.path == ca_d["path"]
-    assert ca.inputs == list(ca_d["inputs"].keys())
     assert ca.using == "node16"
     assert ca.url == ca_d["url"]
     assert ca.is_public == ca_d["is_public"]
     assert ca.image is None
     assert len(ca.steps) == 0
+
+    assert_action_inputs(ca, ca_d)
 
 
 def test_composite_action_from_dict_dockerfile():
@@ -70,12 +72,13 @@ def test_composite_action_from_dict_dockerfile():
 
     assert ca.name == ca_d["name"]
     assert ca.path == ca_d["path"]
-    assert ca.inputs == list(ca_d["inputs"].keys())
     assert ca.using == "docker"
     assert ca.image == "Dockerfile"
     assert ca.url == ca_d["url"]
     assert ca.is_public == ca_d["is_public"]
     assert len(ca.steps) == 0
+
+    assert_action_inputs(ca, ca_d)
 
 
 def test_composite_action_from_dict_image():
@@ -105,12 +108,13 @@ def test_composite_action_from_dict_image():
 
     assert ca.name == ca_d["name"]
     assert ca.path == ca_d["path"]
-    assert ca.inputs == list(ca_d["inputs"].keys())
     assert ca.using == "docker"
     assert ca.url == ca_d["url"]
     assert ca.is_public == ca_d["is_public"]
     assert ca.image == "docker://ghcr.io/calibreapp/image-actions/image-actions:main"
     assert len(ca.steps) == 0
+
+    assert_action_inputs(ca, ca_d)
 
 
 def test_composite_action_from_dict_steps():
@@ -150,12 +154,13 @@ def test_composite_action_from_dict_steps():
 
     assert ca.name == ca_d["name"]
     assert ca.path == ca_d["path"]
-    assert ca.inputs == list(ca_d["inputs"].keys())
     assert ca.using == "composite"
     assert ca.url == ca_d["url"]
     assert ca.is_public == ca_d["is_public"]
     assert ca.image is None
     assert len(ca.steps) == 1
+
+    assert_action_inputs(ca, ca_d)
 
 
 def test_composite_action_step_from_dict_run():

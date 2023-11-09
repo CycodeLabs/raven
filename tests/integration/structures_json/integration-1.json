@@ -3,9 +3,6 @@
         {
             "path": "RavenIntegrationTests/CompositeAction-Mock",
             "using": "composite",
-            "inputs": [
-                "param1"
-            ],
             "name": "Example composite GitHub action",
             "is_public": true,
             "_id": "0cedc4763c9b12640b59748858f52ecb",
@@ -49,7 +46,9 @@
         },
         {
             "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
-            "machine": ["ubuntu-latest"],
+            "machine": [
+                "ubuntu-latest"
+            ],
             "name": "first_job",
             "_id": "2007449e2ba101423871ac669de5b750",
             "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
@@ -79,7 +78,9 @@
         },
         {
             "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
-            "machine": ["ubuntu-latest"],
+            "machine": [
+                "ubuntu-latest"
+            ],
             "name": "second_job",
             "_id": "57e4ebfad3aa1f852f256d59d7c7e982",
             "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
@@ -108,6 +109,11 @@
         }
     ],
     "relationships": [
+        {
+            "start_node": "0cedc4763c9b12640b59748858f52ecb",
+            "type": "INPUTS",
+            "end_node": "e0e8b6ca1b9aab6e0dd0e1fe70c88a08"
+        },
         {
             "start_node": "db50f26195dcd8ca600a046df26f0a3a",
             "type": "USING_PARAM",

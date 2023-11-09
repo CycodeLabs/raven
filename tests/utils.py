@@ -1,8 +1,17 @@
+from os import getenv
 from py2neo.ogm import GraphObject
 import json
-
 from src.config.config import Config
+from src.workflow_components.composite_action import CompositeAction
 from typing import Tuple, List, Dict, Optional
+from src.config.config import load_downloader_config, load_indexer_config
+from src.downloader.download import download_org_workflows_and_actions
+from src.indexer.index import index_downloaded_workflows_and_actions
+from src.common.utils import raw_str_to_bool
+from hashlib import md5
+
+START_NODE_INDEX = 0
+DEST_NODE_INDEX = 2
 
 
 class GraphDbMock(object):
@@ -17,6 +26,39 @@ class GraphDbMock(object):
 
     def get_or_create(self, obj: GraphObject) -> Tuple[GraphObject, bool]:
         return None, True
+
+
+def init_integration_env():
+    load_integration_tests_config()
+    download_org_workflows_and_actions()
+    index_downloaded_workflows_and_actions()
+
+
+def load_integration_tests_config() -> None:
+    load_downloader_config(
+        {
+            "debug": False,
+            "token": getenv("GITHUB_TOKEN"),
+            "org_name": ["RavenIntegrationTests"],
+            "redis_host": "raven-redis-test",
+            "redis_port": 6379,
+            "clean_redis": False,
+        }
+    )
+
+    load_indexer_config(
+        {
+            "debug": False,
+            "redis_host": "raven-redis-test",
+            "redis_port": 6379,
+            "clean_redis": False,
+            "neo4j_uri": "neo4j://raven-neo4j-test:7687",
+            "neo4j_user": "neo4j",
+            "neo4j_pass": "123456789",
+            "threads": 1,
+            "clean_neo4j": False,
+        }
+    )
 
 
 def load_test_config() -> None:
@@ -130,3 +172,27 @@ def assert_graph_structures(graph_structure: Dict, snapshot_path: str) -> None:
         assert (
             relationship == graph_relations[snapshot_relations.index(relationship)]
         ), f"Properties of relationships on the same index of graph and snapshot is not equal\n\n{get_dicts_differences(relationship, graph_relations[snapshot_relations.index(relationship)])}\nIn snapshot:\n{relationship}\nIn graph:\n{graph_relations[snapshot_relations.index(relationship)]}"
+
+
+def assert_action_inputs(ca: CompositeAction, ca_d: Dict):
+    for input in ca.inputs.triples():
+        ca_d_input = ca_d["inputs"][input[2].name]
+
+        assert input[START_NODE_INDEX]._id == ca._id
+        assert input[DEST_NODE_INDEX].name == ca_d_input["name"]
+        assert input[DEST_NODE_INDEX].url == ca_d["url"]
+        assert (
+            input[DEST_NODE_INDEX]._id
+            == md5(f"{ca._id}_{ca_d_input.get('name')}".encode()).hexdigest()
+        )
+
+        if "required" in ca_d_input:
+            assert input[DEST_NODE_INDEX].required == raw_str_to_bool(
+                ca_d_input["required"]
+            )
+
+        if "default" in ca_d_input:
+            assert input[DEST_NODE_INDEX].default == ca_d_input["default"]
+
+        if "description" in ca_d_input:
+            assert input[DEST_NODE_INDEX].description == ca_d_input["description"]
