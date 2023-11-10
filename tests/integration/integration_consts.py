@@ -48,3 +48,6 @@ TESTS_CONFIGS = [
         },
     },
 ]
+
+START_NODE_INDEX = 0
+DEST_NODE_INDEX = 2

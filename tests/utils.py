@@ -1,8 +1,11 @@
 from py2neo.ogm import GraphObject
 import json
-
 from src.config.config import Config
+from src.workflow_components.composite_action import CompositeAction
 from typing import Tuple, List, Dict, Optional
+from tests.integration.integration_consts import START_NODE_INDEX, DEST_NODE_INDEX
+from src.common.utils import raw_str_to_bool
+from hashlib import md5
 
 
 class GraphDbMock(object):
@@ -130,3 +133,41 @@ def assert_graph_structures(graph_structure: Dict, snapshot_path: str) -> None:
         assert (
             relationship == graph_relations[snapshot_relations.index(relationship)]
         ), f"Properties of relationships on the same index of graph and snapshot is not equal\n\n{get_dicts_differences(relationship, graph_relations[snapshot_relations.index(relationship)])}\nIn snapshot:\n{relationship}\nIn graph:\n{graph_relations[snapshot_relations.index(relationship)]}"
+
+
+def assert_action_inputs(ca: CompositeAction, ca_d: Dict):
+    """
+    This function asserts that the action inputs are equal to those in the JSON file.
+    Each composite action is connected to multiple action inputs.
+    Each input contains different properties such as name, default, description, and required.
+
+    Using `ca.inputs.triples()`, we are iterating over all the inputs of the composite action.
+    For each input, we check the following:
+    1) The ID, name, and URL of the composite action are equal to the ID, name, and URL of the input.
+    2) The id of the composite action input is the md5 hash of the composite action id and the input name.
+    3) Check that the default, description, and required properties are equal to those in the JSON file.
+
+    Each input is a tuple containing a source node (that will always be the composite action in this case)
+    the relation type and the destination node - will be the different action inputs.
+    """
+    for input in ca.inputs.triples():
+        ca_d_input = ca_d["inputs"][input[2].name]
+
+        assert input[START_NODE_INDEX]._id == ca._id
+        assert input[DEST_NODE_INDEX].name == ca_d_input["name"]
+        assert input[DEST_NODE_INDEX].url == ca_d["url"]
+        assert (
+            input[DEST_NODE_INDEX]._id
+            == md5(f"{ca._id}_{ca_d_input.get('name')}".encode()).hexdigest()
+        )
+
+        if "required" in ca_d_input:
+            assert input[DEST_NODE_INDEX].required == raw_str_to_bool(
+                ca_d_input["required"]
+            )
+
+        if "default" in ca_d_input:
+            assert input[DEST_NODE_INDEX].default == ca_d_input["default"]
+
+        if "description" in ca_d_input:
+            assert input[DEST_NODE_INDEX].description == ca_d_input["description"]

@@ -87,6 +87,7 @@ ipython_config.py
 
 # Local debugging - Run tests outside containers
 temp_test_raven.py
+temp/
 
 # pyenv
 .python-version

@@ -121,3 +121,7 @@ def is_url_contains_a_token(url) -> bool:
 
 def str_to_bool(s: str) -> bool:
     return bool(int(s))
+
+
+def raw_str_to_bool(s: str) -> bool:
+    return True if s == "true" else False

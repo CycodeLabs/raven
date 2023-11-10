@@ -15,4 +15,4 @@ test-build:
 test-run:
 	@echo "DO NOT USE DIRECTLY; PLEASE USE: make test-build"
 	@echo "Running Tests..."
-	@python3 test_raven.py
+	@pytest -v tests

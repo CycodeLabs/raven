@@ -57,6 +57,8 @@ jobs:
           fi
           exit 0
 
+  # A job that runs integration tests in an isolated environment against
+  # a predefined organization: RavenIntegrationTests
   test_raven:
     runs-on: ubuntu-latest
     steps:
@@ -65,9 +67,15 @@ jobs:
           prevent: true
           fail-on-error: true
           allowed-ips: >
+            3.216.34.172
+            3.228.146.75
+            18.206.20.10
+            18.210.197.188
             18.215.138.58
             34.194.164.123
+            34.205.13.154
             44.196.175.70
+            44.205.64.79
             52.1.184.176
             52.3.144.121
             54.165.156.197
@@ -90,6 +98,8 @@ jobs:
         run: |
           make test-build
 
+  # A job for testing the setup process and unit tests of RAVEN against
+  # different versions of Python
   test_raven_package:
     runs-on: ubuntu-latest
 
@@ -103,9 +113,15 @@ jobs:
           prevent: true
           fail-on-error: true
           allowed-ips: >
+            3.216.34.172
+            3.228.146.75
+            18.206.20.10
+            18.210.197.188
             18.215.138.58
             34.194.164.123
+            34.205.13.154
             44.196.175.70
+            44.205.64.79
             52.1.184.176
             52.3.144.121
             54.165.156.197
@@ -133,10 +149,13 @@ jobs:
       - name: Setup environment
         run: make setup
 
-      - name: Download Organization
+      - name: Test Raven
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           raven download org --token $GITHUB_TOKEN --org-name RavenIntegrationTests
           raven index
           raven report --format json | jq > /dev/null
+
+      - name: Run Unit Tests
+        run: pytest -v tests/unit

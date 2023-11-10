@@ -1,10 +1,13 @@
 from os import getenv
-import pytest
-import src.logger.log as log
+from src.config.config import load_downloader_config, load_indexer_config
 from src.downloader.download import download_org_workflows_and_actions
 from src.indexer.index import index_downloaded_workflows_and_actions
-from src.config.config import load_downloader_config, load_indexer_config
-from tests.integration.test_graph_structures import test_graph_structure
+
+
+def init_integration_env():
+    load_integration_tests_config()
+    download_org_workflows_and_actions()
+    index_downloaded_workflows_and_actions()
 
 
 def load_integration_tests_config() -> None:
@@ -13,6 +16,8 @@ def load_integration_tests_config() -> None:
             "debug": False,
             "token": getenv("GITHUB_TOKEN"),
             "org_name": ["RavenIntegrationTests"],
+            "redis_host": "raven-redis-test",
+            "redis_port": 6379,
             "clean_redis": False,
         }
     )
@@ -30,22 +35,3 @@ def load_integration_tests_config() -> None:
             "clean_neo4j": False,
         }
     )
-
-
-def init_env():
-    load_integration_tests_config()
-    download_org_workflows_and_actions()
-    index_downloaded_workflows_and_actions()
-
-
-def test():
-    log.info("[x] Starting unit testing")
-    pytest.main(["-v", "tests/unit"])
-
-    log.info("[x] Starting Integration testing")
-    init_env()
-    test_graph_structure()
-
-
-if __name__ == "__main__":
-    test()
