@@ -5,9 +5,9 @@ info:
   severity: critical
   description: Injection of malicious code that triggers a workflow run pipeline can lead to privilege escalation.
   full-description: |
-    Pull request pipeline runs without access to secrets.
-    However, if a workflow run is triggered by a pull request, the workflow run will have access to secrets.
-    Meaning, if an attacker can inject malicious code into the PR workflow and pass the malicious code to the workflow run,
+    The pull request pipeline runs without access to secrets.
+    However, if a pull request triggers a workflow run, the workflow run will then have access to secrets.
+    This means that if an attacker can inject malicious code into the pull request workflow and then pass the malicious code to the workflow run,
     the attacker can gain access to secrets even though the original workflow did not have access to secrets.
   references:
     - https://www.legitsecurity.com/blog/github-privilege-escalation-vulnerability
