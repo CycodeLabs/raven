@@ -1,12 +1,12 @@
 id: RQ-16
 
 info:
-  name: Entreprise GitHub Server
+  name: Enterprise GitHub Server
   severity: info
-  description: Checking out code from GitHub Enterprise repository.
+  description: Checking out code from a GitHub Enterprise repository.
   full-description: |
-    GitHub Enterprise Server is the on-premises version of GitHub, which you can deploy and manage in your own, secure environment.
-    Checking out code from GitHub Enterprise Server Combined with command injection,
+    GitHub Enterprise Server is the on-premises version of GitHub, which you can deploy and manage in your own secure environment.
+    Checking out code from GitHub Enterprise Server - combined with a command injection vulnerability - 
     may lead to data exfiltration from private repositories hosted on GitHub Enterprise Server.
   references:
     - https://github.com/actions/checkout
