@@ -22,7 +22,6 @@ setup(
     name="raven-cycode",
     version=__version__,
     description="RAVEN (Risk Analysis and Vulnerability Enumeration for CI/CD)",
-    long_description=README,
     readme="README.md",
     url="https://github.com/CycodeLabs/raven",
     project_urls={"Source": "https://github.com/CycodeLabs/raven"},
