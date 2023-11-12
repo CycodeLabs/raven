@@ -2,7 +2,10 @@ from requests import get
 
 from src.config.config import Config
 from src.storage.redis_connection import RedisConnection
-from src.downloader.utils import insert_workflow_or_action_to_redis
+from src.downloader.utils import (
+    insert_workflow_or_action_to_redis,
+    add_ref_pointer_to_redis,
+)
 from src.downloader.gh_api import (
     get_repository_generator,
     get_repository_workflows,
@@ -72,8 +75,8 @@ def download_workflows_and_actions(repo: str) -> None:
     - For each such workflow we download it
     - If that workflow contains uses:..., we analyze the string, and download the action or the reusable workflow.
     """
-    with RedisConnection(Config.redis_sets_db) as sets_db:
-        if sets_db.exists_in_set(Config.workflow_download_history_set, repo):
+    with RedisConnection(Config.redis_objects_ops_db) as ops_db:
+        if ops_db.exists_in_set(Config.workflow_download_history_set, repo):
             log.debug("[!] Already downloaded")
             return
 
@@ -102,9 +105,9 @@ def download_workflows_and_actions(repo: str) -> None:
             for uses_string in uses_strings:
                 download_action_or_reusable_workflow(uses_string=uses_string, repo=repo)
 
+            # Save workflow to redis
             workflow_unix_path = convert_workflow_to_unix_path(repo, name)
             github_url = convert_raw_github_url_to_github_com_url(url)
-
             insert_workflow_or_action_to_redis(
                 db=Config.redis_workflows_db,
                 object_path=workflow_unix_path,
@@ -113,7 +116,10 @@ def download_workflows_and_actions(repo: str) -> None:
                 is_public=is_public,
             )
 
-        sets_db.insert_to_set(Config.workflow_download_history_set, repo)
+            # In the future, ref will be with commit sha
+            add_ref_pointer_to_redis(workflow_unix_path, workflow_unix_path)
+
+        ops_db.insert_to_set(Config.workflow_download_history_set, repo)
 
 
 def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
@@ -122,13 +128,13 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
 
     We use out utilitiy tooling to parse the uses string, because it can be quite complex.
     """
-    with RedisConnection(Config.redis_sets_db) as sets_db:
+    with RedisConnection(Config.redis_objects_ops_db) as ops_db:
         uses_string_obj = UsesString.analyze(uses_string=uses_string)
         full_path = uses_string_obj.get_full_path(repo)
         is_public = 1
 
         # If already scanned action
-        if sets_db.exists_in_set(Config.action_download_history_set, full_path):
+        if ops_db.exists_in_set(Config.action_download_history_set, full_path):
             return
         # If already scanned workflow - Have to check workflow db because only it contains the full workflow path.
         with RedisConnection(Config.redis_workflows_db) as workflows_db:
@@ -192,7 +198,7 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             )
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-            sets_db.insert_to_set(Config.workflow_download_history_set, full_path)
+            ops_db.insert_to_set(Config.workflow_download_history_set, full_path)
 
             insert_workflow_or_action_to_redis(
                 db=Config.redis_workflows_db,
@@ -201,8 +207,10 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 github_url=convert_raw_github_url_to_github_com_url(url),
                 is_public=is_public,
             )
+            # In the future, ref will be with commit sha
+            add_ref_pointer_to_redis(full_path, full_path)
         else:  # UsesStringType.ACTION
-            sets_db.insert_to_set(Config.action_download_history_set, full_path)
+            ops_db.insert_to_set(Config.action_download_history_set, full_path)
             insert_workflow_or_action_to_redis(
                 db=Config.redis_actions_db,
                 object_path=full_path,
@@ -210,3 +218,5 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 github_url=convert_raw_github_url_to_github_com_url(url),
                 is_public=is_public,
             )
+            # In the future, ref will be with commit sha
+            add_ref_pointer_to_redis(full_path, full_path)
