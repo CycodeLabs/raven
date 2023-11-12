@@ -6,7 +6,7 @@
 **RAVEN (Risk Analysis and Vulnerability Enumeration for CI/CD)** is a powerful security tool designed to perform massive scans for GitHub Actions CI workflows and digest the discovered data into a Neo4j database.
 <br><br><br>
 <p align="center">
-<img src="assets/images/logo.png" alt="Raven" width="250" height="250" alig=center>
+<img src="https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/logo.png" alt="Raven" width="250" height="250" alig=center>
 </p>
 <br><br>
 
@@ -90,7 +90,7 @@ raven
 Raven is using two primary docker containers: Redis and Neo4j. 
 `make setup` will run a `docker-compose` command to prepare that environment.
 
-![Infrastructure](assets/images/infrastructure.png)
+![Infrastructure](https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/infrastructure.png)
 
 
 ## Usage
@@ -297,4 +297,4 @@ Feel free to reach out to the development team through research@cycode.com. We a
 | [apache/incubator-kie-kogito-runtimes](https://github.com/apache/incubator-kie-kogito-runtimes) | ![](https://img.shields.io/github/stars/apache/incubator-kie-kogito-runtimes) | [53c18e5](https://github.com/apache/incubator-kie-kogito-runtimes/commit/53c18e5372e5306e0aa580f201f820b80359ad11)              | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
 
 
-![Raven](assets/images/raven.png)
+![Raven](https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/raven.png)
