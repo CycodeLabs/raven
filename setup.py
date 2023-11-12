@@ -40,7 +40,7 @@ setup(
         "Operating System :: Unix",
         "Operating System :: MacOS",
         "Intended Audience :: Science/Research",
-        "Topic :: CI/CD Security",
+        "Topic :: Security",
     ],
     install_requires=REQUIRMENTS,
     packages=find_packages(exclude=("tests", "tests.*")),
