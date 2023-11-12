@@ -10,7 +10,7 @@ from src.downloader.gh_api import (
     get_repository_generator,
     get_repository_workflows,
     get_repository_composite_action,
-    get_repository_reusable_workflow,
+    get_repository_workflow,
     get_organization_repository_generator,
 )
 from src.common.utils import (
@@ -18,6 +18,7 @@ from src.common.utils import (
     convert_workflow_to_unix_path,
     get_repo_name_from_path,
     convert_raw_github_url_to_github_com_url,
+    convert_path_and_commit_sha_to_absolute_path,
     is_url_contains_a_token,
 )
 from src.workflow_components.dependency import UsesString, UsesStringType
@@ -80,11 +81,17 @@ def download_workflows_and_actions(repo: str) -> None:
             log.debug(f"[!] Repo {repo} already scanned, skipping.")
             return
 
-        workflows = get_repository_workflows(repo)
-        is_public = 1
+    workflows = get_repository_workflows(repo)
+    is_public = 1
+    log.debug(f"[+] Found {len(workflows)} workflows for {repo}")
 
-        log.debug(f"[+] Found {len(workflows)} workflows for {repo}")
+    with RedisConnection(Config.redis_objects_ops_db) as ops_db:
         for name, url in workflows.items():
+            workflow_path = convert_workflow_to_unix_path(repo, name)
+            if ops_db.exists_in_set(Config.workflow_download_history_set, repo):
+                log.debug("[!] Already downloaded")
+                continue
+
             if is_url_contains_a_token(url):
                 """
                 If the URL contains a token, it means it is a private repository.
@@ -92,8 +99,10 @@ def download_workflows_and_actions(repo: str) -> None:
                 log.debug(f"[+] URL contains token argument - private repository")
                 is_public = 0
 
-            log.debug(f"[+] Fetching {name}")
-            resp = get(url, timeout=10)
+            download_url, commit_sha = get_repository_workflow(workflow_path, None)
+
+            log.debug(f"[+] Fetching {workflow_path}")
+            resp = get(download_url, timeout=10)
 
             if resp.status_code != 200:
                 raise Exception(
@@ -106,20 +115,21 @@ def download_workflows_and_actions(repo: str) -> None:
                 download_action_or_reusable_workflow(uses_string=uses_string, repo=repo)
 
             # Save workflow to redis
-            workflow_unix_path = convert_workflow_to_unix_path(repo, name)
-            github_url = convert_raw_github_url_to_github_com_url(url)
+            commit_sha_path = convert_path_and_commit_sha_to_absolute_path(
+                workflow_path, commit_sha
+            )
+            github_url = convert_raw_github_url_to_github_com_url(download_url)
             insert_workflow_or_action_to_redis(
                 db=Config.redis_workflows_db,
-                object_path=workflow_unix_path,
+                object_path=commit_sha_path,
                 data=resp.text,
                 github_url=github_url,
                 is_public=is_public,
             )
 
             # In the future, ref will be with commit sha
-            add_ref_pointer_to_redis(workflow_unix_path, workflow_unix_path)
-
-        ops_db.insert_to_set(Config.workflow_download_history_set, repo)
+            add_ref_pointer_to_redis(workflow_path, commit_sha_path)
+            ops_db.insert_to_set(Config.workflow_download_history_set, workflow_path)
 
 
 def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
@@ -130,31 +140,42 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
     """
     with RedisConnection(Config.redis_objects_ops_db) as ops_db:
         uses_string_obj = UsesString.analyze(uses_string=uses_string)
-        full_path = uses_string_obj.get_full_path(repo)
+        absolute_path = uses_string_obj.absolute_path_with_ref
         is_public = 1
 
-        # If already scanned action
-        if ops_db.exists_in_set(Config.action_download_history_set, full_path):
+        # If already scanned object - check in pointer db
+        if (
+            ops_db.get_value_from_hash(Config.ref_pointers_hash, absolute_path)
+            is not None
+        ):
             return
-        # If already scanned workflow - Have to check workflow db because only it contains the full workflow path.
-        with RedisConnection(Config.redis_workflows_db) as workflows_db:
-            if (
-                workflows_db.get_value_from_hash(
-                    full_path, Config.redis_data_hash_field_name
-                )
-                is not None
-            ):
-                return
+
+        # # If already scanned action
+        # if ops_db.exists_in_set(Config.action_download_history_set, absolute_path):
+        #     return
+        # # If already scanned workflow - Have to check workflow db because only it contains the full workflow path.
+        # with RedisConnection(Config.redis_workflows_db) as workflows_db:
+        #     if (
+        #         workflows_db.get_value_from_hash(
+        #             absolute_path, Config.redis_data_hash_field_name
+        #         )
+        #         is not None
+        #     ):
+        #         return
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-            url = get_repository_reusable_workflow(full_path)
+            download_url, commit_sha = get_repository_workflow(
+                uses_string_obj.path, uses_string_obj.ref
+            )
         elif uses_string_obj.type == UsesStringType.ACTION:
-            url = get_repository_composite_action(full_path)
+            download_url, commit_sha = get_repository_composite_action(
+                uses_string_obj.path, uses_string_obj.ref
+            )
         else:
             # Can happen with docker references.
             return
 
-        if url is None:
+        if download_url is None:
             # This actions might be a local action, or a docker action.
 
             if uses_string.startswith("./"):
@@ -175,48 +196,52 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 )
             return
 
-        if is_url_contains_a_token(url):
+        if is_url_contains_a_token(download_url):
             log.debug(f"[+] URL contains token argument - private repository")
             is_public = 0
 
-        resp = get(url, timeout=10)
+        resp = get(download_url, timeout=10)
         if resp.status_code != 200:
             raise Exception(f"status code: {resp.status_code}. Response: {resp.text}")
 
         # We look for dependant external actions.
         uses_strings = find_uses_strings(resp.text)
-        new_repo = get_repo_name_from_path(full_path)
 
+        # TODO: What is this - It will return nothing - Catch instance inside this loop?
+        new_repo = get_repo_name_from_path(absolute_path)
         for new_uses_string in uses_strings:
             # Some infinite loop I met in several repositories
-            new_full_path = UsesString.analyze(new_uses_string).get_full_path(new_repo)
-            if new_full_path == full_path:
+            new_full_path = UsesString.analyze(new_uses_string).absolute_path_with_ref
+            if new_full_path == absolute_path:
                 continue
 
             download_action_or_reusable_workflow(
                 uses_string=new_uses_string, repo=new_repo
             )
 
+        commit_sha_path = convert_path_and_commit_sha_to_absolute_path(
+            uses_string_obj.absolute_path, commit_sha
+        )
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-            ops_db.insert_to_set(Config.workflow_download_history_set, full_path)
+            ops_db.insert_to_set(Config.workflow_download_history_set, absolute_path)
 
             insert_workflow_or_action_to_redis(
                 db=Config.redis_workflows_db,
-                object_path=full_path,
+                object_path=commit_sha_path,
                 data=resp.text,
-                github_url=convert_raw_github_url_to_github_com_url(url),
+                github_url=convert_raw_github_url_to_github_com_url(download_url),
                 is_public=is_public,
             )
             # In the future, ref will be with commit sha
-            add_ref_pointer_to_redis(full_path, full_path)
+            add_ref_pointer_to_redis(absolute_path, commit_sha_path)
         else:  # UsesStringType.ACTION
-            ops_db.insert_to_set(Config.action_download_history_set, full_path)
+            ops_db.insert_to_set(Config.action_download_history_set, absolute_path)
             insert_workflow_or_action_to_redis(
                 db=Config.redis_actions_db,
-                object_path=full_path,
+                object_path=commit_sha_path,
                 data=resp.text,
-                github_url=convert_raw_github_url_to_github_com_url(url),
+                github_url=convert_raw_github_url_to_github_com_url(download_url),
                 is_public=is_public,
             )
             # In the future, ref will be with commit sha
-            add_ref_pointer_to_redis(full_path, full_path)
+            add_ref_pointer_to_redis(absolute_path, commit_sha_path)

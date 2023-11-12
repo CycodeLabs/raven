@@ -27,6 +27,13 @@ def convert_workflow_to_unix_path(repo: str, workflow_name: str) -> str:
     return f"{repo}/.github/workflows/{workflow_name}"
 
 
+def convert_path_and_commit_sha_to_absolute_path(path: str, commit_sha: str) -> str:
+    """
+    Calculates the full path for a given action or workflow with a commit sha.
+    """
+    return f"{path}@{commit_sha}"
+
+
 def convert_raw_github_url_to_github_com_url(raw_url: str):
     """
     Convert a GitHub raw URL to its corresponding tree URL.

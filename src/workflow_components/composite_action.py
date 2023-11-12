@@ -108,7 +108,7 @@ class CompositeActionStep(GraphObject):
             uses_string_obj = UsesString.analyze(uses_string=s.uses)
             if uses_string_obj.type == UsesStringType.ACTION:
                 obj = get_or_create_composite_action(
-                    uses_string_obj.get_full_path(s.path)
+                    uses_string_obj.absolute_path_with_ref
                 )
                 s.action.add(obj)
 
