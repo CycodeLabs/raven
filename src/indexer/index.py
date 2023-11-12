@@ -26,16 +26,22 @@ def index_downloaded_workflows_and_actions() -> None:
 
 
 def index_downloaded_actions() -> None:
-    with RedisConnection(Config.redis_actions_db) as actions_db:
-        actions = [a.decode() for a in actions_db.get_all_keys()]
+    with RedisConnection(Config.redis_objects_ops_db) as ops_db:
+        actions = [
+            a.decode()
+            for a in ops_db.get_set_values(Config.action_download_history_set)
+        ]
         log.info(f"[*] Indexing actions...")
         for action in tqdm(actions, desc="Indexing actions"):
             index_action_file(action)
 
 
 def index_downloaded_workflows() -> None:
-    with RedisConnection(Config.redis_workflows_db) as workflows_db:
-        workflows = [w.decode() for w in workflows_db.get_all_keys()]
+    with RedisConnection(Config.redis_objects_ops_db) as ops_db:
+        workflows = [
+            w.decode()
+            for w in ops_db.get_set_values(Config.workflow_download_history_set)
+        ]
         log.info(f"[*] Indexing workflows...")
         for workflow in tqdm(workflows, desc="Indexing workflows"):
             index_workflow_file(workflow)
@@ -88,12 +94,12 @@ def index_action_file(action: str) -> None:
                 log.debug(f"[-] Symlink detected: {content}. Skipping...")
                 return
 
-            obj["path"] = action_full_name
+            obj["path"] = action
             obj["url"] = url
             obj["is_public"] = is_public
 
             Config.graph.push_object(CompositeAction.from_dict(obj))
-            ops_db.insert_to_set(Config.action_index_history_set, action_full_name)
+            ops_db.insert_to_set(Config.action_index_history_set, action)
     except Exception as e:
         log.error(f"[-] Error while indexing {action}. {e}")
 
@@ -146,12 +152,12 @@ def index_workflow_file(workflow: str) -> None:
                 log.debug(f"[-] Symlink detected: {content}. Skipping...")
                 return
 
-            obj["path"] = workflow_full_name
+            obj["path"] = workflow
             obj["url"] = url
             obj["is_public"] = is_public
 
             Config.graph.push_object(Workflow.from_dict(obj))
-            ops_db.insert_to_set(Config.workflow_index_history_set, workflow_full_name)
+            ops_db.insert_to_set(Config.workflow_index_history_set, workflow)
 
     except Exception as e:
         log.error(f"[-] Error while indexing {workflow}. {e}")

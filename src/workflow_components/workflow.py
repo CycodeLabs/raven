@@ -90,7 +90,7 @@ class Step(GraphObject):
                 import src.workflow_components.composite_action as composite_action
 
                 obj = composite_action.get_or_create_composite_action(
-                    uses_string_obj.get_full_path(s.path)
+                    uses_string_obj.absolute_path_with_ref
                 )
                 s.action.add(obj)
 
@@ -131,7 +131,7 @@ class Job(GraphObject):
             # In the case of jobs, it may only reference reusable workflows.
             uses_string_obj = UsesString.analyze(uses_string=j.uses)
             if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-                obj = get_or_create_workflow(uses_string_obj.get_full_path(j.path))
+                obj = get_or_create_workflow(uses_string_obj.absolute_path_with_ref)
                 j.reusable_workflow.add(obj)
 
             if "with" in obj_dict:
