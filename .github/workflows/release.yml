@@ -36,26 +36,14 @@ jobs:
           pypi.org
           raw.githubusercontent.com
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - name: Download Latest Release
-      run: |
-        curl -s https://raw.githubusercontent.com/CycodeLabs/raven/f020094d175ab5cd0eb10442c6f7728485cc6903/install.sh | bash
-
-    - name: Setup environment
-      working-directory: raven
-      run: make setup
-
-    - name: Download Organization
+    - name: Test Organization
       env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        raven download org --token $GITHUB_TOKEN --org-name RavenIntegrationTests
-        raven index
-        raven report --format json | jq > /dev/null
+        make test-build
 
   publish:
     name: Release to PyPI
