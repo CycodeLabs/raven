@@ -1,7 +1,7 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/images/raven-dark-mode.png">
-  <source media="(prefers-color-scheme: light)" srcset="assets/images/raven-light-mode.png">
-  <img alt="Raven" src="assets/images/raven-light-mode.png">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/raven-dark-mode.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/raven-light-mode.png">
+  <img alt="Raven" src="https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/raven-light-mode.png">
 </picture>
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-orange.svg)](https://opensource.org/licenses/MIT)
@@ -258,17 +258,17 @@ For authenticated users, the next rate limiting applies:
 
 ## Research Knowledge Base
 
-- [Issue Injections](/docs/Issue%20Injections/README.md)
-- [Pull Request Injections](/docs/Pull%20Request%20Injections/README.md)
-- [Workflow Run Injections](/docs/Multi%20Prerequisite%20Exploits/README.md)
-- [CodeSee Injections](/docs/Codesee%20Injections/README.md)
+- [Issue Injections](https://github.com/CycodeLabs/raven/blob/main/docs/Issue%20Injections/README.md)
+- [Pull Request Injections](https://github.com/CycodeLabs/raven/blob/main/docs/Pull%20Request%20Injections/README.md)
+- [Workflow Run Injections](https://github.com/CycodeLabs/raven/blob/main/docs/Multi%20Prerequisite%20Exploits/README.md)
+- [CodeSee Injections](https://github.com/CycodeLabs/raven/blob/main/docs/Codesee%20Injections/README.md)
 
 ## Current Limitations
 
 - It is possible to run external action by referencing a folder with a `Dockerfile` (without `action.yml`). Currently, this behavior isn't supported.
 - It is possible to run external action by referencing a docker container through the `docker://...` URL. Currently, this behavior isn't supported.
 - It is possible to run an action by referencing it locally. This creates complex behavior, as it may come from a different repository that was checked out previously. The current behavior is trying to find it in the existing repository.
-- We aren't modeling the entire workflow structure. If additional fields are needed, please submit a pull request according to the [contribution](./CONTRIBUTING.md) guidelines.
+- We aren't modeling the entire workflow structure. If additional fields are needed, please submit a pull request according to the [contribution](https://github.com/CycodeLabs/raven/blob/main/CONTRIBUTING.md) guidelines.
 
 ## Future Research Work
 
@@ -278,7 +278,7 @@ For authenticated users, the next rate limiting applies:
 
 ## License
 
-[Apache License 2.0](./LICENSE.md)
+[Apache License 2.0](https://github.com/CycodeLabs/raven/blob/main/LICENSE.md)
 
 ## Hall of Fame - Vulnerabilities Found and Disclosed Using Raven
 
