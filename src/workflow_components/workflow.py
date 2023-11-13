@@ -8,6 +8,7 @@ from src.common.utils import (
     get_repo_name_from_path,
     convert_dict_to_list,
     find_workflow_by_name,
+    raw_str_to_bool,
 )
 from src.workflow_components.parsing_utils import (
     parse_workflow_trigger,
@@ -165,6 +166,7 @@ class Workflow(GraphObject):
 
     jobs = RelatedTo(Job)
     triggered_by = RelatedFrom("Workflow")
+    reusable_workflow_input = RelatedTo("ReusableWorkflowInput")
 
     def __init__(self, name: Optional[str], path: str):
         self.name = name
@@ -176,6 +178,9 @@ class Workflow(GraphObject):
         w = Workflow(name=obj_dict.get("name"), path=obj_dict["path"])
 
         w.trigger = parse_workflow_trigger(obj_dict["on"])
+
+        w.url = obj_dict["url"]
+        w.is_public = obj_dict["is_public"]
 
         # Handling special case of workflow_run
         # When we meet it, we want to create a special relation from the triggering workflow,
@@ -198,8 +203,19 @@ class Workflow(GraphObject):
                     w_triggering = get_or_create_workflow(w_path)
                     w.triggered_by.add(w_triggering, types=types)
 
-        w.url = obj_dict["url"]
-        w.is_public = obj_dict["is_public"]
+        # Handling special case of workflow_call
+        # When we meet it, we want to create a special relation to inputs of the reusable workflow.
+        # We continue to treat the workflow as a regular workflow, and not as a reusable workflow.
+        # But the difference is that we connected the different inputs to the workflow.
+        if "workflow_call" in w.trigger:
+            wokrflow_call = obj_dict["on"]["workflow_call"]
+            inputs = wokrflow_call["inputs"]
+            for input_name, input in inputs.items():
+                input["_id"] = md5(f"{w._id}_{input_name}".encode()).hexdigest()
+                input["name"] = input_name
+                input["url"] = w.url
+                input["path"] = w.path
+                w.reusable_workflow_input.add(ReusableWorkflowInput.from_dict(input))
 
         if "permissions" in obj_dict:
             w.permissions = convert_dict_to_list(obj_dict["permissions"])
@@ -215,3 +231,35 @@ class Workflow(GraphObject):
             w.jobs.add(Job.from_dict(job))
 
         return w
+
+
+class ReusableWorkflowInput(GraphObject):
+    __primarykey__ = "_id"
+
+    _id = Property()
+    name = Property()
+    default = Property()
+    description = Property()
+    required = Property()
+    path = Property()
+    url = Property()
+
+    def __init__(self, _id: str, path: str):
+        self._id = _id
+        self.path = path
+
+    @staticmethod
+    def from_dict(obj_dict) -> "ReusableWorkflowInput":
+        i = ReusableWorkflowInput(_id=obj_dict["_id"], path=obj_dict["path"])
+        i.name = obj_dict["name"]
+        i.url = obj_dict["url"]
+
+        if "default" in obj_dict:
+            i.default = obj_dict.get("default")
+
+        if "description" in obj_dict:
+            i.description = obj_dict.get("description")
+
+        i.required = raw_str_to_bool(obj_dict.get("required", "false"))
+
+        return i

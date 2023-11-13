@@ -12,6 +12,9 @@ where s.path in {paths_list}
 RETURN s
 """
 
+START_NODE_INDEX = 0
+DEST_NODE_INDEX = 2
+
 ## Tests Configs ##
 TESTS_CONFIGS = [
     {
@@ -47,7 +50,19 @@ TESTS_CONFIGS = [
             },
         },
     },
+    {
+        "test_name": "test_reusable_workflows",
+        "json_path": "tests/integration/structures_json/reusable-workflows.json",
+        "description": "Tests ReusableWorkflows-Mock's graph structure. This is a repository with two workflows. One of them uses the other as a reusable workflow.",
+        "queries": {
+            "nodes_query": GET_NODES_BY_PATH_QUERY,
+            "relationships_query": GET_RELATIONSHIPS_BY_PATH_QUERY,
+            "to_format": {
+                "paths_list": [
+                    "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+                    "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test.yml",
+                ]
+            },
+        },
+    },
 ]
-
-START_NODE_INDEX = 0
-DEST_NODE_INDEX = 2

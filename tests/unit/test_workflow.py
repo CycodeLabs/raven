@@ -1,5 +1,5 @@
 import src.workflow_components.workflow as workflow
-from tests.utils import load_test_config
+from tests.utils import load_test_config, assert_reusable_workflow_inputs
 
 load_test_config()
 
@@ -136,3 +136,53 @@ def test_step_from_dict_run():
     assert step.url == step_d["url"]
     assert step.with_prop is None
     assert len(step.using_param) == 1
+
+
+def test_reusable_workflow_from_dict():
+    workflow_d = {
+        "name": "Release notes",
+        "on": {
+            "workflow_call": {
+                "inputs": {
+                    "input_1": {
+                        "required": True,
+                        "default": "default_value_1",
+                        "description": "description_1",
+                    },
+                    "input_2": {
+                        "required": False,
+                        "default": "default_value_2",
+                        "description": "description_2",
+                    },
+                }
+            }
+        },
+        "permissions": {"contents": "read"},
+        "jobs": {
+            "update_release_draft": {
+                "permissions": {"contents": "write", "pull-requests": "write"},
+                "runs-on": "ubuntu-latest",
+                "if": "github.repository == 'twbs/bootstrap'",
+                "steps": [
+                    {
+                        "uses": "release-drafter/release-drafter@v5",
+                        "env": {"GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}"},
+                    }
+                ],
+            }
+        },
+        "path": "twbs/bootstrap/.github/workflows/release-notes.yml",
+        "url": "https://github.com/CycodeLabs/Raven/pull/1",
+        "is_public": True,
+    }
+
+    wf = workflow.Workflow.from_dict(workflow_d)
+
+    assert wf.name == workflow_d["name"]
+    assert wf.path == workflow_d["path"]
+    assert wf.trigger == ["workflow_call"]
+    assert wf.permissions == ["contents:read"]
+    assert wf.url == workflow_d["url"]
+    assert len(wf.jobs) == 1
+
+    assert_reusable_workflow_inputs(wf, workflow_d)

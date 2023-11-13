@@ -38,7 +38,6 @@ class CompositeActionInput(GraphObject):
     required = Property()
     url = Property()
     path = Property()
-    action = RelatedTo("CompositeAction")
 
     def __init__(self, _id: str, path: str):
         self._id = _id
@@ -79,7 +78,6 @@ class CompositeActionStep(GraphObject):
     with_prop = Property("with")
 
     action = RelatedTo("CompositeAction")
-    reusable_workflow = RelatedTo(workflow.Workflow)
     using_param = RelatedTo(workflow.StepCodeDependency)
 
     def __init__(self, _id: str, path: str):
@@ -134,7 +132,7 @@ class CompositeAction(GraphObject):
     url = Property()
     is_public = Property()
 
-    inputs = RelatedTo(CompositeActionInput)
+    composite_action_input = RelatedTo(CompositeActionInput)
     steps = RelatedTo(CompositeActionStep)
 
     def __init__(self, name: Optional[str], path: str):
@@ -154,7 +152,7 @@ class CompositeAction(GraphObject):
                 input["name"] = name
                 input["url"] = ca.url
                 input["path"] = ca.path
-                ca.inputs.add(CompositeActionInput.from_dict(input))
+                ca.composite_action_input.add(CompositeActionInput.from_dict(input))
 
         if "runs" in obj_dict:
             d_runs = obj_dict["runs"]
