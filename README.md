@@ -1,15 +1,16 @@
-# Raven - CI/CD Security Analyzer
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/images/raven-dark-mode.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/images/raven-light-mode.png">
+  <img alt="Raven" src="assets/images/raven-light-mode.png">
+</picture>
+
 [![License](https://img.shields.io/badge/license-Apache%202.0-orange.svg)](https://opensource.org/licenses/MIT)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/CycodeLabs/raven?color=red)
 [<img src="https://img.shields.io/badge/CI/MON%20-none.svg?color=5D65B1&url=https://cimon.build&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2My45OCA2My45NyI+PHBhdGggZD0iTTU5LjM5IDMyLjY4Yy0uNS0uNjUtMi4wMi00LjMzLTIuOTctNy4wNSA5LjQtOC43OC43MS0yMi42Mi05LjMxLTE1LjcxQzQzIDcuNDggMzYuNTYgNC45MSAyOC4xOSA1LjQ4YzEuNDQtMS44MiAyLjk5LTMuNyA0LjQ5LTUuNDgtNi45Mi40Ny0xNS4wNiA2LjMzLTE2LjM1IDcuOTVDNS4xNyAxLjEtNC40NSAxNS41NSA1LjY3IDI1LjVjLTExLjUyIDE3LjMxLTIuMTYgMjQuMDUtLjY0IDI1LjcyLS4wMy0uOTQtLjA3LTEuNDgtLjA5LTIuNjIgMy4xNCA0LjI0IDcuNjIgNi45NiA3Ljg0IDcuMDktLjA2LjMtNy41My03Ljg5LTkuMjYtMTIuMjJ2NC4xQzEuMzggNDQuODItMSAzNi4zOCA3LjQ3IDI1LjQxLTEuMyAxOC4zNCAzLjI2IDEuNzMgMTYuNTUgOS43Yy42MS0uNTcgNC45OS01LjM0IDEyLjUyLTcuNTctMi4yNiAyLjc5LTIuNjggMy4zMy0zLjk3IDUuMDYgMi4yMS0uMjggNC41Mi0uNDkgNi43NC0uMzggMi45IDEuOTUgOC4zOCA0Ljg4IDkuNTEgMTMuNzIgMCAwIDIuNjMtNS42LS4wNi0xMS44NCAyLjAzLjc1IDMuOTkgMS43MSA1LjgyIDIuODdDNTguNDUgNCA2Mi42NSAxOSA1NC44IDI1LjI4Yy42MyAxLjg3IDIuNiA3LjIyIDMuNTYgOC4zNi40MS4zNSA1Ljc2IDQuMzQgMy45NSAxMC4yNy0uNS0yLjY0LTQuMTEtNS41OC00LjExLTUuNTggMy4zOSA2LjYyIDEuMyAxMC43OC0xLjUzIDE0LjYxIDAgMCAzLjUxLTEuOTcgNC41Ny03LjE3LjUxLjgzLjEzIDIuODMuMTMgMi44MyA1LjA4LTUuOSAxLjc3LTEzLjUtMi0xNS45MnYuMDJaIiBzdHlsZT0iZmlsbDojZmZmO3N0cm9rZS13aWR0aDowIi8+PHBhdGggZD0iTTUzLjcgMTYuOTJjLjMzLjYuNDggMS4yMy41IDEuODQgMi4xNC0yLjk4LS40My04LjI4LTQuMDItNC4zMyAxLjI4LS4wNCAyLjc4IDEuMTcgMy41MSAyLjQ5Wm0tMzkuNTYtMy43NWMuMDcuMDIuMTQuMDQuMjEuMDctNC4xNi03LjQ2LTExLjg5IDQuOTItNC43NiA3LjA0LTIuMDQtMi45OCAxLjAyLTguMTYgNC41NS03LjExWm00Mi40NiAzMC45Yy40MS4yNCAxLjU2IDEuMTggMS42IDMuOTUgMS4yOC00LjE2LTEuNTMtOS4xMi0xLjcxLTExLjIyIDIuMjkgMCA0LjUxIDIuMzEgNC45NCAzLjA0LTEuNTctNS42OS03LjU0LTUuNjEtNy41NC01LjYxczIuMDItLjQgMi4yNS0uODhjLTIuODktMy43OC0yLjA1LTkuNzMtNS44NC0xMS4xNy0xLjQ1IDAtNS40NiA5Ljg0LTguODcgOS44NC0xMC4wMS0xLjY3LTcuOTEtOS43MS0xOS42OS05LjM5LTUuMyAxLjUzLTYuMDkgNy41OC02LjA0IDEyLjIxIDIuNTMtLjU3IDQuMTMuMjQgNC4xMy4yNC03LjMzLjc5LTEwLjExIDQuOTgtMTAgNi43MS44Ny0uODEgMy45My0xLjY5IDUuNDctMi4wNC02Ljk5IDYuMDctMi43MiAxMi40Ni0uNSAxNC41Ny0xLjI1LTUuNS4xLTguMDMuMS04LjAzLS45OSAxNS42NCA0Ny42MyAxNi4xIDQxLjcxLTIuMjJaTTIxLjIzIDMzLjYzYy0uMTUtNi43NSA4Ljk2LTcuNDYgNy41Ny0uMTcgMCAwIDQuNjEtLjY1IDYuMzkuMzUtMi4zLTEuNTMtMTMuOSA0Ljk5LTEzLjk2LS4xOFpNNDYuMTYgNDguMWMtLjI5LjIzLS41OC40NC0uODkuNjQuMSAxLjMzLS4xMiAzLjE1LTEuODcgMy4xMi0yLjUzIDAtNS40OC42MS00LjkzLTMuMDgtLjMtLjItLjU4LS40Mi0uODUtLjY2LTEuOTguNjEtMy44OS41OS00LjY2LTEuMTIgMS44OCAyLjEzIDYuMDgtLjczIDguNDgtMi4yOGwuMDItMi43MmMtMi43LTIuOTEtMTAuMTctNi4yMS45Ni02Ljc2IDkuNjQuNDIgMi42NCAzLjk1LjYgNi43NEw0MyA0NC42NWMxLjU2IDEuNzEgMy45IDQuMDQgNS45OSAxLjY3LS43NCAxLjQ5LTEuNzUgMS45Mi0yLjgzIDEuNzhabTIuNzItMTMuMDVjLTMuMzYtMS41Ni01LjM1LTEuMTctNS4zNS0xLjE3IDEuMjktMSAzLjkzLS40MiAzLjkzLS40MnMtLjYyLTUuMjQgMi4xNS01LjI0YzQuMDUuNSA1LjQ4IDkuMzUtLjc0IDYuODNaIiBzdHlsZT0iZmlsbDojZmZmO3N0cm9rZS13aWR0aDowIi8+PHBhdGggZD0iTTI1LjgyIDI5LjQ0Yy0xLjc2LS4wMi0xLjc2IDIuNjggMCAyLjY1IDEuNzYuMDIgMS43Ni0yLjY3IDAtMi42NVptMjQuNjIgMi43OWMxLjYyLjAyIDEuNjItMi40NyAwLTIuNDQtMS42Mi0uMDItMS42MiAyLjQ3IDAgMi40NFpNMzkuNTIgNDcuMThjLS4xNyA0LjI5LS4xIDMuNjMgMy44NyAzLjYyIDEuMzctLjEuNjEtMi42My44NC0zLjUzbC0yLjA3LTEuNjctMi42NSAxLjU4Wm0tNi4wOCAxMi4wNHMtLjcgMy4yOC00LjM3IDQuNjRjNy4wOC4zNSAxMy41OS4xIDE0LjM3LTUuMjQtNS4wNSAxLjYtOS45OS41OS05Ljk5LjU5WiIgc3R5bGU9ImZpbGw6I2ZmZjtzdHJva2Utd2lkdGg6MCIvPjwvc3ZnPg==">](https://cimon.build/)
 
-**RAVEN (Risk Analysis and Vulnerability Enumeration for CI/CD)** is a powerful security tool designed to perform massive scans for GitHub Actions CI workflows and digest the discovered data into a Neo4j database.
-<br><br><br>
-<p align="center">
-<img src="https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/logo.png" alt="Raven" width="250" height="250" alig=center>
-</p>
-<br><br>
+# Raven - CI/CD Security Analyzer
 
+**RAVEN (Risk Analysis and Vulnerability Enumeration for CI/CD)** is a powerful security tool designed to perform massive scans for GitHub Actions CI workflows and digest the discovered data into a Neo4j database.
 
 With Raven, we were able to identify and report security vulnerabilities in some of the most popular repositories hosted on GitHub, including:
 
@@ -27,7 +28,7 @@ The tool provides the following capabilities to scan and analyze potential CI/CD
 - ⏬ **Downloader:** You can download workflows and actions necessary for analysis. Workflows can be downloaded for a specified organization or for all repositories, sorted by star count. Performing this step is a prerequisite for analyzing the workflows.
 - 📊 **Indexer:** Digesting the downloaded data into a graph-based Neo4j database. This process involves establishing relationships between workflows, actions, jobs, steps, etc.
 - 📚 **Query Library:** We created a library of pre-defined queries based on research conducted by the community.
-- ❗ **Report:** Raven has a simple way of reporting suspicious findings. As an example, it can be incorporated into the CI process for pull requests and run there.
+- ❗ **Reporter:** Raven has a simple way of reporting suspicious findings. As an example, it can be incorporated into the CI process for pull requests and run there.
 
 Possible usages for Raven:
 
@@ -56,29 +57,54 @@ It was for these reasons that Raven was created, a framework for CI/CD security 
 
 To get started with Raven, follow these installation instructions:
 
-**Step 1**: Download the latest stable version, The install script requires `curl`, `wget` and `jq`
-``` bash
-curl -sSfL https://raw.githubusercontent.com/CycodeLabs/raven/f020094d175ab5cd0eb10442c6f7728485cc6903/install.sh | bash
-cd raven
-```
+**Step 1**: Install the Raven package
 
-or, you can download the latest release from `https://github.com/CycodeLabs/raven/releases/latest`
-
-**Step 2**: Create a virtual environment
-``` bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-**Step 3**: Build a containerized environment and install Raven
 ```bash
-sudo make setup
+pip3 install raven-cycode
 ```
 
-**Step 4**: Run Raven
-``` bash
-raven
+**Step 2**: Setup a local Redis server and Neo4j database
+
+```bash
+docker run -d --name raven-neo4j -p7474:7474 -p7687:7687 --env NEO4J_AUTH=neo4j/123456789 --volume raven-neo4j:/data neo4j:5.12
+docker run -d --name raven-redis -p6379:6379 --volume raven-redis:/data redis:7.2.1
 ```
+
+Another way to setup the environment is by running our provided docker compose file:
+
+```bash
+git clone https://github.com/CycodeLabs/raven.git
+cd raven
+make setup
+```
+
+**Step 3**: Run Raven Downloader
+
+Org mode:
+
+```bash
+raven download org --token $GITHUB_TOKEN --org-name RavenDemo
+```
+
+Crawl mode:
+
+```bash
+raven download crawl --token $GITHUB_TOKEN --min-stars 1000
+```
+
+**Step 4**: Run Raven Indexer
+
+```bash
+raven index
+```
+
+**Step 5**: Inspect the results through the reporter
+
+```bash
+raven report --format raw
+```
+
+At this point, it is possible to inspect the data in the Neo4j database, by connecting http://localhost:7474/browser/.
 
 ### Prerequisites
 
@@ -87,18 +113,17 @@ raven
 - Docker Engine v1.13.0+
 
 ## Infrastructure
-Raven is using two primary docker containers: Redis and Neo4j. 
-`make setup` will run a `docker-compose` command to prepare that environment.
+
+Raven is using two primary docker containers: Redis and Neo4j.
+`make setup` will run a `docker compose` command to prepare that environment.
 
 ![Infrastructure](https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/infrastructure.png)
 
-
 ## Usage
 
-The tool contains two main functionalities, `download` and `index`.
+The tool contains three main functionalities, `download` and `index` and `report`.
 
 ### Download
-
 
 #### Download Organization Repositories
 
@@ -118,7 +143,8 @@ options:
 ```
 
 #### Download Public Repositories
-``` bash
+
+```bash
 usage: raven download crawl [-h] --token TOKEN [--debug] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] [--max-stars MAX_STARS] [--min-stars MIN_STARS]
 
 options:
@@ -160,6 +186,7 @@ options:
 ```
 
 ### Report
+
 ```bash
 usage: raven report [-h] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] [--neo4j-uri NEO4J_URI]
                     [--neo4j-user NEO4J_USER] [--neo4j-pass NEO4J_PASS] [--clean-neo4j]
@@ -198,22 +225,25 @@ options:
 ## Examples
 
 Retrieve all workflows and actions associated with the organization.
-``` bash
+
+```bash
 raven download org --token $GITHUB_TOKEN --org-name microsoft --org-name google --debug
 ```
 
 Scrape all publicly accessible GitHub repositories.
-``` bash
+
+```bash
 raven download crawl --token $GITHUB_TOKEN --min-stars 100 --max-stars 1000 --debug
 ```
 
 After finishing the download process or if interrupted using Ctrl+C, proceed to index all workflows and actions into the Neo4j database.
 
-``` bash
+```bash
 raven index --debug
 ```
 
 Now, we can generate a report using our query library.
+
 ```bash
 raven report --severity high --tag injection --tag unauthenticated
 ```
@@ -226,20 +256,7 @@ For authenticated users, the next rate limiting applies:
 - Code search - 30 queries per minute
 - Any other API - 5000 per hour
 
-## Functionalities
-
-### Downloader
-
-- If the workflow contains an action, the downloader will also download it.
-- If the workflow references a reusable workflow, the downloader will also download it.
-
-### Indexer
-
-- If the indexer finds workflow uses an action, it will create a proper connection to it in the graph
-- Same applies to reusable workflows
-- Same applies to workflow triggered through `workflow_call`
-
-## Knowledge Base
+## Research Knowledge Base
 
 - [Issue Injections](/docs/Issue%20Injections/README.md)
 - [Pull Request Injections](/docs/Pull%20Request%20Injections/README.md)
@@ -251,23 +268,13 @@ For authenticated users, the next rate limiting applies:
 - It is possible to run external action by referencing a folder with a `Dockerfile` (without `action.yml`). Currently, this behavior isn't supported.
 - It is possible to run external action by referencing a docker container through the `docker://...` URL. Currently, this behavior isn't supported.
 - It is possible to run an action by referencing it locally. This creates complex behavior, as it may come from a different repository that was checked out previously. The current behavior is trying to find it in the existing repository.
-- We aren't modeling the entire workflow structure. If additional fields are needed, please submit a pull request according to the [contribution](#contribution) guidelines.
+- We aren't modeling the entire workflow structure. If additional fields are needed, please submit a pull request according to the [contribution](./CONTRIBUTING.md) guidelines.
 
 ## Future Research Work
 
 - Implementation of taint analysis. Example use case - a user can pass a pull request title (which is controllable parameter) to an action parameter that is named `data`. That action parameter may be used in a run command: `- run: echo ${{ inputs.data }}`, which creates a path for a code execution.
 - Expand the research for findings of harmful misuse of `GITHUB_ENV`. This may utilize the previous taint analysis as well.
 - Research whether `actions/github-script` has an interesting threat landscape. If it is, it can be modeled in the graph.
-
-## Contributing
-
-We encourage contributions from the community to help improve our tooling and research. We manage contributions primarily through GitHub Issues and Pull Requests.
-
-If you have a feature request, bug report, or any improvement suggestions, please create an issue to discuss it. To start contributing, you may check [good first issue](https://github.com/CycodeLabs/Raven/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) label to get started quickly into the code base.
-
-To contribute code changes, fork our repository, make your modifications, and then submit a pull request.
-
-Feel free to reach out to the development team through research@cycode.com. We appreciate your collaboration and look forward to your valuable contributions!
 
 ## License
 
@@ -296,5 +303,8 @@ Feel free to reach out to the development team through research@cycode.com. We a
 | [fauna/faunadb-js](https://github.com/fauna/faunadb-js)                                         | ![](https://img.shields.io/github/stars/fauna/faunadb-js)                     | [ee6f53f](https://github.com/fauna/faunadb-js/commit/ee6f53f9c985bde41976743530e3846dee058587)                                  | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
 | [apache/incubator-kie-kogito-runtimes](https://github.com/apache/incubator-kie-kogito-runtimes) | ![](https://img.shields.io/github/stars/apache/incubator-kie-kogito-runtimes) | [53c18e5](https://github.com/apache/incubator-kie-kogito-runtimes/commit/53c18e5372e5306e0aa580f201f820b80359ad11)              | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
 
+<<<<<<< HEAD
 
-![Raven](https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/raven.png)
+# ![Raven](https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/raven.png)
+
+> > > > > > > 217ad26 (chore(readme): update logo, reporter, and more)
