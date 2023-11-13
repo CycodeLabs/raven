@@ -302,9 +302,3 @@ For authenticated users, the next rate limiting applies:
 | [DynamoDS/Dynamo](https://github.com/DynamoDS/Dynamo)                                           | ![](https://img.shields.io/github/stars/DynamoDS/Dynamo)                      | Disabled workflow                                                                                                               | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
 | [fauna/faunadb-js](https://github.com/fauna/faunadb-js)                                         | ![](https://img.shields.io/github/stars/fauna/faunadb-js)                     | [ee6f53f](https://github.com/fauna/faunadb-js/commit/ee6f53f9c985bde41976743530e3846dee058587)                                  | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
 | [apache/incubator-kie-kogito-runtimes](https://github.com/apache/incubator-kie-kogito-runtimes) | ![](https://img.shields.io/github/stars/apache/incubator-kie-kogito-runtimes) | [53c18e5](https://github.com/apache/incubator-kie-kogito-runtimes/commit/53c18e5372e5306e0aa580f201f820b80359ad11)              | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
-
-<<<<<<< HEAD
-
-# ![Raven](https://raw.githubusercontent.com/CycodeLabs/raven/main/assets/images/raven.png)
-
-> > > > > > > 217ad26 (chore(readme): update logo, reporter, and more)
