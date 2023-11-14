@@ -2,6 +2,7 @@ from py2neo.ogm import GraphObject
 import json
 from src.config.config import Config
 from src.workflow_components.composite_action import CompositeAction
+from src.workflow_components.workflow import Workflow
 from typing import Tuple, List, Dict, Optional
 from tests.integration.integration_consts import START_NODE_INDEX, DEST_NODE_INDEX
 from src.common.utils import raw_str_to_bool
@@ -147,11 +148,11 @@ def assert_action_inputs(ca: CompositeAction, ca_d: Dict):
     2) The id of the composite action input is the md5 hash of the composite action id and the input name.
     3) Check that the default, description, and required properties are equal to those in the JSON file.
 
-    Each input is a tuple containing a source node (that will always be the composite action in this case)
-    the relation type and the destination node - will be the different action inputs.
+    Each input is a tuple containing a source node (in this case, will always be the composite action identifier)
+    the relation type and the destination node (the input itself identifier).
     """
-    for input in ca.inputs.triples():
-        ca_d_input = ca_d["inputs"][input[2].name]
+    for input in ca.composite_action_input.triples():
+        ca_d_input = ca_d["inputs"][input[DEST_NODE_INDEX].name]
 
         assert input[START_NODE_INDEX]._id == ca._id
         assert input[DEST_NODE_INDEX].name == ca_d_input["name"]
@@ -171,3 +172,43 @@ def assert_action_inputs(ca: CompositeAction, ca_d: Dict):
 
         if "description" in ca_d_input:
             assert input[DEST_NODE_INDEX].description == ca_d_input["description"]
+
+
+def assert_reusable_workflow_inputs(w: Workflow, workflow_d: Dict):
+    """
+    This function asserts that the reusable workflow inputs are equal to those in the JSON file.
+    Each reusable workflow is connected to multiple reusable workflow inputs.
+    Each input contains different properties such as name, default, description, and required.
+
+    Using `w.reusable_workflow_input.triples()`, we are iterating over all the inputs of the reusable workflow.
+    For each input, we check the following:
+    1) The ID, name, and URL of the workflow are equal to the ID, name, and URL of the input.
+    2) The id of the reusable workflow input is the md5 hash of the workflow id and the input name.
+    3) Check that the default, description, and required properties are equal to those in the JSON file.
+
+    Each input is a tuple containing a source node (in this case, will always be the reusable workflow)
+    the relation type and the destination node (the input itself identifier).
+    """
+    for input in w.reusable_workflow_input.triples():
+        workflow_d_input = workflow_d["on"]["workflow_call"]["inputs"][
+            input[DEST_NODE_INDEX].name
+        ]
+
+        assert input[START_NODE_INDEX]._id == w._id
+        assert input[DEST_NODE_INDEX].name == workflow_d_input["name"]
+        assert input[DEST_NODE_INDEX].url == workflow_d["url"]
+        assert (
+            input[DEST_NODE_INDEX]._id
+            == md5(f"{w._id}_{workflow_d_input.get('name')}".encode()).hexdigest()
+        )
+
+        if "required" in workflow_d_input:
+            assert input[DEST_NODE_INDEX].required == raw_str_to_bool(
+                workflow_d_input["required"]
+            )
+
+        if "default" in workflow_d_input:
+            assert input[DEST_NODE_INDEX].default == workflow_d_input["default"]
+
+        if "description" in workflow_d_input:
+            assert input[DEST_NODE_INDEX].description == workflow_d_input["description"]

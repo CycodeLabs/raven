@@ -185,7 +185,6 @@ def test_composite_action_step_from_dict_run():
     assert step.with_prop is None
     assert step.url == step_d["url"]
     assert len(step.action) == 0
-    assert len(step.reusable_workflow) == 0
     assert len(step.using_param) == 0
 
 
@@ -214,7 +213,6 @@ def test_composite_action_step_from_dict_run_dependency():
     assert step.url == step_d["url"]
     assert step.with_prop is None
     assert len(step.action) == 0
-    assert len(step.reusable_workflow) == 0
     assert len(step.using_param) == 1
 
 
@@ -254,7 +252,4 @@ def test_composite_action_step_from_dict_using():
         "cache-dependency-path:${{ inputs.cache-dependency-path }}",
         "update-environment:${{ inputs.update-environment }}",
     ]
-    # Check if step.action should be == 0 or 1
-    # assert len(step.action) == 0
-    assert len(step.reusable_workflow) == 0
     assert len(step.using_param) == 0
