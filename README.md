@@ -10,7 +10,7 @@
 
 # Raven - CI/CD Security Analyzer
 
-**RAVEN (Risk Analysis and Vulnerability Enumeration for CI/CD)** is a powerful security tool designed to perform massive scans for GitHub Actions CI workflows and digest the discovered data into a Neo4j database.
+**RAVEN (Risk Analysis and Vulnerability Enumeration for CI/CD)** is a powerful security tool designed to perform massive scans for GitHub Actions CI workflows and digest the discovered data into a Neo4j database. Developed and maintained by the [Cycode](https://cycode.com/?utm_source=github_website&utm_medium=referral&utm_campaign=raven_page) research team.
 
 With Raven, we were able to identify and report security vulnerabilities in some of the most popular repositories hosted on GitHub, including:
 
@@ -302,3 +302,9 @@ For authenticated users, the next rate limiting applies:
 | [DynamoDS/Dynamo](https://github.com/DynamoDS/Dynamo)                                           | ![](https://img.shields.io/github/stars/DynamoDS/Dynamo)                      | Disabled workflow                                                                                                               | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
 | [fauna/faunadb-js](https://github.com/fauna/faunadb-js)                                         | ![](https://img.shields.io/github/stars/fauna/faunadb-js)                     | [ee6f53f](https://github.com/fauna/faunadb-js/commit/ee6f53f9c985bde41976743530e3846dee058587)                                  | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
 | [apache/incubator-kie-kogito-runtimes](https://github.com/apache/incubator-kie-kogito-runtimes) | ![](https://img.shields.io/github/stars/apache/incubator-kie-kogito-runtimes) | [53c18e5](https://github.com/apache/incubator-kie-kogito-runtimes/commit/53c18e5372e5306e0aa580f201f820b80359ad11)              | [Blog](https://cycode.com/github-actions-vulnerabilities/)                                                   |
+
+## Want more of CI/CD Security, AppSec, and ASPM? Check out Cycode
+
+If you liked Raven, you would probably love our [Cycode](https://cycode.com/?utm_source=github_website&utm_medium=referral&utm_campaign=raven_page) platform that offers even more enhanced capabilities for visibility, prioritization, and remediation of vulnerabilities across the software delivery.
+
+If you are interested in a robust, research-driven Pipeline Security, Application Security, or ASPM solution, don't hesitate to get in touch with us or request a demo using the form [https://cycode.com/book-a-demo/](https://cycode.com/book-a-demo/?utm_source=github_website&utm_medium=referral&utm_campaign=raven_page).
