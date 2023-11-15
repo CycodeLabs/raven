@@ -43,20 +43,23 @@ def index_downloaded_workflows() -> None:
 
 def index_action_file(action: str) -> None:
     try:
-        with RedisConnection(Config.redis_sets_db) as sets_db:
-            if sets_db.exists_in_set(Config.action_index_history_set, action):
+        with RedisConnection(Config.redis_objects_ops_db) as ops_db:
+            if ops_db.exists_in_set(Config.action_index_history_set, action):
                 return
 
+            action_full_name = ops_db.get_value_from_hash(
+                Config.ref_pointers_hash, action
+            ).decode()
             with RedisConnection(Config.redis_actions_db) as actions_db:
                 content = actions_db.get_value_from_hash(
-                    action, Config.redis_data_hash_field_name
+                    action_full_name, Config.redis_data_hash_field_name
                 ).decode()
                 url = actions_db.get_value_from_hash(
-                    action, Config.redis_url_hash_field_name
+                    action_full_name, Config.redis_url_hash_field_name
                 ).decode()
                 is_public = str_to_bool(
                     actions_db.get_value_from_hash(
-                        action, Config.redis_is_public_hash_field_name
+                        action_full_name, Config.redis_is_public_hash_field_name
                     ).decode()
                 )
 
@@ -70,7 +73,7 @@ def index_action_file(action: str) -> None:
                     obj = yaml.load(f, yaml.loader.Loader)
                 except yaml.scanner.ScannerError as e:
                     log.error(
-                        f"[-] Failed loading: {action}. Exception: {e}. Skipping..."
+                        f"[-] Failed loading: {action_full_name}. Exception: {e}. Skipping..."
                     )
                     return
 
@@ -85,32 +88,36 @@ def index_action_file(action: str) -> None:
                 log.debug(f"[-] Symlink detected: {content}. Skipping...")
                 return
 
-            obj["path"] = action
+            obj["path"] = action_full_name
             obj["url"] = url
             obj["is_public"] = is_public
 
             Config.graph.push_object(CompositeAction.from_dict(obj))
-            sets_db.insert_to_set(Config.action_index_history_set, action)
+            ops_db.insert_to_set(Config.action_index_history_set, action_full_name)
     except Exception as e:
         log.error(f"[-] Error while indexing {action}. {e}")
 
 
 def index_workflow_file(workflow: str) -> None:
     try:
-        with RedisConnection(Config.redis_sets_db) as sets_db:
-            if sets_db.exists_in_set(Config.workflow_index_history_set, workflow):
+        with RedisConnection(Config.redis_objects_ops_db) as ops_db:
+            if ops_db.exists_in_set(Config.workflow_index_history_set, workflow):
                 return
+
+            workflow_full_name = ops_db.get_value_from_hash(
+                Config.ref_pointers_hash, workflow
+            ).decode()
 
             with RedisConnection(Config.redis_workflows_db) as workflows_db:
                 content = workflows_db.get_value_from_hash(
-                    workflow, Config.redis_data_hash_field_name
+                    workflow_full_name, Config.redis_data_hash_field_name
                 ).decode()
                 url = workflows_db.get_value_from_hash(
-                    workflow, Config.redis_url_hash_field_name
+                    workflow_full_name, Config.redis_url_hash_field_name
                 ).decode()
                 is_public = str_to_bool(
                     workflows_db.get_value_from_hash(
-                        workflow, Config.redis_is_public_hash_field_name
+                        workflow_full_name, Config.redis_is_public_hash_field_name
                     ).decode()
                 )
 
@@ -124,7 +131,7 @@ def index_workflow_file(workflow: str) -> None:
                     obj = yaml.load(f, yaml.loader.Loader)
                 except yaml.scanner.ScannerError as e:
                     log.error(
-                        f"[-] Failed loading: {workflow}. Exception: {e}. Skipping..."
+                        f"[-] Failed loading: {workflow_full_name}. Exception: {e}. Skipping..."
                     )
                     return
 
@@ -139,12 +146,12 @@ def index_workflow_file(workflow: str) -> None:
                 log.debug(f"[-] Symlink detected: {content}. Skipping...")
                 return
 
-            obj["path"] = workflow
+            obj["path"] = workflow_full_name
             obj["url"] = url
             obj["is_public"] = is_public
 
             Config.graph.push_object(Workflow.from_dict(obj))
-            sets_db.insert_to_set(Config.workflow_index_history_set, workflow)
+            ops_db.insert_to_set(Config.workflow_index_history_set, workflow_full_name)
 
     except Exception as e:
         log.error(f"[-] Error while indexing {workflow}. {e}")
