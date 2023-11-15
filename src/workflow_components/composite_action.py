@@ -12,7 +12,6 @@ from src.common.utils import (
 )
 from src.workflow_components.dependency import UsesString, UsesStringType
 from src.indexer.utils import get_object_full_name_from_ref_pointers_set
-from src.workflow_components.dependency import UsesString
 from src.logger import log
 
 
@@ -125,10 +124,10 @@ class CompositeActionStep(GraphObject):
             if "shell" in obj_dict:
                 s.shell = obj_dict["shell"]
         elif "uses" in obj_dict:
-            s.uses = obj_dict["uses"]
             # Uses string is quite complex, and may reference to several types of nodes.
             # In the case of action steps, it may only reference actions (and not reusable workflows).
-            uses_string_obj = UsesString.analyze(s.uses, s.path)
+            uses_string_obj = UsesString.analyze(obj_dict["uses"], s.path)
+            s.uses = uses_string_obj.absolute_path_with_ref
             if uses_string_obj.type == UsesStringType.ACTION:
                 obj = get_or_create_composite_action(
                     uses_string_obj.absolute_path_with_ref

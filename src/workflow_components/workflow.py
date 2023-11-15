@@ -114,10 +114,10 @@ class Step(GraphObject):
                 param.url = s.url
                 s.using_param.add(param)
         elif "uses" in obj_dict:
-            s.uses = obj_dict["uses"]
             # Uses string is quite complex, and may reference to several types of nodes.
             # In the case of steps, it may only reference actions (and not reusable workflows).
-            uses_string_obj = UsesString.analyze(s.uses, s.path)
+            uses_string_obj = UsesString.analyze(obj_dict["uses"], s.path)
+            s.uses = uses_string_obj.absolute_path_with_ref
             if uses_string_obj.type == UsesStringType.ACTION:
                 # Avoiding circular imports.
                 import src.workflow_components.composite_action as composite_action
@@ -163,10 +163,10 @@ class Job(GraphObject):
             commit_sha=obj_dict["commit_sha"],
         )
         if "uses" in obj_dict:
-            j.uses = obj_dict["uses"]
             # Uses string is quite complex, and may reference to several types of nodes.
             # In the case of jobs, it may only reference reusable workflows.
-            uses_string_obj = UsesString.analyze(j.uses, j.path)
+            uses_string_obj = UsesString.analyze(obj_dict["uses"], j.path)
+            j.uses = uses_string_obj.absolute_path_with_ref
             if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
                 obj = get_or_create_workflow(uses_string_obj.absolute_path_with_ref)
                 j.reusable_workflow.add(obj)
