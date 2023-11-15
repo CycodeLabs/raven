@@ -21,6 +21,7 @@ from src.common.utils import (
     convert_path_and_commit_sha_to_absolute_path,
     is_url_contains_a_token,
 )
+
 from src.workflow_components.dependency import UsesString, UsesStringType
 import src.logger.log as log
 
@@ -139,7 +140,7 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
     We use out utilitiy tooling to parse the uses string, because it can be quite complex.
     """
     with RedisConnection(Config.redis_objects_ops_db) as ops_db:
-        uses_string_obj = UsesString.analyze(uses_string=uses_string)
+        uses_string_obj = UsesString.analyze(uses_string, repo)
         absolute_path = uses_string_obj.absolute_path_with_ref
         is_public = 1
 
@@ -150,26 +151,14 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
         ):
             return
 
-        # # If already scanned action
-        # if ops_db.exists_in_set(Config.action_download_history_set, absolute_path):
-        #     return
-        # # If already scanned workflow - Have to check workflow db because only it contains the full workflow path.
-        # with RedisConnection(Config.redis_workflows_db) as workflows_db:
-        #     if (
-        #         workflows_db.get_value_from_hash(
-        #             absolute_path, Config.redis_data_hash_field_name
-        #         )
-        #         is not None
-        #     ):
-        #         return
-
+        # TODO: Changed to absolute path here
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
             download_url, commit_sha = get_repository_workflow(
-                uses_string_obj.path, uses_string_obj.ref
+                uses_string_obj.absolute_path, uses_string_obj.ref
             )
         elif uses_string_obj.type == UsesStringType.ACTION:
             download_url, commit_sha = get_repository_composite_action(
-                uses_string_obj.path, uses_string_obj.ref
+                uses_string_obj.absolute_path, uses_string_obj.ref
             )
         else:
             # Can happen with docker references.
@@ -211,7 +200,9 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
         new_repo = get_repo_name_from_path(absolute_path)
         for new_uses_string in uses_strings:
             # Some infinite loop I met in several repositories
-            new_full_path = UsesString.analyze(new_uses_string).absolute_path_with_ref
+            new_full_path = UsesString.analyze(
+                new_uses_string, new_repo
+            ).absolute_path_with_ref
             if new_full_path == absolute_path:
                 continue
 

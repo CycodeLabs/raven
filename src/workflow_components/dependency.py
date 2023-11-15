@@ -14,18 +14,15 @@ class UsesStringType(Enum):
 class UsesString:
     def __init__(
         self,
-        path: str,
+        absolute_path: str,
         type: UsesStringType,
         is_relative: bool = False,
         ref: Optional[str] = None,
     ):
         self.type = type
-        self.path = path
+        self.absolute_path = absolute_path
         self.ref = ref
         self.is_relative = is_relative
-        self.absolute_path = self.get_absolute_path_with_repo(
-            self.path, self.is_relative
-        )
 
     @property
     def absolute_path_with_ref(self):
@@ -35,7 +32,7 @@ class UsesString:
         return f"{self.absolute_path}@{self.ref}" if self.ref else self.absolute_path
 
     @staticmethod
-    def analyze(uses_string: str) -> "UsesString":
+    def analyze(uses_string: str, extratct_repo_path: str = None) -> "UsesString":
         """
         Parses the uses string to extract relevant information.
 
@@ -54,11 +51,14 @@ class UsesString:
         Returns:
         - UsesString: An object containing the parsed information.
         """
-        path, ref = UsesString.split_path_and_ref(uses_string)
-        type = UsesString.determine_type(path)
-        is_relative = path.startswith("./")
+        raw_path, ref = UsesString.split_path_and_ref(uses_string)
+        type = UsesString.determine_type(raw_path)
+        is_relative = raw_path.startswith("./")
+        absolute_path = UsesString.calculate_absolute_path(
+            raw_path, extratct_repo_path, is_relative
+        )
 
-        return UsesString(path, type, is_relative=is_relative, ref=ref)
+        return UsesString(absolute_path, type, is_relative=is_relative, ref=ref)
 
     @staticmethod
     def split_path_and_ref(uses_string: str) -> (str, Optional[str]):
@@ -77,7 +77,9 @@ class UsesString:
         return UsesStringType.ACTION
 
     @staticmethod
-    def get_absolute_path_with_repo(file_path: str, is_relative: bool) -> str:
+    def calculate_absolute_path(
+        file_path: str, extratct_repo_path: str, is_relative: bool
+    ) -> str:
         """
         Calculates the full path for a given action or reusable workflow.
         It will get rid of the relative path (e.g., "..", "./", etc.) and return the full path.
@@ -88,13 +90,5 @@ class UsesString:
             return file_path
 
         # Extract repository path and evaluate relative path (e.g., "..", "./", etc.).
-        repo = get_repo_name_from_path(file_path)
+        repo = get_repo_name_from_path(extratct_repo_path)
         return os.path.relpath(os.path.abspath(os.path.join(repo, file_path)))
-
-    # @staticmethod
-    # def get_ref_from_path_string(path: str) -> Optional[str]:
-    #     """
-    #     Extracts the ref from a path string.
-    #     """
-    #     parts = path.split("@")
-    #     return parts[-1] if len(parts) > 1 else None

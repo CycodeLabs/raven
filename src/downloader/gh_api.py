@@ -234,28 +234,6 @@ def get_commit_sha_of_ref(repo: str, ref: str) -> Optional[str]:
     # If we got here, it means that ref is a commit sha
     return ref
 
-    # if ref is None:
-    #     # If no ref is provided, we return the latest commit sha
-    #     r = get(COMMITS_URL.format(repo_path=repo), headers=headers)
-    #     if r.status_code != 200:
-    #         log.error(
-    #             f"Coudln't found commits for repository {repo}. status code: {r.status_code}. Response: {r.text}"
-    #         )
-    #         return
-
-    #     return r.json()[0]["sha"]
-    # r = get(TAGS_URL.format(repo_path=repo), headers=headers)
-    # if r.status_code != 200:
-    #     log.error(
-    #         f"Coudln't found tags for repository {repo} even though tag {ref} is required. status code: {r.status_code}. Response: {r.text}"
-    #     )
-    #     return
-
-    # shas = [d["commit"]["sha"] for d in r.json() if d["name"] == ref]
-
-    # # Sometimes the tag is not found, but the provided reference is actually a branch name.
-    # return shas[0] if len(shas) > 0 else ref
-
 
 def get_download_url(
     path: str,

@@ -3,6 +3,7 @@ import io
 import yaml
 from yaml.constructor import Constructor
 
+from src.indexer.utils import get_object_full_name_from_ref_pointers_set
 from src.storage.redis_connection import RedisConnection
 from src.config.config import Config
 from src.workflow_components.workflow import Workflow
@@ -10,6 +11,7 @@ from src.workflow_components.composite_action import CompositeAction
 from tqdm import tqdm
 import src.logger.log as log
 from src.common.utils import str_to_bool
+from src.workflow_components.dependency import UsesString
 
 
 # A hack to deny PyYAML to convert "on" tags into Python boolean values.
@@ -53,9 +55,7 @@ def index_action_file(action: str) -> None:
             if ops_db.exists_in_set(Config.action_index_history_set, action):
                 return
 
-            action_full_name = ops_db.get_value_from_hash(
-                Config.ref_pointers_hash, action
-            ).decode()
+            action_full_name = get_object_full_name_from_ref_pointers_set(action)
             with RedisConnection(Config.redis_actions_db) as actions_db:
                 content = actions_db.get_value_from_hash(
                     action_full_name, Config.redis_data_hash_field_name
@@ -94,9 +94,15 @@ def index_action_file(action: str) -> None:
                 log.debug(f"[-] Symlink detected: {content}. Skipping...")
                 return
 
-            obj["path"] = action
+            obj["path"], obj["commit_sha"] = UsesString.split_path_and_ref(
+                action_full_name
+            )
             obj["url"] = url
             obj["is_public"] = is_public
+
+            ref = UsesString.split_path_and_ref(action)[1]
+            if ref:
+                obj["ref"] = ref
 
             Config.graph.push_object(CompositeAction.from_dict(obj))
             ops_db.insert_to_set(Config.action_index_history_set, action)
@@ -110,9 +116,7 @@ def index_workflow_file(workflow: str) -> None:
             if ops_db.exists_in_set(Config.workflow_index_history_set, workflow):
                 return
 
-            workflow_full_name = ops_db.get_value_from_hash(
-                Config.ref_pointers_hash, workflow
-            ).decode()
+            workflow_full_name = get_object_full_name_from_ref_pointers_set(workflow)
 
             with RedisConnection(Config.redis_workflows_db) as workflows_db:
                 content = workflows_db.get_value_from_hash(
@@ -152,9 +156,14 @@ def index_workflow_file(workflow: str) -> None:
                 log.debug(f"[-] Symlink detected: {content}. Skipping...")
                 return
 
-            obj["path"] = workflow
+            obj["path"], obj["commit_sha"] = UsesString.split_path_and_ref(
+                workflow_full_name
+            )
             obj["url"] = url
             obj["is_public"] = is_public
+            ref = UsesString.split_path_and_ref(workflow)[1]
+            if ref:
+                obj["ref"] = ref
 
             Config.graph.push_object(Workflow.from_dict(obj))
             ops_db.insert_to_set(Config.workflow_index_history_set, workflow)
