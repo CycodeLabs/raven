@@ -92,7 +92,7 @@ def test_job_from_dict_uses():
     assert job.commit_sha == job_d["commit_sha"]
     assert job.path == job_d["path"]
     assert job.machine is None
-    assert job.uses == job_d["uses"]
+    assert job.uses == "vercel/next.js/.github/workflows/build_reusable.yml"
     assert job.url == job_d["url"]
     assert job.with_prop == ["skipForDocsOnly:yes"]
     assert len(job.steps) == 0
