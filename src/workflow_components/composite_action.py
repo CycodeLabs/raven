@@ -11,6 +11,9 @@ from src.common.utils import (
     raw_str_to_bool,
 )
 from src.workflow_components.dependency import UsesString, UsesStringType
+from src.indexer.utils import get_object_full_name_from_ref_pointers_set
+from src.workflow_components.dependency import UsesString
+from src.logger import log
 
 
 def get_or_create_composite_action(path: str) -> "CompositeAction":
@@ -18,7 +21,16 @@ def get_or_create_composite_action(path: str) -> "CompositeAction":
     If action wasn't indexed yet, we create a stub node,
     that will be enriched eventually.
     """
-    ca = CompositeAction(None, path)
+    # TODO: This should be discussed. #
+    ca_full_name = get_object_full_name_from_ref_pointers_set(path)
+    if ca_full_name:
+        absolute_path, commit_sha = UsesString.split_path_and_ref(ca_full_name)
+        ca = CompositeAction(None, absolute_path, commit_sha)
+    else:
+        log.warning(f"We did not download Composite Action - {path}")
+        ca = CompositeAction(None, path, "")
+    ###
+
     obj = Config.graph.get_object(ca)
     if not obj:
         # This is a legitimate behavior.
@@ -38,16 +50,20 @@ class CompositeActionInput(GraphObject):
     required = Property()
     url = Property()
     path = Property()
+    commit_sha = Property()
+    action = RelatedTo("CompositeAction")
 
-    def __init__(self, _id: str, path: str):
+    def __init__(self, _id: str, path: str, commit_sha: str):
         self._id = _id
         self.path = path
+        self.commit_sha = commit_sha
 
     @staticmethod
     def from_dict(obj_dict) -> "CompositeActionInput":
         i = CompositeActionInput(
             _id=obj_dict["_id"],
             path=obj_dict["path"],
+            commit_sha=obj_dict["commit_sha"],
         )
 
         i.name = obj_dict["name"]
@@ -72,21 +88,26 @@ class CompositeActionStep(GraphObject):
     path = Property()
     run = Property()
     uses = Property()
-    ref = Property()
     shell = Property()
     url = Property()
     with_prop = Property("with")
+    commit_sha = Property()
 
     action = RelatedTo("CompositeAction")
     using_param = RelatedTo(workflow.StepCodeDependency)
 
-    def __init__(self, _id: str, path: str):
+    def __init__(self, _id: str, path: str, commit_sha: str):
         self._id = _id
         self.path = path
+        self.commit_sha = commit_sha
 
     @staticmethod
     def from_dict(obj_dict) -> "CompositeActionStep":
-        s = CompositeActionStep(_id=obj_dict["_id"], path=obj_dict["path"])
+        s = CompositeActionStep(
+            _id=obj_dict["_id"],
+            path=obj_dict["path"],
+            commit_sha=obj_dict["commit_sha"],
+        )
         s.url = obj_dict["url"]
         if "id" in obj_dict:
             s.name = obj_dict["id"]
@@ -95,7 +116,9 @@ class CompositeActionStep(GraphObject):
 
             # Adding ${{...}} dependencies as an entity.
             for code_dependency in get_dependencies_in_code(s.run):
-                param = workflow.StepCodeDependency(code_dependency, s.path)
+                param = workflow.StepCodeDependency(
+                    code_dependency, s.path, s.commit_sha
+                )
                 param.url = s.url
                 s.using_param.add(param)
 
@@ -105,7 +128,7 @@ class CompositeActionStep(GraphObject):
             s.uses = obj_dict["uses"]
             # Uses string is quite complex, and may reference to several types of nodes.
             # In the case of action steps, it may only reference actions (and not reusable workflows).
-            uses_string_obj = UsesString.analyze(uses_string=s.uses)
+            uses_string_obj = UsesString.analyze(s.uses, s.path)
             if uses_string_obj.type == UsesStringType.ACTION:
                 obj = get_or_create_composite_action(
                     uses_string_obj.absolute_path_with_ref
@@ -114,10 +137,6 @@ class CompositeActionStep(GraphObject):
 
             if "with" in obj_dict:
                 s.with_prop = convert_dict_to_list(obj_dict["with"])
-
-            if len(s.uses.split("@")) > 1:
-                s.ref = s.uses.split("@")[1]
-
         return s
 
 
@@ -131,28 +150,42 @@ class CompositeAction(GraphObject):
     image = Property()
     url = Property()
     is_public = Property()
+    refs = Property()
+    commit_sha = Property()
 
     composite_action_input = RelatedTo(CompositeActionInput)
     steps = RelatedTo(CompositeActionStep)
 
-    def __init__(self, name: Optional[str], path: str):
+    def __init__(self, name: Optional[str], path: str, commit_sha: str):
         self.name = name
         self.path = path
-        self._id = md5(path.encode()).hexdigest()
+        self.commit_sha = commit_sha
+        self._id = md5(f"{path}_{commit_sha}".encode()).hexdigest()
+        self.refs = []
 
     @staticmethod
     def from_dict(obj_dict) -> "CompositeAction":
-        ca = CompositeAction(name=obj_dict.get("name"), path=obj_dict["path"])
+        ca = CompositeAction(
+            name=obj_dict.get("name"),
+            path=obj_dict["path"],
+            commit_sha=obj_dict["commit_sha"],
+        )
 
         ca.url = obj_dict["url"]
         ca.is_public = obj_dict["is_public"]
         if "inputs" in obj_dict:
             for name, input in obj_dict["inputs"].items():
-                input["_id"] = md5(f"{ca._id}_{name}".encode()).hexdigest()
+                input["_id"] = md5(
+                    f"{ca._id}_{name}_{ca.commit_sha}".encode()
+                ).hexdigest()
                 input["name"] = name
                 input["url"] = ca.url
+                input["commit_sha"] = ca.commit_sha
                 input["path"] = ca.path
                 ca.composite_action_input.add(CompositeActionInput.from_dict(input))
+
+        if "ref" in obj_dict:
+            ca.refs.append(obj_dict["ref"])
 
         if "runs" in obj_dict:
             d_runs = obj_dict["runs"]
@@ -165,9 +198,12 @@ class CompositeAction(GraphObject):
 
             if "steps" in d_runs:
                 for i, step in enumerate(d_runs["steps"]):
-                    step["_id"] = md5(f"{ca._id}_{i}".encode()).hexdigest()
+                    step["_id"] = md5(
+                        f"{ca._id}_{i}_{ca.commit_sha}".encode()
+                    ).hexdigest()
                     step["path"] = ca.path
                     step["url"] = ca.url
+                    step["commit_sha"] = ca.commit_sha
                     ca.steps.add(CompositeActionStep.from_dict(step))
 
         return ca

@@ -19,12 +19,12 @@ def test_uses_string_analyze():
         (
             "./.github/actions/action-setup",
             True,
-            "./.github/actions/action-setup",
+            ".github/actions/action-setup",
         ),
         (
             "./.github/actions/build.yml",
             True,
-            "./.github/actions/build.yml",
+            ".github/actions/build.yml",
         ),
         (
             "octo-org/this-repo/.github/workflows/workflow-1.yml@latest",
@@ -39,8 +39,8 @@ def test_uses_string_analyze():
     ]
 
     for test_case in test_cases:
-        uses_string_obj = dependency.UsesString.analyze(test_case[0])
+        uses_string_obj = dependency.UsesString.analyze(test_case[0], "")
         assert (
             uses_string_obj.is_relative == test_case[1]
-            and uses_string_obj.path == test_case[2]
+            and uses_string_obj.absolute_path == test_case[2]
         )
