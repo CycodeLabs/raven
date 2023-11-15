@@ -27,8 +27,12 @@ REDIS_REF_POINTERS_HASH = "ref_pointers"
 REDIS_DATA_HASH_FIELD_NAME = "data"
 REDIS_URL_HASH_FIELD_NAME = "url"
 REDIS_IS_PUBLIC_HASH_FIELD_NAME = "is_public"
+
+# The DB which contains the objects operations history (downloaded, indexed, etc.) and the ref pointers
 REDIS_OBJECTS_OPS_DB = 0
+# The DB which contains the downloaded workflows
 REDIS_WORKFLOWS_DB = 1
+# The DB which contains the downloaded actions
 REDIS_ACTIONS_DB = 2
 
 # CLI commands

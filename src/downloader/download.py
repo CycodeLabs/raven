@@ -77,7 +77,7 @@ def download_workflows_and_actions(repo: str) -> None:
     """
     with RedisConnection(Config.redis_objects_ops_db) as ops_db:
         if ops_db.exists_in_set(Config.workflow_download_history_set, repo):
-            log.debug("[!] Already downloaded")
+            log.debug(f"[!] Repo {repo} already scanned, skipping.")
             return
 
         workflows = get_repository_workflows(repo)

@@ -29,13 +29,13 @@ def insert_workflow_or_action_to_redis(
 
 def add_ref_pointer_to_redis(uses_path: str, processed_path: str):
     """
-    Adds a reference pointer to Redis for a given raw path and its path includint the commit sha of the ref.
+    Adds a reference pointer to Redis for a given raw path and its path including the commit sha of the ref.
     For example:
     actions/checkout@v4 -> actions/checkout@c533a0a4cfc4962971818edcfac47a2899e69799
     repo/some/workflow.yml@master -> repo/some/workflow.yml@c533a0a4cfc4962971818edcfac47a2899e69799
 
     Args:
-        uses_path (str): The raw path to be added as a key in the Redis hash, it is the output of dependency.analyze
+        uses_path (str): The raw path to be added as a key in the Redis hash, it is the output of dependency analysis.
         processed_path (str): The path of the object including the commit sha of the ref
     """
     with RedisConnection(Config.redis_objects_ops_db) as ops_db:
