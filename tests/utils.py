@@ -159,7 +159,9 @@ def assert_action_inputs(ca: CompositeAction, ca_d: Dict):
         assert input[DEST_NODE_INDEX].url == ca_d["url"]
         assert (
             input[DEST_NODE_INDEX]._id
-            == md5(f"{ca._id}_{ca_d_input.get('name')}".encode()).hexdigest()
+            == md5(
+                f"{ca._id}_{ca_d_input.get('name')}_{ca_d_input.get('commit_sha')}".encode()
+            ).hexdigest()
         )
 
         if "required" in ca_d_input:
@@ -199,7 +201,9 @@ def assert_reusable_workflow_inputs(w: Workflow, workflow_d: Dict):
         assert input[DEST_NODE_INDEX].url == workflow_d["url"]
         assert (
             input[DEST_NODE_INDEX]._id
-            == md5(f"{w._id}_{workflow_d_input.get('name')}".encode()).hexdigest()
+            == md5(
+                f"{w._id}_{workflow_d_input.get('name')}_{w.commit_sha}".encode()
+            ).hexdigest()
         )
 
         if "required" in workflow_d_input:

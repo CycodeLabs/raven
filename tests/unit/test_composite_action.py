@@ -8,6 +8,7 @@ def test_composite_action_from_dist_node():
     ca_d = {
         "name": "Create Issue From File",
         "description": "An action to create an issue using content from a file",
+        "commit_sha": "f85b9778e35a1273d88c7dabdb210eaf",
         "inputs": {
             "token": {
                 "description": "The GitHub authentication token",
@@ -40,6 +41,7 @@ def test_composite_action_from_dist_node():
 
     assert ca.name == ca_d["name"]
     assert ca.path == ca_d["path"]
+    assert ca.commit_sha == ca_d["commit_sha"]
     assert ca.using == "node16"
     assert ca.url == ca_d["url"]
     assert ca.is_public == ca_d["is_public"]
@@ -53,6 +55,7 @@ def test_composite_action_from_dict_dockerfile():
     ca_d = {
         "name": "Automatic Rebase",
         "description": "Automatically rebases PR on '/rebase' comment",
+        "commit_sha": "f85b9778e35a1273d88c7dabdb210eaf",
         "maintainer": "Cirrus Labs",
         "runs": {"using": "docker", "image": "Dockerfile"},
         "inputs": {
@@ -72,6 +75,7 @@ def test_composite_action_from_dict_dockerfile():
 
     assert ca.name == ca_d["name"]
     assert ca.path == ca_d["path"]
+    assert ca.commit_sha == ca_d["commit_sha"]
     assert ca.using == "docker"
     assert ca.image == "Dockerfile"
     assert ca.url == ca_d["url"]
@@ -85,6 +89,7 @@ def test_composite_action_from_dict_image():
     ca_d = {
         "name": "Image Actions",
         "author": "Calibre",
+        "commit_sha": "f85b9778e35a1273d88c7dabdb210eaf",
         "description": "Compresses Images for the Web",
         "inputs": {
             "githubToken": {"description": "GitHub Token", "required": "true"},
@@ -111,6 +116,7 @@ def test_composite_action_from_dict_image():
     assert ca.using == "docker"
     assert ca.url == ca_d["url"]
     assert ca.is_public == ca_d["is_public"]
+    assert ca.commit_sha == ca_d["commit_sha"]
     assert ca.image == "docker://ghcr.io/calibreapp/image-actions/image-actions:main"
     assert len(ca.steps) == 0
 
@@ -121,6 +127,7 @@ def test_composite_action_from_dict_steps():
     ca_d = {
         "name": "Install development tools",
         "description": "GitHub Action for installing development tools",
+        "commit_sha": "f85b9778e35a1273d88c7dabdb210eaf",
         "inputs": {
             "tool": {
                 "description": "Tools to install (comma-separated list)",
@@ -154,6 +161,7 @@ def test_composite_action_from_dict_steps():
 
     assert ca.name == ca_d["name"]
     assert ca.path == ca_d["path"]
+    assert ca.commit_sha == ca_d["commit_sha"]
     assert ca.using == "composite"
     assert ca.url == ca_d["url"]
     assert ca.is_public == ca_d["is_public"]
@@ -169,6 +177,7 @@ def test_composite_action_step_from_dict_run():
         "if": "runner.os != 'Windows'",
         "shell": "bash",
         "_id": "4eba12855ade10f6e8dda0456946ffa1",
+        "commit_sha": "f85b9778e35a1273d88c7dabdb210eaf",
         "path": "data/actions/dtolnay|rust-toolchain|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
     }
@@ -178,9 +187,9 @@ def test_composite_action_step_from_dict_run():
     assert step._id == step_d["_id"]
     assert step.name is None
     assert step.path == step_d["path"]
+    assert step.commit_sha == step_d["commit_sha"]
     assert step.run == step_d["run"]
     assert step.uses is None
-    assert step.ref is None
     assert step.shell == step_d["shell"]
     assert step.with_prop is None
     assert step.url == step_d["url"]
@@ -197,6 +206,7 @@ def test_composite_action_step_from_dict_run_dependency():
             "SETUP_PYTHON_PATH": "${{ steps.setup.outputs.python-path }}",
         },
         "_id": "f85b9778e35a1273d88c7dabdb210eaf",
+        "commit_sha": "f85b9778e35a1273d88c7dabdb210eaf",
         "path": "data/actions/ytdl-org|setup-python|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
     }
@@ -208,9 +218,9 @@ def test_composite_action_step_from_dict_run_dependency():
     assert step.path == step_d["path"]
     assert step.run == step_d["run"]
     assert step.uses is None
-    assert step.ref is None
     assert step.shell == step_d["shell"]
     assert step.url == step_d["url"]
+    assert step.commit_sha == step_d["commit_sha"]
     assert step.with_prop is None
     assert len(step.action) == 0
     assert len(step.using_param) == 1
@@ -230,6 +240,7 @@ def test_composite_action_step_from_dict_using():
             "update-environment": "${{ inputs.update-environment }}",
         },
         "_id": "11e15e6b7424478c2e32fd22ed477c21",
+        "commit_sha": "f85b9778e35a1273d88c7dabdb210eaf",
         "path": "data/actions/ytdl-org|setup-python|action.yml",
         "url": "https://github.com/CycodeLabs/Raven/pull/1",
     }
@@ -240,7 +251,7 @@ def test_composite_action_step_from_dict_using():
     assert step.path == step_d["path"]
     assert step.run is None
     assert step.uses == step_d["uses"]
-    assert step.ref == "bd6b4b6205c4dbad673328db7b31b7fab9e241c0"
+    assert step.commit_sha == step_d["commit_sha"]
     assert step.shell is None
     assert step.url == step_d["url"]
     assert step.with_prop == [
