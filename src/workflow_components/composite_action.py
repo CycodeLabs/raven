@@ -15,8 +15,19 @@ from src.indexer.utils import get_object_full_name_from_ref_pointers_set
 from src.logger import log
 
 
+def get_composite_action(path: str, commit_sha: str) -> Optional["CompositeAction"]:
+    """
+    Returns a composite action object from the graph.
+    If not found, returns None.
+    """
+    ca = CompositeAction(None, path, commit_sha)
+    obj = Config.graph.get_object(ca)
+    return obj
+
+
 def get_or_create_composite_action(path: str) -> "CompositeAction":
-    """Used when need to create relations with another action.
+    """
+    Used when need to create relations with another action.
     If action wasn't indexed yet, we create a stub node,
     that will be enriched eventually.
     """
@@ -24,17 +35,17 @@ def get_or_create_composite_action(path: str) -> "CompositeAction":
     ca_full_name = get_object_full_name_from_ref_pointers_set(path)
     if ca_full_name:
         absolute_path, commit_sha = UsesString.split_path_and_ref(ca_full_name)
-        ca = CompositeAction(None, absolute_path, commit_sha)
     else:
         log.warning(f"We did not download Composite Action - {path}")
-        ca = CompositeAction(None, path, "")
+        absolute_path, commit_sha = path, ""
     ###
 
-    obj = Config.graph.get_object(ca)
+    obj = get_composite_action(absolute_path, commit_sha)
     if not obj:
         # This is a legitimate behavior.
         # Once the action will be indexed, the node will be enriched.
-        Config.graph.push_object(ca)
+        ca = CompositeAction(None, absolute_path, commit_sha)
+        Config.graph.merge_object(ca)
         obj = ca
     return obj
 

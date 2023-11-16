@@ -1,9 +1,8 @@
 import re
 import io
-from typing import List, Dict, Union, Tuple, Optional
+from typing import List, Dict, Union
 
 import yaml
-from py2neo.data import Node
 
 from src.storage.redis_connection import RedisConnection
 from src.config.config import Config
