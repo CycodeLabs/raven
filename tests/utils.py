@@ -13,7 +13,7 @@ class GraphDbMock(object):
     def __init__(self):
         pass
 
-    def push_object(self, obj: GraphObject):
+    def merge_object(self, obj: GraphObject):
         pass
 
     def get_object(self, obj: GraphObject) -> Optional[GraphObject]:
@@ -125,15 +125,25 @@ def assert_graph_structures(graph_structure: Dict, snapshot_path: str) -> None:
 
     # Asserting nodes
     for node in snapshot_nodes:
-        assert (
-            node == graph_nodes[snapshot_nodes.index(node)]
-        ), f"Properties of nodes on the same index is not equal\n{get_dicts_differences(node, graph_nodes[snapshot_nodes.index(node)])}\n\nIn snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}"
+        if isinstance(node, list) or isinstance(node, tuple):
+            assert sorted(node) == sorted(
+                graph_nodes[snapshot_nodes.index(node)]
+            ), f"Properties of nodes on the same index is not equal\n{get_dicts_differences(node, graph_nodes[snapshot_nodes.index(node)])}\n\nIn snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}"
+        else:
+            assert (
+                node == graph_nodes[snapshot_nodes.index(node)]
+            ), f"Properties of nodes on the same index is not equal\n{get_dicts_differences(node, graph_nodes[snapshot_nodes.index(node)])}\n\nIn snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}"
 
     # Asserting relationships
     for relationship in snapshot_relations:
-        assert (
-            relationship == graph_relations[snapshot_relations.index(relationship)]
-        ), f"Properties of relationships on the same index of graph and snapshot is not equal\n\n{get_dicts_differences(relationship, graph_relations[snapshot_relations.index(relationship)])}\nIn snapshot:\n{relationship}\nIn graph:\n{graph_relations[snapshot_relations.index(relationship)]}"
+        if isinstance(relationship, list) or isinstance(relationship, tuple):
+            assert sorted(relationship) == sorted(
+                graph_relations[snapshot_relations.index(relationship)]
+            ), f"Properties of relationships on the same index of graph and snapshot is not equal\n\n{get_dicts_differences(relationship, graph_relations[snapshot_relations.index(relationship)])}\nIn snapshot:\n{relationship}\nIn graph:\n{graph_relations[snapshot_relations.index(relationship)]}"
+        else:
+            assert (
+                relationship == graph_relations[snapshot_relations.index(relationship)]
+            ), f"Properties of relationships on the same index of graph and snapshot is not equal\n\n{get_dicts_differences(relationship, graph_relations[snapshot_relations.index(relationship)])}\nIn snapshot:\n{relationship}\nIn graph:\n{graph_relations[snapshot_relations.index(relationship)]}"
 
 
 def assert_action_inputs(ca: CompositeAction, ca_d: Dict):

@@ -32,7 +32,7 @@ class UsesString:
         return f"{self.absolute_path}@{self.ref}" if self.ref else self.absolute_path
 
     @staticmethod
-    def analyze(uses_string: str, extratct_repo_path: str = None) -> "UsesString":
+    def analyze(uses_string: str, extratct_repo_path: str) -> "UsesString":
         """
         Parses the uses string to extract relevant information.
 

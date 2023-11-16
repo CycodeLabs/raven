@@ -139,6 +139,7 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
 
     We use out utilitiy tooling to parse the uses string, because it can be quite complex.
     """
+
     with RedisConnection(Config.redis_objects_ops_db) as ops_db:
         uses_string_obj = UsesString.analyze(uses_string, repo)
         absolute_path = uses_string_obj.absolute_path_with_ref

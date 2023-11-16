@@ -19,6 +19,16 @@ import src.logger.log as log
 from src.indexer.utils import get_object_full_name_from_ref_pointers_set
 
 
+def get_workflow(path: str, commit_sha: str) -> Optional["Workflow"]:
+    """
+    Returns a workflow object from the graph.
+    If not found, returns None.
+    """
+    w = Workflow(None, path, commit_sha)
+    obj = Config.graph.get_object(w)
+    return obj
+
+
 def get_or_create_workflow(path: str) -> "Workflow":
     """Used when need to create relations with another workflow.
     If workflow wasn't indexed yet, we create a stub node,
@@ -28,16 +38,16 @@ def get_or_create_workflow(path: str) -> "Workflow":
     w_full_name = get_object_full_name_from_ref_pointers_set(path)
     if w_full_name:
         absolute_path, commit_sha = UsesString.split_path_and_ref(w_full_name)
-        w = Workflow(None, absolute_path, commit_sha)
     else:
         log.warning(f"We did not download Workflow - {path}")
-        w = Workflow(None, path, "")
+        absolute_path, commit_sha = path, ""
     ###
+    w = Workflow(None, absolute_path, commit_sha)
     obj = Config.graph.get_object(w)
     if not obj:
         # This is a legitimate behavior.
         # Once the workflow will be indexed, the node will be enriched.
-        Config.graph.push_object(w)
+        Config.graph.merge_object(w)
         obj = w
     return obj
 
@@ -53,7 +63,7 @@ def get_or_create_workflow_run_workflow(path: str, commit_sha: str) -> "Workflow
     if not obj:
         # This is a legitimate behavior.
         # Once the workflow will be indexed, the node will be enriched.
-        Config.graph.push_object(w)
+        Config.graph.merge_object(w)
         obj = w
     return obj
 
