@@ -289,14 +289,14 @@ def get_download_url(
         return (r.json()["download_url"], commit_sha)
 
 
-def get_repository_composite_action(path: str, ref: Union[str, None]) -> str:
+def get_download_url_for_composite_action(path: str, ref: Union[str, None]) -> str:
     """
     Retrieves the downloadable URL for a specific composite action located at the given path.
     """
     return get_download_url(path, ref, file_suffixes=ACTION_SUFFIXES)
 
 
-def get_repository_workflow(path: str, ref: Union[str, None]) -> str:
+def get_download_url_for_workflow(path: str, ref: Union[str, None]) -> str:
     """
     Retrieves the downloadable URL for a specific workflow located at the given path.
     """

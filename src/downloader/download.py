@@ -9,8 +9,8 @@ from src.downloader.utils import (
 from src.downloader.gh_api import (
     get_repository_generator,
     get_repository_workflows,
-    get_repository_composite_action,
-    get_repository_workflow,
+    get_download_url_for_composite_action,
+    get_download_url_for_workflow,
     get_organization_repository_generator,
 )
 from src.common.utils import (
@@ -100,7 +100,9 @@ def download_workflows_and_actions(repo: str) -> None:
                 log.debug(f"[+] URL contains token argument - private repository")
                 is_public = 0
 
-            download_url, commit_sha = get_repository_workflow(workflow_path, None)
+            download_url, commit_sha = get_download_url_for_workflow(
+                workflow_path, None
+            )
 
             log.debug(f"[+] Fetching {workflow_path}")
             resp = get(download_url, timeout=10)
@@ -142,23 +144,22 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
 
     with RedisConnection(Config.redis_objects_ops_db) as ops_db:
         uses_string_obj = UsesString.analyze(uses_string, repo)
-        absolute_path = uses_string_obj.absolute_path_with_ref
+        absolute_path_with_ref = uses_string_obj.absolute_path_with_ref
         is_public = 1
 
         # If already scanned object - check in pointer db
         if (
-            ops_db.get_value_from_hash(Config.ref_pointers_hash, absolute_path)
+            ops_db.get_value_from_hash(Config.ref_pointers_hash, absolute_path_with_ref)
             is not None
         ):
             return
 
-        # TODO: Changed to absolute path here
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-            download_url, commit_sha = get_repository_workflow(
+            download_url, commit_sha = get_download_url_for_workflow(
                 uses_string_obj.absolute_path, uses_string_obj.ref
             )
         elif uses_string_obj.type == UsesStringType.ACTION:
-            download_url, commit_sha = get_repository_composite_action(
+            download_url, commit_sha = get_download_url_for_composite_action(
                 uses_string_obj.absolute_path, uses_string_obj.ref
             )
         else:
@@ -197,14 +198,13 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
         # We look for dependant external actions.
         uses_strings = find_uses_strings(resp.text)
 
-        # TODO: What is this - It will return nothing - Catch instance inside this loop?
-        new_repo = get_repo_name_from_path(absolute_path)
+        new_repo = get_repo_name_from_path(absolute_path_with_ref)
         for new_uses_string in uses_strings:
             # Some infinite loop I met in several repositories
             new_full_path = UsesString.analyze(
                 new_uses_string, new_repo
             ).absolute_path_with_ref
-            if new_full_path == absolute_path:
+            if new_full_path == absolute_path_with_ref:
                 continue
 
             download_action_or_reusable_workflow(
@@ -215,7 +215,9 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             uses_string_obj.absolute_path, commit_sha
         )
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-            ops_db.insert_to_set(Config.workflow_download_history_set, absolute_path)
+            ops_db.insert_to_set(
+                Config.workflow_download_history_set, absolute_path_with_ref
+            )
 
             insert_workflow_or_action_to_redis(
                 db=Config.redis_workflows_db,
@@ -225,9 +227,11 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 is_public=is_public,
             )
             # In the future, ref will be with commit sha
-            add_ref_pointer_to_redis(absolute_path, commit_sha_path)
+            add_ref_pointer_to_redis(absolute_path_with_ref, commit_sha_path)
         else:  # UsesStringType.ACTION
-            ops_db.insert_to_set(Config.action_download_history_set, absolute_path)
+            ops_db.insert_to_set(
+                Config.action_download_history_set, absolute_path_with_ref
+            )
             insert_workflow_or_action_to_redis(
                 db=Config.redis_actions_db,
                 object_path=commit_sha_path,
@@ -236,4 +240,4 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 is_public=is_public,
             )
             # In the future, ref will be with commit sha
-            add_ref_pointer_to_redis(absolute_path, commit_sha_path)
+            add_ref_pointer_to_redis(absolute_path_with_ref, commit_sha_path)
