@@ -57,7 +57,6 @@ def get_or_create_workflow_run_workflow(path: str, commit_sha: str) -> "Workflow
     The reason we need this function is that we find the triggred workflow by searching all the workflows for name  by the workflow_run trigger
 
     """
-    # TODO: Document or refactor the search for the workflow by name, it is weird to search for name field in the workflow data, it is heavy function
     w = Workflow(None, path, commit_sha)
     obj = Config.graph.get_object(w)
     if not obj:
@@ -253,7 +252,6 @@ class Workflow(GraphObject):
                         f"[-] Couldn't find the triggering workflow '{workflow_name}' in repository '{repo}'"
                     )
                 else:
-                    # TODO: Improve this
                     w_triggering = get_or_create_workflow_run_workflow(
                         *UsesString.split_path_and_ref(w_path)
                     )
