@@ -194,3 +194,35 @@ def test_reusable_workflow_from_dict():
     assert len(wf.jobs) == 1
 
     assert_reusable_workflow_inputs(wf, workflow_d)
+
+
+def test_refs_in_workflow():
+    workflow_d = {
+        "name": "Release notes",
+        "on": {"push": {"branches": ["main"]}, "workflow_dispatch": None},
+        "path": "twbs/bootstrap/.github/workflows/release-notes.yml",
+        "url": "https://github.com/CycodeLabs/Raven/pull/1",
+        "is_public": True,
+        "jobs": {
+            "update_release_draft": {
+                "permissions": {"contents": "write", "pull-requests": "write"},
+                "runs-on": "ubuntu-latest",
+                "if": "github.repository == 'twbs/bootstrap'",
+                "steps": [
+                    {
+                        "uses": "release-drafter/release-drafter@v5",
+                        "env": {"GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}"},
+                    }
+                ],
+            }
+        },
+        "ref": "main",
+        "commit_sha": "f85b9778e35a1273d88c7dabdb210eaf",
+    }
+
+    wf = workflow.Workflow.from_dict(workflow_d)
+
+    assert wf.name == workflow_d["name"]
+    assert wf.path == workflow_d["path"]
+    assert wf.commit_sha == workflow_d["commit_sha"]
+    assert wf.refs == ["main"]

@@ -264,3 +264,21 @@ def test_composite_action_step_from_dict_using():
         "update-environment:${{ inputs.update-environment }}",
     ]
     assert len(step.using_param) == 0
+
+
+def test_ref_added_to_composite_action():
+    ca_d = {
+        "name": "Automatic Rebase",
+        "url": "https://github.com/CycodeLabs/Raven/pull/1",
+        "is_public": True,
+        "commit_sha": "f85b9778e35a1273d88c7dabdb210eaf",
+        "path": "data/actions/cirrus-actions|rebase|action.yml",
+        "ref": "v1",
+    }
+
+    ca = composite_action.CompositeAction.from_dict(ca_d)
+
+    assert ca.name == ca_d["name"]
+    assert ca.path == ca_d["path"]
+    assert ca.commit_sha == ca_d["commit_sha"]
+    assert ca.refs == ["v1"]

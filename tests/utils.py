@@ -1,4 +1,5 @@
 from py2neo.ogm import GraphObject
+from colorama import Fore, Style
 import json
 from src.config.config import Config
 from src.workflow_components.composite_action import CompositeAction
@@ -103,8 +104,18 @@ def get_dicts_differences(dict1: Dict, dict2: Dict) -> Dict:
     keys = set(dict1.keys()).union(set(dict2.keys()))
     differences = {}
     for key in keys:
-        if dict1.get(key) != dict2.get(key):
-            differences[key] = [dict1.get(key), dict2.get(key)]
+        value1 = (
+            sorted(dict1.get(key))
+            if isinstance(dict1.get(key), list)
+            else dict1.get(key)
+        )
+        value2 = (
+            sorted(dict2.get(key))
+            if isinstance(dict2.get(key), list)
+            else dict2.get(key)
+        )
+        if value1 != value2:
+            differences[key] = [value1, value2]
 
     return differences
 
@@ -125,25 +136,21 @@ def assert_graph_structures(graph_structure: Dict, snapshot_path: str) -> None:
 
     # Asserting nodes
     for node in snapshot_nodes:
-        if isinstance(node, list) or isinstance(node, tuple):
-            assert sorted(node) == sorted(
-                graph_nodes[snapshot_nodes.index(node)]
-            ), f"Properties of nodes on the same index is not equal\n{get_dicts_differences(node, graph_nodes[snapshot_nodes.index(node)])}\n\nIn snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}"
-        else:
-            assert (
-                node == graph_nodes[snapshot_nodes.index(node)]
-            ), f"Properties of nodes on the same index is not equal\n{get_dicts_differences(node, graph_nodes[snapshot_nodes.index(node)])}\n\nIn snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}"
+        diffrences = get_dicts_differences(
+            node, graph_nodes[snapshot_nodes.index(node)]
+        )
+        assert (
+            len(diffrences) == 0
+        ), f"Properties of nodes on the same index is not equal\n{Fore.RED}{diffrences}\n\n{Fore.CYAN}In snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}{Style.RESET_ALL}"
 
     # Asserting relationships
     for relationship in snapshot_relations:
-        if isinstance(relationship, list) or isinstance(relationship, tuple):
-            assert sorted(relationship) == sorted(
-                graph_relations[snapshot_relations.index(relationship)]
-            ), f"Properties of relationships on the same index of graph and snapshot is not equal\n\n{get_dicts_differences(relationship, graph_relations[snapshot_relations.index(relationship)])}\nIn snapshot:\n{relationship}\nIn graph:\n{graph_relations[snapshot_relations.index(relationship)]}"
-        else:
-            assert (
-                relationship == graph_relations[snapshot_relations.index(relationship)]
-            ), f"Properties of relationships on the same index of graph and snapshot is not equal\n\n{get_dicts_differences(relationship, graph_relations[snapshot_relations.index(relationship)])}\nIn snapshot:\n{relationship}\nIn graph:\n{graph_relations[snapshot_relations.index(relationship)]}"
+        diffrences = get_dicts_differences(
+            relationship, graph_relations[snapshot_relations.index(relationship)]
+        )
+        assert (
+            len(diffrences) == 0
+        ), f"Properties of relationships on the same index is not equal\n{Fore.RED}{diffrences}\n\n{Fore.CYAN}In snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}{Style.RESET_ALL}"
 
 
 def assert_action_inputs(ca: CompositeAction, ca_d: Dict):
