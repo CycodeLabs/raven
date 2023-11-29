@@ -31,7 +31,6 @@ def get_or_create_composite_action(path: str) -> "CompositeAction":
     If action wasn't indexed yet, we create a stub node,
     that will be enriched eventually.
     """
-    # TODO: This should be discussed. #
     ca_full_name = get_object_full_name_from_ref_pointers_set(path)
     if ca_full_name:
         absolute_path, commit_sha = UsesString.split_path_and_ref(ca_full_name)

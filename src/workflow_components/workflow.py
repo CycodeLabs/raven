@@ -34,7 +34,6 @@ def get_or_create_workflow(path: str) -> "Workflow":
     If workflow wasn't indexed yet, we create a stub node,
     that will be enriched eventually.
     """
-    # TODO: This should be discussed. #
     w_full_name = get_object_full_name_from_ref_pointers_set(path)
     if w_full_name:
         absolute_path, commit_sha = UsesString.split_path_and_ref(w_full_name)

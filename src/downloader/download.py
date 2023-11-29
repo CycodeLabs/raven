@@ -118,20 +118,19 @@ def download_workflows_and_actions(repo: str) -> None:
                 download_action_or_reusable_workflow(uses_string=uses_string, repo=repo)
 
             # Save workflow to redis
-            commit_sha_path = convert_path_and_commit_sha_to_absolute_path(
+            absoute_path_with_commit = convert_path_and_commit_sha_to_absolute_path(
                 workflow_path, commit_sha
             )
             github_url = convert_raw_github_url_to_github_com_url(download_url)
             insert_workflow_or_action_to_redis(
                 db=Config.redis_workflows_db,
-                object_path=commit_sha_path,
+                object_path=absoute_path_with_commit,
                 data=resp.text,
                 github_url=github_url,
                 is_public=is_public,
             )
 
-            # In the future, ref will be with commit sha
-            add_ref_pointer_to_redis(workflow_path, commit_sha_path)
+            add_ref_pointer_to_redis(workflow_path, absoute_path_with_commit)
             ops_db.insert_to_set(Config.workflow_download_history_set, workflow_path)
 
 
@@ -211,7 +210,7 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 uses_string=new_uses_string, repo=new_repo
             )
 
-        commit_sha_path = convert_path_and_commit_sha_to_absolute_path(
+        absoute_path_with_commit = convert_path_and_commit_sha_to_absolute_path(
             uses_string_obj.absolute_path, commit_sha
         )
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
@@ -221,23 +220,21 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
 
             insert_workflow_or_action_to_redis(
                 db=Config.redis_workflows_db,
-                object_path=commit_sha_path,
+                object_path=absoute_path_with_commit,
                 data=resp.text,
                 github_url=convert_raw_github_url_to_github_com_url(download_url),
                 is_public=is_public,
             )
-            # In the future, ref will be with commit sha
-            add_ref_pointer_to_redis(absolute_path_with_ref, commit_sha_path)
+            add_ref_pointer_to_redis(absolute_path_with_ref, absoute_path_with_commit)
         else:  # UsesStringType.ACTION
             ops_db.insert_to_set(
                 Config.action_download_history_set, absolute_path_with_ref
             )
             insert_workflow_or_action_to_redis(
                 db=Config.redis_actions_db,
-                object_path=commit_sha_path,
+                object_path=absoute_path_with_commit,
                 data=resp.text,
                 github_url=convert_raw_github_url_to_github_com_url(download_url),
                 is_public=is_public,
             )
-            # In the future, ref will be with commit sha
-            add_ref_pointer_to_redis(absolute_path_with_ref, commit_sha_path)
+            add_ref_pointer_to_redis(absolute_path_with_ref, absoute_path_with_commit)
