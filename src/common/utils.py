@@ -1,9 +1,9 @@
 import re
+import os
 import io
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union
 
 import yaml
-from py2neo.data import Node
 
 from src.storage.redis_connection import RedisConnection
 from src.config.config import Config
@@ -25,6 +25,13 @@ def convert_dict_to_list(d: Union[Dict, str]) -> List:
 
 def convert_workflow_to_unix_path(repo: str, workflow_name: str) -> str:
     return f"{repo}/.github/workflows/{workflow_name}"
+
+
+def convert_path_and_commit_sha_to_absolute_path(path: str, commit_sha: str) -> str:
+    """
+    Calculates the full path for a given action or workflow with a commit sha.
+    """
+    return f"{path}@{commit_sha}"
 
 
 def convert_raw_github_url_to_github_com_url(raw_url: str):
@@ -93,6 +100,35 @@ def get_repo_name_from_path(path: str) -> str:
     slsa-framework/slsa-github-generator
     """
     return "/".join(path.split("/")[:2])
+
+
+def get_repo_and_relative_path_from_path(path: str) -> tuple[str, str]:
+    """
+    Split the path to repo and relative path.
+
+    edgedb/edgedb-pkg/integration/linux/test/ubuntu-jammy/action.yml ->
+    edgedb/edgedb-pkg, integration/linux/test/ubuntu-jammy/action.yml
+    """
+    splitted_path = path.split("/")
+    return "/".join(splitted_path[:2]), "/".join(splitted_path[2:])
+
+
+def generate_file_paths(relative_path: str, file_suffixes: List[str]) -> List[str]:
+    """
+    Generate a list of file paths by appending optional suffixes to a base path.
+
+    relative_path (str): The base path to which suffixes are appended.
+    file_suffixes (List[str]): A list of suffixes to append to the base path. Can be empty.
+
+    Returns:
+    List[str]: A list of generated file paths with suffixes appended, or the base path if no suffixes are provided.
+    """
+    files_to_try = (
+        [os.path.join(relative_path, fs) for fs in file_suffixes]
+        if file_suffixes
+        else [relative_path]
+    )
+    return files_to_try
 
 
 def find_uses_strings(workflow_content: str) -> List[str]:
