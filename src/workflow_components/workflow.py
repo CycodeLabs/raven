@@ -38,9 +38,9 @@ def get_or_create_workflow(path: str) -> "Workflow":
     if w_full_name:
         absolute_path, commit_sha = UsesString.split_path_and_ref(w_full_name)
     else:
-        log.warning(f"We did not download Workflow - {path}")
+        log.warning(f"[-] We did not download Workflow - {path}")
         absolute_path, commit_sha = path, ""
-    ###
+
     w = Workflow(None, absolute_path, commit_sha)
     obj = Config.graph.get_object(w)
     if not obj:

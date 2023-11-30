@@ -61,7 +61,7 @@ class UsesString:
         return UsesString(absolute_path, type, is_relative=is_relative, ref=ref)
 
     @staticmethod
-    def split_path_and_ref(uses_string: str) -> Tuple(str, Optional[str]):
+    def split_path_and_ref(uses_string: str) -> Tuple[str, Optional[str]]:
         """Split the uses string into path and reference."""
         parts = uses_string.split("@")
         ref = parts[1] if len(parts) > 1 else None

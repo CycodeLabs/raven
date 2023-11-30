@@ -103,6 +103,11 @@ def download_workflows_and_actions(repo: str) -> None:
             download_url, commit_sha = get_download_url_for_workflow(
                 workflow_path, None
             )
+            if download_url is None:
+                log.warning(
+                    f"[-] Workflow '{workflow_path}' could not be found while scanning repo '{repo}', skipping."
+                )
+                continue
 
             log.debug(f"[+] Fetching {workflow_path}")
             resp = get(download_url, timeout=10)

@@ -5,6 +5,7 @@ from typing import Dict, Any, List, Optional, Iterator, Union, Tuple
 from http import HTTPStatus
 from src.config.config import Config
 import src.logger.log as log
+from src.common.utils import get_repo_and_relative_path_from_path, generate_file_paths
 
 """
 Current rate limiting:
@@ -37,6 +38,8 @@ REPOSITORY_QUERY_MIN = "stars:>={min_stars}"
 REPOSITORY_QUERY_MIN_MAX = "stars:{min_stars}..{max_stars}"
 
 ACTION_SUFFIXES = ["action.yml", "action.yaml"]
+SHA_INDEX = 0
+
 headers = {
     "Accept": "application/vnd.github+json",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.42",
@@ -224,7 +227,7 @@ def get_commit_sha_of_ref(repo: str, ref: str) -> Optional[str]:
 
         # Sometimes the tag is not found, but the provided reference is actually a branch name.
         if len(shas) > 0:
-            return shas[0]
+            return shas[SHA_INDEX]
 
     # Check if it is a branch
     r = get(BRANCHES_URL.format(repo_path=repo, branch=ref), headers=headers)
@@ -241,7 +244,7 @@ def get_download_url(
     file_suffixes: Union[List[str], None],
 ) -> Optional[Tuple[str, str]]:
     """
-    Retrieves the downloadable URL for a GitHub resource located at the given path.
+    Retrieves the downloadable URL for a GitHub resource located at the given path and its ref.
 
     Parameters:
     - path (str): The repository path containing the resource, formatted as "owner/repo/relative_path_to_resource".
@@ -249,23 +252,18 @@ def get_download_url(
     - file_suffixes (List[str]): List of possible file suffixes that the resource could have (e.g., ["action.yml", "action.yaml"]).
 
     Returns:
-    Tuple of the downloadable URL for the resource and the commit sha. Returns None if the resource is not found or if a network error occurs.
+    Tuple of the downloadable URL for the resource and the commit sha, Or None if the resource could not be found.
 
     Raises:
     - Logs an error message if the request to the GitHub API fails.
     """
-    splitted_path = path.split("/")
-    repo, relative_path = "/".join(splitted_path[:2]), "/".join(splitted_path[2:])
+    repo, relative_path = get_repo_and_relative_path_from_path(path)
 
     headers["Authorization"] = f"Token {Config.github_token}"
 
     commit_sha = get_commit_sha_of_ref(repo, ref)
 
-    files_to_try = (
-        [os.path.join(relative_path, fs) for fs in file_suffixes]
-        if file_suffixes
-        else [relative_path]
-    )
+    files_to_try = generate_file_paths(relative_path, file_suffixes)
 
     for file_path in files_to_try:
         # If we have a tag, we need to use the contents by ref API to get the correct version of the action.
@@ -287,17 +285,22 @@ def get_download_url(
             continue
 
         return (r.json()["download_url"], commit_sha)
+    return None, None
 
 
-def get_download_url_for_composite_action(path: str, ref: Union[str, None]) -> str:
+def get_download_url_for_composite_action(
+    path: str, ref: Union[str, None]
+) -> Optional[Tuple[str, str]]:
     """
-    Retrieves the downloadable URL for a specific composite action located at the given path.
+    Retrieves the downloadable URL for a specific composite action located at the given path and its ref, Or None if the resource could not be found.
     """
     return get_download_url(path, ref, file_suffixes=ACTION_SUFFIXES)
 
 
-def get_download_url_for_workflow(path: str, ref: Union[str, None]) -> str:
+def get_download_url_for_workflow(
+    path: str, ref: Union[str, None]
+) -> Optional[Tuple[str, str]]:
     """
-    Retrieves the downloadable URL for a specific workflow located at the given path.
+    Retrieves the downloadable URL for a specific workflow located at the given path and its ref, Or None if the resource could not be found.
     """
     return get_download_url(path, ref, file_suffixes=[])

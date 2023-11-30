@@ -3,7 +3,10 @@ import io
 import yaml
 from yaml.constructor import Constructor
 
-from src.indexer.utils import get_object_full_name_from_ref_pointers_set
+from src.indexer.utils import (
+    get_object_full_name_from_ref_pointers_set,
+    REF_INDEX_IN_USES_STRING_SPLIT,
+)
 from src.storage.redis_connection import RedisConnection
 from src.config.config import Config
 from src.workflow_components.workflow import Workflow
@@ -136,7 +139,9 @@ def index_workflow_file(workflow: str) -> None:
             w = get_composite_action(*UsesString.split_path_and_ref(workflow_full_name))
             if w:
                 # Add data or change the node as you wish
-                ref = UsesString.split_path_and_ref(workflow)[1]
+                ref = UsesString.split_path_and_ref(workflow)[
+                    REF_INDEX_IN_USES_STRING_SPLIT
+                ]
                 if ref:
                     w.refs.append(ref)
                 Config.graph.push_object(w)
@@ -184,7 +189,9 @@ def index_workflow_file(workflow: str) -> None:
             )
             obj["url"] = url
             obj["is_public"] = is_public
-            ref = UsesString.split_path_and_ref(workflow)[1]
+            ref = UsesString.split_path_and_ref(workflow)[
+                REF_INDEX_IN_USES_STRING_SPLIT
+            ]
             if ref:
                 obj["ref"] = ref
 

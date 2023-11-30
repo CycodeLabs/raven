@@ -35,9 +35,8 @@ def get_or_create_composite_action(path: str) -> "CompositeAction":
     if ca_full_name:
         absolute_path, commit_sha = UsesString.split_path_and_ref(ca_full_name)
     else:
-        log.warning(f"We did not download Composite Action - {path}")
+        log.warning(f"[-] We did not download Composite Action - {path}")
         absolute_path, commit_sha = path, ""
-    ###
 
     obj = get_composite_action(absolute_path, commit_sha)
     if not obj:

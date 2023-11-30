@@ -1,4 +1,5 @@
 import re
+import os
 import io
 from typing import List, Dict, Union
 
@@ -99,6 +100,35 @@ def get_repo_name_from_path(path: str) -> str:
     slsa-framework/slsa-github-generator
     """
     return "/".join(path.split("/")[:2])
+
+
+def get_repo_and_relative_path_from_path(path: str) -> tuple[str, str]:
+    """
+    Split the path to repo and relative path.
+
+    edgedb/edgedb-pkg/integration/linux/test/ubuntu-jammy/action.yml ->
+    edgedb/edgedb-pkg, integration/linux/test/ubuntu-jammy/action.yml
+    """
+    splitted_path = path.split("/")
+    return "/".join(splitted_path[:2]), "/".join(splitted_path[2:])
+
+
+def generate_file_paths(relative_path: str, file_suffixes: List[str]) -> List[str]:
+    """
+    Generate a list of file paths by appending optional suffixes to a base path.
+
+    relative_path (str): The base path to which suffixes are appended.
+    file_suffixes (List[str]): A list of suffixes to append to the base path. Can be empty.
+
+    Returns:
+    List[str]: A list of generated file paths with suffixes appended, or the base path if no suffixes are provided.
+    """
+    files_to_try = (
+        [os.path.join(relative_path, fs) for fs in file_suffixes]
+        if file_suffixes
+        else [relative_path]
+    )
+    return files_to_try
 
 
 def find_uses_strings(workflow_content: str) -> List[str]:

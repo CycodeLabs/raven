@@ -1,6 +1,8 @@
 from src.config.config import Config
 from src.storage.redis_connection import RedisConnection
 
+REF_INDEX_IN_USES_STRING_SPLIT = 1
+
 
 def get_object_full_name_from_ref_pointers_set(obj_name: str) -> str:
     """
