@@ -77,7 +77,7 @@
         },
         {
             "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test.yml",
-            "name": "test",
+            "name": "test-reusable",
             "is_public": true,
             "_id": "b3b5a0752de42836289310f0548e8243",
             "trigger": [
