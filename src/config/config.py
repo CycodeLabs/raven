@@ -58,6 +58,8 @@ QUERY_TAGS = [
     "endoflife",
     "reconnaissance",
 ]
+LAST_QUERY_ID = 16
+QUERY_IDS = [f"RQ-{num}" for num in range(1, LAST_QUERY_ID + 1)]
 
 
 def load_downloader_config(args) -> None:
@@ -120,6 +122,7 @@ def load_neo4j_config(args) -> None:
 def load_reporter_config(args):
     Config.tags = args.get("tag")
     Config.severity = args.get("severity")
+    Config.query_ids = args.get("query_ids")
     Config.queries_path = args.get("queries_path")
     Config.format = args.get("format")
     Config.reporter = args.get("report_command")
@@ -164,6 +167,7 @@ class Config:
     # Report Config Constants
     tags: list = []
     severity: str = None
+    query_ids: list = []
     format: str = None
     queries_path: str = QUERIES_PATH_DEFAULT
     reporter: str = None
