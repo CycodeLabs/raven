@@ -7,11 +7,11 @@ from src.downloader.utils import (
     add_ref_pointer_to_redis,
 )
 from src.downloader.gh_api import (
+    get_account_generator,
     get_repository_generator,
     get_repository_workflows,
     get_repository_composite_action,
     get_repository_reusable_workflow,
-    get_organization_repository_generator,
 )
 from src.common.utils import (
     find_uses_strings,
@@ -24,8 +24,9 @@ from src.workflow_components.dependency import UsesString, UsesStringType
 import src.logger.log as log
 
 
-def download_org_workflows_and_actions() -> None:
-    """Iterating all organization repositories through Github API.
+def download_account_workflows_and_actions() -> None:
+    """Firstly, we define it as an organization or a user account.
+    We iterate all the repositories and download the workflows and actions for both cases.
 
     For each repository we enumerating the .github/workflows directory,
     and downloading all the workflows.
@@ -37,11 +38,8 @@ def download_org_workflows_and_actions() -> None:
 
     We are trying to cache the downloads as much as we can to reduce redundant download attempts.
     """
-    log.debug("[+] Starting organization repository iterator")
-
-    for organization in Config.org_name:
-        log.debug(f"[+] Scanning {organization}")
-        generator = get_organization_repository_generator(organization)
+    for account in Config.account_name:
+        generator = get_account_generator(account)
 
         for repo in generator:
             download_workflows_and_actions(repo)
