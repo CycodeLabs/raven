@@ -165,7 +165,7 @@ class Workflow(GraphObject):
     is_public = Property()
 
     jobs = RelatedTo(Job)
-    triggered_by = RelatedFrom("Workflow")
+    triggered_by = RelatedTo("Workflow")
     reusable_workflow_input = RelatedTo("ReusableWorkflowInput")
 
     def __init__(self, name: Optional[str], path: str):

@@ -25,7 +25,7 @@ import src.logger.log as log
 
 
 def download_account_workflows_and_actions() -> None:
-    """Firstly, we define it as an organization or a user account.
+    """First, we define it as an organization or a user account.
     We iterate all the repositories and download the workflows and actions for both cases.
 
     For each repository we enumerating the .github/workflows directory,
