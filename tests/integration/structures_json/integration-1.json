@@ -30,16 +30,6 @@
             ]
         },
         {
-            "path": "RavenIntegrationTests/Integration-1/.github/workflows/integration-workflow.yml",
-            "name": "print_env",
-            "run": "print_env",
-            "_id": "2a12d8215584fab339b14da4d6a904ff",
-            "url": "https://github.com/RavenIntegrationTests/Integration-1/tree/main/.github/workflows/integration-workflow.yml",
-            "labels": [
-                "Step"
-            ]
-        },
-        {
             "path": "RavenIntegrationTests/CompositeAction-Mock",
             "commit_sha": "7f3fade4c902daf84bb334f337a5044ee12ae025",
             "shell": "bash",

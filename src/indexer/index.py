@@ -65,8 +65,8 @@ def index_action_file(action: str) -> None:
 
             # In case we already indexed the action with a different ref, we will add the ref and push the object to the neo4j DB to update it
             ca = get_composite_action(*UsesString.split_path_and_ref(action_full_name))
-            if ca:
-                # Add data or change the node as you wish
+            # We check whether the url property is not null to verify that this action is indexed in the database and that it is not a mock action with null data.
+            if ca and ca.url is not None:
                 ref = UsesString.split_path_and_ref(action)[
                     REF_INDEX_IN_USES_STRING_SPLIT
                 ]
