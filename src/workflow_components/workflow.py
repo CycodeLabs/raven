@@ -41,11 +41,11 @@ def get_or_create_workflow(path: str) -> "Workflow":
         log.warning(f"[-] We did not download Workflow - {path}")
         absolute_path, commit_sha = path, ""
 
-    w = Workflow(None, absolute_path, commit_sha)
-    obj = Config.graph.get_object(w)
+    obj = get_workflow(absolute_path, commit_sha)
     if not obj:
         # This is a legitimate behavior.
         # Once the workflow will be indexed, the node will be enriched.
+        w = Workflow(None, absolute_path, commit_sha)
         Config.graph.merge_object(w)
         obj = w
     return obj
@@ -262,16 +262,19 @@ class Workflow(GraphObject):
         # But the difference is that we connected the different inputs to the workflow.
         if "workflow_call" in w.trigger:
             wokrflow_call = obj_dict["on"]["workflow_call"]
-            inputs = wokrflow_call["inputs"]
-            for input_name, input in inputs.items():
-                input["_id"] = md5(
-                    f"{w._id}_{input_name}_{w.commit_sha}".encode()
-                ).hexdigest()
-                input["name"] = input_name
-                input["url"] = w.url
-                input["path"] = w.path
-                input["commit_sha"] = w.commit_sha
-                w.reusable_workflow_input.add(ReusableWorkflowInput.from_dict(input))
+            if wokrflow_call is not None and wokrflow_call.get("inputs") is not None:
+                inputs = wokrflow_call["inputs"]
+                for input_name, input in inputs.items():
+                    input["_id"] = md5(
+                        f"{w._id}_{input_name}_{w.commit_sha}".encode()
+                    ).hexdigest()
+                    input["name"] = input_name
+                    input["url"] = w.url
+                    input["path"] = w.path
+                    input["commit_sha"] = w.commit_sha
+                    w.reusable_workflow_input.add(
+                        ReusableWorkflowInput.from_dict(input)
+                    )
 
         if "permissions" in obj_dict:
             w.permissions = convert_dict_to_list(obj_dict["permissions"])
