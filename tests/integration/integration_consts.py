@@ -53,14 +53,16 @@ TESTS_CONFIGS = [
     {
         "test_name": "test_reusable_workflows",
         "json_path": "tests/integration/structures_json/reusable-workflows.json",
-        "description": "Tests ReusableWorkflows-Mock's graph structure. This is a repository with two workflows. One of them uses the other as a reusable workflow.",
+        "description": "Tests ReusableWorkflows-Mock's graph structure. This is a repository with four workflows. One is a resuable workflow, and the other three use it using different refs.",
         "queries": {
             "nodes_query": GET_NODES_BY_PATH_QUERY,
             "relationships_query": GET_RELATIONSHIPS_BY_PATH_QUERY,
             "to_format": {
                 "paths_list": [
                     "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
-                    "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test.yml",
+                    "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test-reusable-local-import.yml",
+                    "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test-reusable-ref-v1.0.0.yml",
+                    "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test-reusable-ref-main.yml",
                 ]
             },
         },

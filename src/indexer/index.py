@@ -9,7 +9,7 @@ from src.indexer.utils import (
 )
 from src.storage.redis_connection import RedisConnection
 from src.config.config import Config
-from src.workflow_components.workflow import Workflow
+from src.workflow_components.workflow import Workflow, get_workflow
 from src.workflow_components.composite_action import (
     CompositeAction,
     get_composite_action,
@@ -67,7 +67,9 @@ def index_action_file(action: str) -> None:
             ca = get_composite_action(*UsesString.split_path_and_ref(action_full_name))
             if ca:
                 # Add data or change the node as you wish
-                ref = UsesString.split_path_and_ref(action)[1]
+                ref = UsesString.split_path_and_ref(action)[
+                    REF_INDEX_IN_USES_STRING_SPLIT
+                ]
                 if ref:
                     ca.refs.append(ref)
                 Config.graph.push_object(ca)
@@ -135,10 +137,11 @@ def index_workflow_file(workflow: str) -> None:
                 return
 
             workflow_full_name = get_object_full_name_from_ref_pointers_set(workflow)
+
             # In case we already indexed the workflow with a different ref, we will add the ref and push the object to the neo4j DB to update it
-            w = get_composite_action(*UsesString.split_path_and_ref(workflow_full_name))
-            if w:
-                # Add data or change the node as you wish
+            w = get_workflow(*UsesString.split_path_and_ref(workflow_full_name))
+            # We check whether the url property is not null to verify that this workflow is indexed in the database and that it is not a mock workflow with null data.
+            if w and w.url is not None:
                 ref = UsesString.split_path_and_ref(workflow)[
                     REF_INDEX_IN_USES_STRING_SPLIT
                 ]
@@ -146,56 +149,57 @@ def index_workflow_file(workflow: str) -> None:
                     w.refs.append(ref)
                 Config.graph.push_object(w)
 
-            with RedisConnection(Config.redis_workflows_db) as workflows_db:
-                content = workflows_db.get_value_from_hash(
-                    workflow_full_name, Config.redis_data_hash_field_name
-                ).decode()
-                url = workflows_db.get_value_from_hash(
-                    workflow_full_name, Config.redis_url_hash_field_name
-                ).decode()
-                is_public = str_to_bool(
-                    workflows_db.get_value_from_hash(
-                        workflow_full_name, Config.redis_is_public_hash_field_name
+            else:
+                with RedisConnection(Config.redis_workflows_db) as workflows_db:
+                    content = workflows_db.get_value_from_hash(
+                        workflow_full_name, Config.redis_data_hash_field_name
                     ).decode()
-                )
-
-            # PyYAML has issues with tabs.
-            content = content.replace("\t", "  ")
-
-            with io.StringIO() as f:
-                f.write(content)
-                f.seek(0)
-                try:
-                    obj = yaml.load(f, yaml.loader.Loader)
-                except yaml.scanner.ScannerError as e:
-                    log.error(
-                        f"[-] Failed loading: {workflow_full_name}. Exception: {e}. Skipping..."
+                    url = workflows_db.get_value_from_hash(
+                        workflow_full_name, Config.redis_url_hash_field_name
+                    ).decode()
+                    is_public = str_to_bool(
+                        workflows_db.get_value_from_hash(
+                            workflow_full_name, Config.redis_is_public_hash_field_name
+                        ).decode()
                     )
+
+                # PyYAML has issues with tabs.
+                content = content.replace("\t", "  ")
+
+                with io.StringIO() as f:
+                    f.write(content)
+                    f.seek(0)
+                    try:
+                        obj = yaml.load(f, yaml.loader.Loader)
+                    except yaml.scanner.ScannerError as e:
+                        log.error(
+                            f"[-] Failed loading: {workflow_full_name}. Exception: {e}. Skipping..."
+                        )
+                        return
+
+                # Could happen if the YAML is empty.
+                if not obj:
                     return
 
-            # Could happen if the YAML is empty.
-            if not obj:
-                return
+                if isinstance(obj, str):
+                    # TODO: This is a symlink. We should handle it.
+                    # Only examples at the moment are for https://github.com/edgedb/edgedb-pkg
+                    # E.g., https://github.com/edgedb/edgedb-pkg/blob/master/integration/linux/build/centos-8/action.yml
+                    log.debug(f"[-] Symlink detected: {content}. Skipping...")
+                    return
 
-            if isinstance(obj, str):
-                # TODO: This is a symlink. We should handle it.
-                # Only examples at the moment are for https://github.com/edgedb/edgedb-pkg
-                # E.g., https://github.com/edgedb/edgedb-pkg/blob/master/integration/linux/build/centos-8/action.yml
-                log.debug(f"[-] Symlink detected: {content}. Skipping...")
-                return
+                obj["path"], obj["commit_sha"] = UsesString.split_path_and_ref(
+                    workflow_full_name
+                )
+                obj["url"] = url
+                obj["is_public"] = is_public
+                ref = UsesString.split_path_and_ref(workflow)[
+                    REF_INDEX_IN_USES_STRING_SPLIT
+                ]
+                if ref:
+                    obj["ref"] = ref
 
-            obj["path"], obj["commit_sha"] = UsesString.split_path_and_ref(
-                workflow_full_name
-            )
-            obj["url"] = url
-            obj["is_public"] = is_public
-            ref = UsesString.split_path_and_ref(workflow)[
-                REF_INDEX_IN_USES_STRING_SPLIT
-            ]
-            if ref:
-                obj["ref"] = ref
-
-            Config.graph.merge_object(Workflow.from_dict(obj))
+                Config.graph.merge_object(Workflow.from_dict(obj))
             ops_db.insert_to_set(Config.workflow_index_history_set, workflow)
 
     except Exception as e:
