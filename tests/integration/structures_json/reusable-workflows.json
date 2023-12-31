@@ -2,10 +2,59 @@
     "nodes": [
         {
             "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
+            "refs": [
+                "main",
+                "v1.0.0"
+            ],
+            "name": "reusable_workflow",
+            "is_public": true,
+            "trigger": [
+                "workflow_call"
+            ],
+            "_id": "5653e101deb32d74da60cdba3a026cd2",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/reuse_workflow.yml",
+            "labels": [
+                "Workflow"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test-reusable-local-import.yml",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
+            "refs": [],
+            "name": "test-reusable-local-import",
+            "is_public": true,
+            "_id": "39eaac9205aa5e55a9c5189c5a9f5220",
+            "trigger": [
+                "pull_request"
+            ],
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/test-reusable-local-import.yml",
+            "labels": [
+                "Workflow"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test-reusable-local-import.yml",
+            "with": [
+                "input_1:test",
+                "input_2:5"
+            ],
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
+            "name": "test_on_pr",
+            "uses": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+            "_id": "9a71a4f5de33f16df2a94fb06a0ab011",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/test-reusable-local-import.yml",
+            "labels": [
+                "Job"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
             "default": "input_1_defult",
             "name": "input_1",
-            "_id": "aaaaf3ef437b55388bec93f26c8f9c44",
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
+            "_id": "84dfb82f36d71833c3e61ace3fcdb497",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/reuse_workflow.yml",
             "required": true,
             "labels": [
                 "ReusableWorkflowInput"
@@ -13,159 +62,204 @@
         },
         {
             "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
             "default": 1,
             "name": "input_2",
-            "_id": "3f81ef5510e05f61bfa26a950ebd2c3d",
+            "_id": "5caca9cd5fa29256ca251e567623fd3e",
             "required": false,
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/reuse_workflow.yml",
             "labels": [
                 "ReusableWorkflowInput"
             ]
         },
         {
             "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
             "default": "true",
             "name": "input_3",
-            "_id": "2fe112d8d392c700041b353c90db4edf",
+            "_id": "e33137aa998cc6285db2495621c3f77c",
             "required": false,
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/reuse_workflow.yml",
             "labels": [
                 "ReusableWorkflowInput"
             ]
         },
         {
             "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
             "machine": [
                 "ubuntu-latest"
             ],
             "name": "test",
-            "_id": "292255a5b241802f89614333a7a13539",
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
+            "_id": "eb933a7a749321ab9288ef9fbe49bb22",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/reuse_workflow.yml",
             "labels": [
                 "Job"
             ]
         },
         {
             "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
-            "ref": "v4",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
             "name": "Checkout",
             "uses": "actions/checkout@v4",
-            "_id": "3cae77d1d794cf1a5dd88b4e2e38bd22",
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
+            "_id": "f3ced5cf5fe3eaabff8b41767defb808",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/reuse_workflow.yml",
             "labels": [
                 "Step"
             ]
         },
         {
             "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
             "name": "Print Input",
             "run": "echo \"${{ inputs.input_1 }}\"",
-            "_id": "7f294647090543c69b742cb12d98bd00",
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
+            "_id": "3d71936692f05331783cfaaf99c9ce61",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/reuse_workflow.yml",
             "labels": [
                 "Step"
             ]
         },
         {
             "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
             "param": "inputs.input_1",
-            "_id": "92b692254230795df97f94ad6e6243a7",
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
+            "_id": "e0f6d0dec01f26379d2386cdc34929d2",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/reuse_workflow.yml",
             "labels": [
                 "StepCodeDependency"
             ]
         },
         {
-            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test.yml",
-            "name": "test-reusable",
+            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test-reusable-ref-main.yml",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
+            "refs": [],
+            "name": "test-reusable-ref-main",
             "is_public": true,
-            "_id": "b3b5a0752de42836289310f0548e8243",
+            "_id": "a4d9ae3295410028b2f7d8cffccf434d",
             "trigger": [
                 "pull_request"
             ],
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/test.yml",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/test-reusable-ref-main.yml",
             "labels": [
                 "Workflow"
             ]
         },
         {
-            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test.yml",
+            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test-reusable-ref-main.yml",
             "with": [
                 "input_1:test",
                 "input_2:5"
             ],
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
             "name": "test_on_pr",
-            "uses": "./.github/workflows/reuse_workflow.yml",
-            "_id": "ec093f6e746fd0ab0de1d81915404129",
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/test.yml",
+            "uses": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml@main",
+            "_id": "ac8b4bd36e0e92b302939d28e7a3105c",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/test-reusable-ref-main.yml",
             "labels": [
                 "Job"
             ]
         },
         {
-            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test-reusable-ref-v1.0.0.yml",
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
+            "refs": [],
+            "name": "test-reusable-ref-v1.0.0",
             "is_public": true,
-            "name": "reusable_workflow",
-            "_id": "ff1b0c2b61a25d227707be99c3901303",
+            "_id": "c9895501d7acb7eb427c5ff7b6f63d88",
             "trigger": [
-                "workflow_call"
+                "pull_request"
             ],
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/test-reusable-ref-v1.0.0.yml",
             "labels": [
                 "Workflow"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test-reusable-ref-v1.0.0.yml",
+            "with": [
+                "input_1:test",
+                "input_2:5"
+            ],
+            "commit_sha": "fb3e55c7aa25ffaeab65d0bc965ec37051c01122",
+            "name": "test_on_pr",
+            "uses": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml@v1.0.0",
+            "_id": "a6c2c0e1cba00d206fac8e1febfb1fe9",
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/fb3e55c7aa25ffaeab65d0bc965ec37051c01122/.github/workflows/test-reusable-ref-v1.0.0.yml",
+            "labels": [
+                "Job"
             ]
         }
     ],
     "relationships": [
         {
-            "start_node": "ff1b0c2b61a25d227707be99c3901303",
-            "type": "REUSABLE_WORKFLOW_INPUT",
-            "end_node": "aaaaf3ef437b55388bec93f26c8f9c44"
-        },
-        {
-            "start_node": "ff1b0c2b61a25d227707be99c3901303",
-            "type": "REUSABLE_WORKFLOW_INPUT",
-            "end_node": "3f81ef5510e05f61bfa26a950ebd2c3d"
-        },
-        {
-            "start_node": "ff1b0c2b61a25d227707be99c3901303",
-            "type": "REUSABLE_WORKFLOW_INPUT",
-            "end_node": "2fe112d8d392c700041b353c90db4edf"
-        },
-        {
-            "start_node": "3cae77d1d794cf1a5dd88b4e2e38bd22",
-            "type": "ACTION",
-            "end_node": "d35e7df441120da9624b8c11e36151be"
-        },
-        {
-            "start_node": "7f294647090543c69b742cb12d98bd00",
-            "type": "USING_PARAM",
-            "end_node": "92b692254230795df97f94ad6e6243a7"
-        },
-        {
-            "start_node": "292255a5b241802f89614333a7a13539",
-            "type": "STEPS",
-            "end_node": "3cae77d1d794cf1a5dd88b4e2e38bd22"
-        },
-        {
-            "start_node": "292255a5b241802f89614333a7a13539",
-            "type": "STEPS",
-            "end_node": "7f294647090543c69b742cb12d98bd00"
-        },
-        {
-            "start_node": "ff1b0c2b61a25d227707be99c3901303",
-            "type": "JOBS",
-            "end_node": "292255a5b241802f89614333a7a13539"
-        },
-        {
-            "start_node": "ec093f6e746fd0ab0de1d81915404129",
+            "start_node": "9a71a4f5de33f16df2a94fb06a0ab011",
             "type": "REUSABLE_WORKFLOW",
-            "end_node": "ff1b0c2b61a25d227707be99c3901303"
+            "end_node": "5653e101deb32d74da60cdba3a026cd2"
         },
         {
-            "start_node": "b3b5a0752de42836289310f0548e8243",
+            "start_node": "39eaac9205aa5e55a9c5189c5a9f5220",
             "type": "JOBS",
-            "end_node": "ec093f6e746fd0ab0de1d81915404129"
+            "end_node": "9a71a4f5de33f16df2a94fb06a0ab011"
+        },
+        {
+            "start_node": "5653e101deb32d74da60cdba3a026cd2",
+            "type": "REUSABLE_WORKFLOW_INPUT",
+            "end_node": "84dfb82f36d71833c3e61ace3fcdb497"
+        },
+        {
+            "start_node": "5653e101deb32d74da60cdba3a026cd2",
+            "type": "REUSABLE_WORKFLOW_INPUT",
+            "end_node": "5caca9cd5fa29256ca251e567623fd3e"
+        },
+        {
+            "start_node": "5653e101deb32d74da60cdba3a026cd2",
+            "type": "REUSABLE_WORKFLOW_INPUT",
+            "end_node": "e33137aa998cc6285db2495621c3f77c"
+        },
+        {
+            "start_node": "f3ced5cf5fe3eaabff8b41767defb808",
+            "type": "ACTION",
+            "end_node": "040ed80ea3905d73c253a72fa0806eb9"
+        },
+        {
+            "start_node": "3d71936692f05331783cfaaf99c9ce61",
+            "type": "USING_PARAM",
+            "end_node": "e0f6d0dec01f26379d2386cdc34929d2"
+        },
+        {
+            "start_node": "eb933a7a749321ab9288ef9fbe49bb22",
+            "type": "STEPS",
+            "end_node": "f3ced5cf5fe3eaabff8b41767defb808"
+        },
+        {
+            "start_node": "eb933a7a749321ab9288ef9fbe49bb22",
+            "type": "STEPS",
+            "end_node": "3d71936692f05331783cfaaf99c9ce61"
+        },
+        {
+            "start_node": "5653e101deb32d74da60cdba3a026cd2",
+            "type": "JOBS",
+            "end_node": "eb933a7a749321ab9288ef9fbe49bb22"
+        },
+        {
+            "start_node": "ac8b4bd36e0e92b302939d28e7a3105c",
+            "type": "REUSABLE_WORKFLOW",
+            "end_node": "5653e101deb32d74da60cdba3a026cd2"
+        },
+        {
+            "start_node": "a4d9ae3295410028b2f7d8cffccf434d",
+            "type": "JOBS",
+            "end_node": "ac8b4bd36e0e92b302939d28e7a3105c"
+        },
+        {
+            "start_node": "a6c2c0e1cba00d206fac8e1febfb1fe9",
+            "type": "REUSABLE_WORKFLOW",
+            "end_node": "5653e101deb32d74da60cdba3a026cd2"
+        },
+        {
+            "start_node": "c9895501d7acb7eb427c5ff7b6f63d88",
+            "type": "JOBS",
+            "end_node": "a6c2c0e1cba00d206fac8e1febfb1fe9"
         }
     ]
 }

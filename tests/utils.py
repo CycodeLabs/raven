@@ -1,4 +1,5 @@
 from py2neo.ogm import GraphObject
+from colorama import Fore, Style
 import json
 from src.config.config import Config
 from src.workflow_components.composite_action import CompositeAction
@@ -13,7 +14,7 @@ class GraphDbMock(object):
     def __init__(self):
         pass
 
-    def push_object(self, obj: GraphObject):
+    def merge_object(self, obj: GraphObject):
         pass
 
     def get_object(self, obj: GraphObject) -> Optional[GraphObject]:
@@ -103,8 +104,18 @@ def get_dicts_differences(dict1: Dict, dict2: Dict) -> Dict:
     keys = set(dict1.keys()).union(set(dict2.keys()))
     differences = {}
     for key in keys:
-        if dict1.get(key) != dict2.get(key):
-            differences[key] = [dict1.get(key), dict2.get(key)]
+        value1 = (
+            sorted(dict1.get(key))
+            if isinstance(dict1.get(key), list)
+            else dict1.get(key)
+        )
+        value2 = (
+            sorted(dict2.get(key))
+            if isinstance(dict2.get(key), list)
+            else dict2.get(key)
+        )
+        if value1 != value2:
+            differences[key] = [value1, value2]
 
     return differences
 
@@ -125,15 +136,21 @@ def assert_graph_structures(graph_structure: Dict, snapshot_path: str) -> None:
 
     # Asserting nodes
     for node in snapshot_nodes:
+        diffrences = get_dicts_differences(
+            node, graph_nodes[snapshot_nodes.index(node)]
+        )
         assert (
-            node == graph_nodes[snapshot_nodes.index(node)]
-        ), f"Properties of nodes on the same index is not equal\n{get_dicts_differences(node, graph_nodes[snapshot_nodes.index(node)])}\n\nIn snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}"
+            len(diffrences) == 0
+        ), f"Properties of nodes on the same index is not equal\n{Fore.RED}{diffrences}\n\n{Fore.CYAN}In snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}{Style.RESET_ALL}"
 
     # Asserting relationships
     for relationship in snapshot_relations:
+        diffrences = get_dicts_differences(
+            relationship, graph_relations[snapshot_relations.index(relationship)]
+        )
         assert (
-            relationship == graph_relations[snapshot_relations.index(relationship)]
-        ), f"Properties of relationships on the same index of graph and snapshot is not equal\n\n{get_dicts_differences(relationship, graph_relations[snapshot_relations.index(relationship)])}\nIn snapshot:\n{relationship}\nIn graph:\n{graph_relations[snapshot_relations.index(relationship)]}"
+            len(diffrences) == 0
+        ), f"Properties of relationships on the same index is not equal\n{Fore.RED}{diffrences}\n\n{Fore.CYAN}In snapshot:\n{node}\nIn graph:\n{graph_nodes[snapshot_nodes.index(node)]}{Style.RESET_ALL}"
 
 
 def assert_action_inputs(ca: CompositeAction, ca_d: Dict):
@@ -159,7 +176,9 @@ def assert_action_inputs(ca: CompositeAction, ca_d: Dict):
         assert input[DEST_NODE_INDEX].url == ca_d["url"]
         assert (
             input[DEST_NODE_INDEX]._id
-            == md5(f"{ca._id}_{ca_d_input.get('name')}".encode()).hexdigest()
+            == md5(
+                f"{ca._id}_{ca_d_input.get('name')}_{ca_d_input.get('commit_sha')}".encode()
+            ).hexdigest()
         )
 
         if "required" in ca_d_input:
@@ -199,7 +218,9 @@ def assert_reusable_workflow_inputs(w: Workflow, workflow_d: Dict):
         assert input[DEST_NODE_INDEX].url == workflow_d["url"]
         assert (
             input[DEST_NODE_INDEX]._id
-            == md5(f"{w._id}_{workflow_d_input.get('name')}".encode()).hexdigest()
+            == md5(
+                f"{w._id}_{workflow_d_input.get('name')}_{w.commit_sha}".encode()
+            ).hexdigest()
         )
 
         if "required" in workflow_d_input:

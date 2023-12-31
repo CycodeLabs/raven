@@ -13,8 +13,17 @@ class GraphDb(object):
         query = "MATCH (n) RETURN COUNT(n) as count"
         return self.graph.run(query).data()[0]["count"] == 0
 
-    def push_object(self, obj: GraphObject):
+    def merge_object(self, obj: GraphObject):
+        """
+        Add subgraph to the graph. Does not work for updating property of single object.
+        """
         self.graph.merge(obj)
+
+    def push_object(self, obj: GraphObject):
+        """
+        Update or create a object in the graph.
+        """
+        self.graph.push(obj)
 
     def get_object(self, obj: GraphObject) -> Optional[GraphObject]:
         """Tries to find an object in the graph.
