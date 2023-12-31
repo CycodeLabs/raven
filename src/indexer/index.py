@@ -61,18 +61,20 @@ def index_action_file(action: str) -> None:
             if ops_db.exists_in_set(Config.action_index_history_set, action):
                 return
 
-            action_full_name = get_object_full_name_from_ref_pointers_set(action)
+            # If we got here, it indicates that the action is either not indexed in the database or does not include this reference in its list of properties
 
+            action_full_name = get_object_full_name_from_ref_pointers_set(action)
             # In case we already indexed the action with a different ref, we will add the ref and push the object to the neo4j DB to update it
             ca = get_composite_action(*UsesString.split_path_and_ref(action_full_name))
-            # We check whether the url property is not null to verify that this action is indexed in the database and that it is not a mock action with null data.
+            # We check whether the url property is not null to verify this action is not a mock action with null data.
             if ca and ca.url is not None:
+                # If a ref exists, we will add it to the action object and push it to the neo4j DB to update it
                 ref = UsesString.split_path_and_ref(action)[
                     REF_INDEX_IN_USES_STRING_SPLIT
                 ]
                 if ref:
                     ca.refs.append(ref)
-                Config.graph.push_object(ca)
+                    Config.graph.push_object(ca)
 
             # Create new composite action object from the data in redis.
             else:
@@ -120,7 +122,9 @@ def index_action_file(action: str) -> None:
                 obj["url"] = url
                 obj["is_public"] = is_public
 
-                ref = UsesString.split_path_and_ref(action)[1]
+                ref = UsesString.split_path_and_ref(action)[
+                    REF_INDEX_IN_USES_STRING_SPLIT
+                ]
                 if ref:
                     obj["ref"] = ref
 
@@ -136,18 +140,20 @@ def index_workflow_file(workflow: str) -> None:
             if ops_db.exists_in_set(Config.workflow_index_history_set, workflow):
                 return
 
+            # If we got here, it indicates that the workflow is either not indexed in the database or does not include this reference in its list of properties
+
             workflow_full_name = get_object_full_name_from_ref_pointers_set(workflow)
 
             # In case we already indexed the workflow with a different ref, we will add the ref and push the object to the neo4j DB to update it
             w = get_workflow(*UsesString.split_path_and_ref(workflow_full_name))
-            # We check whether the url property is not null to verify that this workflow is indexed in the database and that it is not a mock workflow with null data.
+            # We check whether the url property is not null to verify this workflow it is not a mock workflow with null data.
             if w and w.url is not None:
                 ref = UsesString.split_path_and_ref(workflow)[
                     REF_INDEX_IN_USES_STRING_SPLIT
                 ]
                 if ref:
                     w.refs.append(ref)
-                Config.graph.push_object(w)
+                    Config.graph.push_object(w)
 
             else:
                 with RedisConnection(Config.redis_workflows_db) as workflows_db:
