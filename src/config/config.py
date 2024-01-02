@@ -37,7 +37,7 @@ REDIS_ACTIONS_DB = 2
 
 # CLI commands
 DOWNLOAD_COMMAND = "download"
-DOWNLOAD_ORG_COMMAND = "org"
+DOWNLOAD_ACCOUNT_COMMAND = "account"
 DOWNLOAD_CRAWL_COMMAND = "crawl"
 INDEX_COMMAND = "index"
 REPORT_COMMAND = "report"
@@ -68,7 +68,7 @@ def load_downloader_config(args) -> None:
     Config.github_token = args.get("token")
     Config.min_stars = args.get("min_stars", MIN_STARS_DEFAULT)
     Config.max_stars = args.get("max_stars")
-    Config.org_name = args.get("org_name")
+    Config.account_name = args.get("account_name")
     Config.clean_redis = args.get("clean_redis", REDIS_CLEAN_DEFAULT)
 
     load_redis_config(args)
@@ -138,7 +138,7 @@ class Config:
     github_token: str = None
     min_stars: int = None
     max_stars: int = None
-    org_name: list[str] = []
+    account_name: list[str] = []
 
     # Indexer Configs
     clean_neo4j: bool = None

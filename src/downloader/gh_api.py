@@ -23,6 +23,8 @@ REPOSITORY_SEARCH_URL = (
     BASE_URL
     + "/search/repositories?q={query}&sort=stars&order=desc&per_page=100&page={page}"
 )
+ACCOUNT_INFO_URL = BASE_URL + "/users/{account_name}"
+USER_REPOSITORY_URL = BASE_URL + "/users/{user_name}/repos?per_page=100&page={page}"
 ORGANIZATION_REPOSITORY_URL = (
     BASE_URL + "/orgs/{organization_name}/repos?per_page=100&page={page}"
 )
@@ -35,6 +37,43 @@ headers = {
     "Accept": "application/vnd.github+json",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.42",
 }
+
+
+def get_account_generator(account_name: str) -> Iterator[str]:
+    account_info = get_account_info(account_name=account_name)
+    account_type = account_info.get("type")
+
+    if account_type == "User":
+        log.info(f"[+] Scanning user: {account_name}")
+        return get_user_repository_generator(account_name)
+
+    elif account_type == "Organization":
+        log.info(f"[+] Scanning organization: {account_name}")
+        return get_organization_repository_generator(account_name)
+
+    else:
+        log.error(f"[-] Failed to get account type for {account_name}")
+        return None
+
+
+def get_user_repository_generator(user_name: str) -> Iterator[str]:
+    # Quering user repositories is not limited. We loop over each page,
+    # and look for more repos. If there are no more repos, we break
+    page = 1
+    while True:
+        log.info(f"[*] Querying page: {page}")
+        repos = get_user_repository(user_name=user_name, page=page)
+        if repos:
+            for repo in repos:
+                repo_star_count = int(repo["stargazers_count"])
+                log.debug(
+                    f"[+] About to download repository: {repo['full_name']}, Stars: {repo_star_count}"
+                )
+                yield repo["full_name"]
+        else:
+            break
+
+        page += 1
 
 
 def get_organization_repository_generator(organization_name: str) -> Iterator[str]:
@@ -105,6 +144,52 @@ def get_repository_generator(
             max_stars = last_star_count + 1
 
 
+def get_account_info(account_name: str) -> Dict[str, Any]:
+    """
+    Returns a dictionary with the account information.
+    The objects look like this:
+    {
+        "login": "CycodeLabs",
+        "type": "Organization",
+        ...
+    }
+    """
+    headers["Authorization"] = f"Token {Config.github_token}"
+    r = get(ACCOUNT_INFO_URL.format(account_name=account_name), headers=headers)
+
+    if r.status_code != HTTPStatus.OK:
+        log.error(f"[-] Failed fetching repositories for {account_name}")
+        raise Exception(f"status code: {r.status_code}. Response: {r.text}")
+
+    return r.json()
+
+
+def get_user_repository(user_name: str, page: int) -> list[dict]:
+    """
+    Returns a list of all repositories for the specified user.
+    The objects look like this:
+    {
+        "id": 000000000,
+        "node_id": "R_...",
+        "name": "example",
+        "full_name": "example/example",
+        "private": true,
+        ...
+    }
+    """
+    headers["Authorization"] = f"Token {Config.github_token}"
+
+    r = get(
+        USER_REPOSITORY_URL.format(user_name=user_name, page=page),
+        headers=headers,
+    )
+    if r.status_code != HTTPStatus.OK:
+        log.error(f"[-] Failed fetching repositories for {user_name}")
+        raise Exception(f"status code: {r.status_code}. Response: {r.text}")
+
+    return r.json()
+
+
 def get_organization_repository(organization_name: str, page: int) -> list[dict]:
     """
     Returns a list of all repositories for the specified organization.
@@ -119,7 +204,7 @@ def get_organization_repository(organization_name: str, page: int) -> list[dict]
     }
     """
     headers["Authorization"] = f"Token {Config.github_token}"
-    # while True:
+
     r = get(
         ORGANIZATION_REPOSITORY_URL.format(
             organization_name=organization_name, page=page

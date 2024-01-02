@@ -111,7 +111,7 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          raven download org --token $GITHUB_TOKEN --org-name RavenIntegrationTests
+          raven download account --token $GITHUB_TOKEN --account-name RavenIntegrationTests
           raven index
           raven report --format json | jq > /dev/null
 
