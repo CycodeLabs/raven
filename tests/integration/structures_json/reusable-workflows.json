@@ -2,6 +2,19 @@
     "nodes": [
         {
             "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
+            "is_public": true,
+            "name": "reusable_workflow",
+            "_id": "ff1b0c2b61a25d227707be99c3901303",
+            "trigger": [
+                "workflow_call"
+            ],
+            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
+            "labels": [
+                "Workflow"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
             "default": "input_1_defult",
             "name": "input_1",
             "_id": "aaaaf3ef437b55388bec93f26c8f9c44",
@@ -74,46 +87,6 @@
             "labels": [
                 "StepCodeDependency"
             ]
-        },
-        {
-            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test.yml",
-            "name": "test-reusable",
-            "is_public": true,
-            "_id": "b3b5a0752de42836289310f0548e8243",
-            "trigger": [
-                "pull_request"
-            ],
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/test.yml",
-            "labels": [
-                "Workflow"
-            ]
-        },
-        {
-            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/test.yml",
-            "with": [
-                "input_1:test",
-                "input_2:5"
-            ],
-            "name": "test_on_pr",
-            "uses": "./.github/workflows/reuse_workflow.yml",
-            "_id": "ec093f6e746fd0ab0de1d81915404129",
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/test.yml",
-            "labels": [
-                "Job"
-            ]
-        },
-        {
-            "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
-            "is_public": true,
-            "name": "reusable_workflow",
-            "_id": "ff1b0c2b61a25d227707be99c3901303",
-            "trigger": [
-                "workflow_call"
-            ],
-            "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
-            "labels": [
-                "Workflow"
-            ]
         }
     ],
     "relationships": [
@@ -156,16 +129,6 @@
             "start_node": "ff1b0c2b61a25d227707be99c3901303",
             "type": "JOBS",
             "end_node": "292255a5b241802f89614333a7a13539"
-        },
-        {
-            "start_node": "ec093f6e746fd0ab0de1d81915404129",
-            "type": "REUSABLE_WORKFLOW",
-            "end_node": "ff1b0c2b61a25d227707be99c3901303"
-        },
-        {
-            "start_node": "b3b5a0752de42836289310f0548e8243",
-            "type": "JOBS",
-            "end_node": "ec093f6e746fd0ab0de1d81915404129"
         }
     ]
 }
