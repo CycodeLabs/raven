@@ -25,7 +25,7 @@ We listed all vulnerabilities discovered using Raven in the tool [Hall of Fame](
 
 The tool provides the following capabilities to scan and analyze potential CI/CD vulnerabilities:
 
-- ⏬ **Downloader:** You can download workflows and actions necessary for analysis. Workflows can be downloaded for a specified organization or for all repositories, sorted by star count. Performing this step is a prerequisite for analyzing the workflows.
+- ⏬ **Downloader:** You can download workflows and actions necessary for analysis. Workflows can be downloaded either for multiple accounts (user/organization) simultaneously or for public GitHub repositories, sorted by star count. Performing this step is a prerequisite for analyzing the workflows.
 - 📊 **Indexer:** Digesting the downloaded data into a graph-based Neo4j database. This process involves establishing relationships between workflows, actions, jobs, steps, etc.
 - 📚 **Query Library:** We created a library of pre-defined queries based on research conducted by the community.
 - ❗ **Reporter:** Raven has a simple way of reporting suspicious findings. As an example, it can be incorporated into the CI process for pull requests and run there.
@@ -80,10 +80,10 @@ make setup
 
 **Step 3**: Run Raven Downloader
 
-Org mode:
+Account mode:
 
 ```bash
-raven download org --token $GITHUB_TOKEN --org-name RavenDemo
+raven download account --token $GITHUB_TOKEN --account-name RavenDemo
 ```
 
 Crawl mode:
@@ -125,21 +125,25 @@ The tool contains three main functionalities, `download` and `index` and `report
 
 ### Download
 
-#### Download Organization Repositories
+#### Download Account Repositories
 
 ```bash
-usage: raven download org [-h] --token TOKEN [--debug] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] --org-name ORG_NAME
+usage: raven download account [-h] --token TOKEN [--debug] [--redis-host REDIS_HOST]
+                                [--redis-port REDIS_PORT] [--clean-redis] --account-name
+                                ACCOUNT_NAME
 
 options:
   -h, --help            show this help message and exit
-  --token TOKEN         GITHUB_TOKEN to download data from Github API (Needed for effective rate-limiting)
+  --token TOKEN         GITHUB_TOKEN to download data from Github API (Needed for effective
+                        rate-limiting)
   --debug               Whether to print debug statements, default: False
   --redis-host REDIS_HOST
                         Redis host, default: localhost
   --redis-port REDIS_PORT
                         Redis port, default: 6379
   --clean-redis, -cr    Whether to clean cache in the redis, default: False
-  --org-name ORG_NAME   Organization name to download the workflows
+  --account-name ACCOUNT_NAME
+                        Account name for downloading the workflows
 ```
 
 #### Download Public Repositories
@@ -224,10 +228,10 @@ options:
 
 ## Examples
 
-Retrieve all workflows and actions associated with the organization.
+Retrieve all workflows and actions associated with any account (user/organization).
 
 ```bash
-raven download org --token $GITHUB_TOKEN --org-name microsoft --org-name google --debug
+raven download account --token $GITHUB_TOKEN --account-name microsoft --account-name google --debug
 ```
 
 Scrape all publicly accessible GitHub repositories.

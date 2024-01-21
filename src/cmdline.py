@@ -2,7 +2,7 @@ import argparse
 import src.logger.log as log
 from src.downloader.download import (
     download_all_workflows_and_actions,
-    download_org_workflows_and_actions,
+    download_account_workflows_and_actions,
 )
 from src.indexer.index import index_downloaded_workflows_and_actions
 from src.reporter.report import generate
@@ -22,7 +22,7 @@ from src.config.config import (
     REDIS_PORT_DEFAULT,
     REDIS_CLEAN_DEFAULT,
     DOWNLOAD_COMMAND,
-    DOWNLOAD_ORG_COMMAND,
+    DOWNLOAD_ACCOUNT_COMMAND,
     DOWNLOAD_CRAWL_COMMAND,
     INDEX_COMMAND,
     REPORT_COMMAND,
@@ -36,7 +36,7 @@ from src.config.config import (
 COMMAND_FUNCTIONS = {
     DOWNLOAD_COMMAND: {
         DOWNLOAD_CRAWL_COMMAND: download_all_workflows_and_actions,
-        DOWNLOAD_ORG_COMMAND: download_org_workflows_and_actions,
+        DOWNLOAD_ACCOUNT_COMMAND: download_account_workflows_and_actions,
     },
     INDEX_COMMAND: index_downloaded_workflows_and_actions,
     REPORT_COMMAND: generate,
@@ -137,9 +137,9 @@ def raven() -> None:
         parents=[download_parser_options, redis_parser],
     )
 
-    org_download_parser = download_sub_parser.add_parser(
-        "org",
-        help="Scan specific GitHub organization",
+    account_download_parser = download_sub_parser.add_parser(
+        "account",
+        help="Scan a specific GitHub account (user or organization)",
         parents=[download_parser_options, redis_parser],
     )
 
@@ -153,12 +153,12 @@ def raven() -> None:
         help=f"Minimum number of stars for a repository, default: {MIN_STARS_DEFAULT}",
     )
 
-    org_download_parser.add_argument(
-        "--org-name",
+    account_download_parser.add_argument(
+        "--account-name",
         required=True,
         action="append",
         type=str,
-        help="Organization name to download the workflows",
+        help="Account name for downloading the workflows",
     )
 
     # Index action
