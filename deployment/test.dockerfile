@@ -9,6 +9,7 @@ RUN mkdir -p /raven/tests
 WORKDIR /raven
 COPY Makefile requirements.txt /raven/
 COPY src /raven/src
+COPY library /raven/library
 COPY tests /raven/tests
 
 # Install any needed packages specified in requirements.txt

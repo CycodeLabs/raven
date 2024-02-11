@@ -192,10 +192,10 @@ options:
 ### Report
 
 ```bash
-usage: raven report [-h] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] [--neo4j-uri NEO4J_URI]
-                    [--neo4j-user NEO4J_USER] [--neo4j-pass NEO4J_PASS] [--clean-neo4j]
-                    [--tag {injection,unauthenticated,fixed,priv-esc,supply-chain}]
-                    [--severity {info,low,medium,high,critical}] [--queries-path QUERIES_PATH] [--format {raw,json}]
+usage: raven report [-h] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] [--neo4j-uri NEO4J_URI] [--neo4j-user NEO4J_USER]
+                    [--neo4j-pass NEO4J_PASS] [--clean-neo4j]
+                    [--tag {injection,unauthenticated,fixed,priv-esc,supply-chain,best-practice,endoflife,reconnaissance}]
+                    [--severity {info,low,medium,high,critical}] [--query_ids RQ-1,..,RQ-16] [--queries-path QUERIES_PATH] [--format {raw,json}]
                     {slack} ...
 
 positional arguments:
@@ -216,10 +216,12 @@ options:
   --neo4j-pass NEO4J_PASS
                         Neo4j password, default: 123456789
   --clean-neo4j, -cn    Whether to clean cache, and index from scratch, default: False
-  --tag {injection,unauthenticated,fixed,priv-esc,supply-chain}, -t {injection,unauthenticated,fixed,priv-esc,supply-chain}
+  --tag {injection,unauthenticated,fixed,priv-esc,supply-chain,best-practice,endoflife,reconnaissance}, -t {injection,unauthenticated,fixed,priv-esc,supply-chain,best-practice,endoflife,reconnaissance}
                         Filter queries with specific tag
   --severity {info,low,medium,high,critical}, -s {info,low,medium,high,critical}
                         Filter queries by severity level (default: info)
+  --query_ids RQ-1,..,RQ-16, -id RQ-1,..,RQ-16
+                        Filter queries by query ids (example: RQ-2,RQ-8)
   --queries-path QUERIES_PATH, -dp QUERIES_PATH
                         Queries folder (default: library)
   --format {raw,json}, -f {raw,json}

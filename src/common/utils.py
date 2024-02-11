@@ -1,3 +1,4 @@
+import argparse
 import re
 import io
 from typing import List, Dict, Union, Optional
@@ -6,7 +7,7 @@ import yaml
 from py2neo.data import Node
 
 from src.storage.redis_connection import RedisConnection
-from src.config.config import Config
+from src.config.config import Config, QUERY_IDS
 import src.logger.log as log
 from urllib.parse import urlparse, parse_qs
 
@@ -125,3 +126,17 @@ def str_to_bool(s: str) -> bool:
 
 def raw_str_to_bool(s: str) -> bool:
     return True if s == "true" else False
+
+
+def validate_query_ids(ids_arg: str) -> list:
+    """check if ids argument (ex: "RQ-1,RQ-3") in config.QUERY_IDS.
+    return parsed list."""
+    if not ids_arg:
+        return []
+
+    ids_list = ids_arg.split(",")
+    if not set(ids_list).issubset(QUERY_IDS):
+        raise argparse.ArgumentTypeError(
+            f"Invalid choice: {ids_arg}. Choose from {','.join(QUERY_IDS)}"
+        )
+    return ids_list

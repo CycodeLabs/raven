@@ -1,5 +1,6 @@
 import argparse
 import src.logger.log as log
+from src.common.utils import validate_query_ids
 from src.downloader.download import (
     download_all_workflows_and_actions,
     download_account_workflows_and_actions,
@@ -31,6 +32,7 @@ from src.config.config import (
     REPORT_JSON_FORMAT,
     SEVERITY_LEVELS,
     QUERY_TAGS,
+    QUERY_IDS,
 )
 
 COMMAND_FUNCTIONS = {
@@ -197,6 +199,14 @@ def raven() -> None:
         default="info",
         choices=SEVERITY_LEVELS.keys(),
         help="Filter queries by severity level (default: info)",
+    )
+    report_parser.add_argument(
+        "--query_ids",
+        "-id",
+        type=validate_query_ids,
+        default="",
+        metavar=f"RQ-1,..,{QUERY_IDS[-1]}",
+        help="Filter queries by query ids (example: RQ-2,RQ-8)",
     )
     report_parser.add_argument(
         "--queries-path",
