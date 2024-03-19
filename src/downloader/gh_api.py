@@ -24,7 +24,7 @@ REPOSITORY_SEARCH_URL = (
     + "/search/repositories?q={query}&sort=stars&order=desc&per_page=100&page={page}"
 )
 ACCOUNT_INFO_URL = BASE_URL + "/users/{account_name}"
-USER_REPOSITORY_URL = BASE_URL + "/users/{user_name}/repos?per_page=100&page={page}"
+USER_REPOSITORY_URL = BASE_URL + "/user/repos?type=owner&per_page=100&page={page}"
 ORGANIZATION_REPOSITORY_URL = (
     BASE_URL + "/orgs/{organization_name}/repos?per_page=100&page={page}"
 )
@@ -180,7 +180,7 @@ def get_user_repository(user_name: str, page: int) -> list[dict]:
     headers["Authorization"] = f"Token {Config.github_token}"
 
     r = get(
-        USER_REPOSITORY_URL.format(user_name=user_name, page=page),
+        USER_REPOSITORY_URL.format(page=page),
         headers=headers,
     )
     if r.status_code != HTTPStatus.OK:
