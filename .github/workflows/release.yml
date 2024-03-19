@@ -6,6 +6,8 @@ on:
 
 jobs:
   test_release:
+    permissions:
+      contents: read
     name: Test Release
     runs-on: ubuntu-latest
     steps:
@@ -14,9 +16,6 @@ jobs:
         # Turn prevent once policy is verified
         # prevent: true
         fail-on-error: true
-
-    - name: Checkout
-      uses: actions/checkout@v4
 
     - name: Checkout
       uses: actions/checkout@v4
