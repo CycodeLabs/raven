@@ -71,6 +71,7 @@ def load_downloader_config(args) -> None:
     Config.min_stars = args.get("min_stars", MIN_STARS_DEFAULT)
     Config.max_stars = args.get("max_stars")
     Config.account_name = args.get("account_name")
+    Config.personal = args.get("personal")
     Config.clean_redis = args.get("clean_redis", REDIS_CLEAN_DEFAULT)
 
     load_redis_config(args)
@@ -142,6 +143,7 @@ class Config:
     min_stars: int = None
     max_stars: int = None
     account_name: list[str] = []
+    personal: bool = None
 
     # Indexer Configs
     clean_neo4j: bool = None

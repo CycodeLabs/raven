@@ -18,7 +18,7 @@ def load_integration_tests_config() -> None:
             "account_name": ["RavenIntegrationTests"],
             "redis_host": "raven-redis-test",
             "redis_port": 6379,
-            "clean_redis": False,
+            "clean_redis": True,
         }
     )
 
@@ -27,11 +27,11 @@ def load_integration_tests_config() -> None:
             "debug": False,
             "redis_host": "raven-redis-test",
             "redis_port": 6379,
-            "clean_redis": False,
+            "clean_redis": True,
             "neo4j_uri": "neo4j://raven-neo4j-test:7687",
             "neo4j_user": "neo4j",
             "neo4j_pass": "123456789",
             "threads": 1,
-            "clean_neo4j": False,
+            "clean_neo4j": True,
         }
     )

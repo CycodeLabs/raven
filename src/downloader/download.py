@@ -8,6 +8,7 @@ from src.downloader.utils import (
 )
 from src.downloader.gh_api import (
     get_account_generator,
+    get_personal_account_generator,
     get_repository_generator,
     get_repository_workflows,
     get_repository_composite_action,
@@ -38,11 +39,21 @@ def download_account_workflows_and_actions() -> None:
 
     We are trying to cache the downloads as much as we can to reduce redundant download attempts.
     """
-    for account in Config.account_name:
-        generator = get_account_generator(account)
+    if Config.account_name:
+        for account in Config.account_name:
+            generator = get_account_generator(account)
+
+            for repo in generator:
+                download_workflows_and_actions(repo)
+
+    elif Config.personal:
+        generator = get_personal_account_generator()
 
         for repo in generator:
             download_workflows_and_actions(repo)
+
+    else:
+        raise Exception("Account name or personal flag must be provided.")
 
 
 def download_all_workflows_and_actions() -> None:

@@ -128,14 +128,11 @@ The tool contains three main functionalities, `download` and `index` and `report
 #### Download Account Repositories
 
 ```bash
-usage: raven download account [-h] --token TOKEN [--debug] [--redis-host REDIS_HOST]
-                                [--redis-port REDIS_PORT] [--clean-redis] --account-name
-                                ACCOUNT_NAME
+usage: raven download account [-h] --token TOKEN [--debug] [--redis-host REDIS_HOST] [--redis-port REDIS_PORT] [--clean-redis] (--account-name ACCOUNT_NAME | --personal)
 
 options:
   -h, --help            show this help message and exit
-  --token TOKEN         GITHUB_TOKEN to download data from Github API (Needed for effective
-                        rate-limiting)
+  --token TOKEN         GITHUB_TOKEN to download data from Github API (Needed for effective rate-limiting)
   --debug               Whether to print debug statements, default: False
   --redis-host REDIS_HOST
                         Redis host, default: localhost
@@ -143,7 +140,8 @@ options:
                         Redis port, default: 6379
   --clean-redis, -cr    Whether to clean cache in the redis, default: False
   --account-name ACCOUNT_NAME
-                        Account name for downloading the workflows
+                        Account name for downloading the workflows, can be used multiple times
+  --personal            Download repositories owned by the authenticated user
 ```
 
 #### Download Public Repositories
