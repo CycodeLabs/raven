@@ -145,6 +145,26 @@ def raven() -> None:
         parents=[download_parser_options, redis_parser],
     )
 
+    account_download_group = account_download_parser.add_mutually_exclusive_group(
+        required=True
+    )
+
+    account_download_group.add_argument(
+        "--account-name",
+        required=False,
+        action="append",
+        type=str,
+        help="Account name for downloading the workflows, can be used multiple times",
+    )
+
+    account_download_group.add_argument(
+        "--personal",
+        required=False,
+        action="store_const",
+        const=True,
+        help="Download repositories owned by the authenticated user",
+    )
+
     crawl_download_parser.add_argument(
         "--max-stars", type=int, help="Maximum number of stars for a repository"
     )
@@ -153,14 +173,6 @@ def raven() -> None:
         type=int,
         default=MIN_STARS_DEFAULT,
         help=f"Minimum number of stars for a repository, default: {MIN_STARS_DEFAULT}",
-    )
-
-    account_download_parser.add_argument(
-        "--account-name",
-        required=True,
-        action="append",
-        type=str,
-        help="Account name for downloading the workflows",
     )
 
     # Index action

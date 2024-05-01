@@ -82,6 +82,18 @@
         },
         {
             "path": "actions/checkout",
+            "default": "git",
+            "name": "ssh-user",
+            "description": "The user to use when connecting to the remote SSH host. By default 'git' is used.\n",
+            "_id": "c647109fbdf1f6f88205b9d01b7e84cb",
+            "required": false,
+            "url": "https://github.com/actions/checkout/tree/main/action.yml",
+            "labels": [
+                "CompositeActionInput"
+            ]
+        },
+        {
+            "path": "actions/checkout",
             "default": "true",
             "name": "persist-credentials",
             "description": "Whether to configure the token or SSH key with the local git config",
@@ -278,6 +290,51 @@
             ]
         },
         {
+            "path": "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
+            "name": "run",
+            "is_public": true,
+            "_id": "b195de8206ae6d901a448576cdba759f",
+            "trigger": [
+                "workflow_dispatch"
+            ],
+            "url": "https://github.com/RavenIntegrationTests/Demo-3/tree/main/.github/workflows/demo-workflow.yml",
+            "labels": [
+                "Workflow"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
+            "machine": [
+                "ubuntu-latest"
+            ],
+            "name": "demo_test",
+            "_id": "672e94911c5b6ad0af76aa61413d236c",
+            "url": "https://github.com/RavenIntegrationTests/Demo-3/tree/main/.github/workflows/demo-workflow.yml",
+            "labels": [
+                "Job"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
+            "ref": "v4",
+            "uses": "actions/checkout@v4",
+            "_id": "77508179e2034107334d369fef96c1dc",
+            "url": "https://github.com/RavenIntegrationTests/Demo-3/tree/main/.github/workflows/demo-workflow.yml",
+            "labels": [
+                "Step"
+            ]
+        },
+        {
+            "path": "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
+            "name": "PrintEnv",
+            "run": "printenv",
+            "_id": "7a09d64801de95b2f329cdda5838df97",
+            "url": "https://github.com/RavenIntegrationTests/Demo-3/tree/main/.github/workflows/demo-workflow.yml",
+            "labels": [
+                "Step"
+            ]
+        },
+        {
             "path": "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
             "name": "run",
             "is_public": true,
@@ -366,51 +423,6 @@
             "labels": [
                 "Step"
             ]
-        },
-        {
-            "path": "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
-            "name": "run",
-            "is_public": true,
-            "_id": "b195de8206ae6d901a448576cdba759f",
-            "trigger": [
-                "workflow_dispatch"
-            ],
-            "url": "https://github.com/RavenIntegrationTests/Demo-3/tree/main/.github/workflows/demo-workflow.yml",
-            "labels": [
-                "Workflow"
-            ]
-        },
-        {
-            "path": "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
-            "machine": [
-                "ubuntu-latest"
-            ],
-            "name": "demo_test",
-            "_id": "672e94911c5b6ad0af76aa61413d236c",
-            "url": "https://github.com/RavenIntegrationTests/Demo-3/tree/main/.github/workflows/demo-workflow.yml",
-            "labels": [
-                "Job"
-            ]
-        },
-        {
-            "path": "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
-            "ref": "v4",
-            "uses": "actions/checkout@v4",
-            "_id": "77508179e2034107334d369fef96c1dc",
-            "url": "https://github.com/RavenIntegrationTests/Demo-3/tree/main/.github/workflows/demo-workflow.yml",
-            "labels": [
-                "Step"
-            ]
-        },
-        {
-            "path": "RavenIntegrationTests/Demo-3/.github/workflows/demo-workflow.yml",
-            "name": "PrintEnv",
-            "run": "printenv",
-            "_id": "7a09d64801de95b2f329cdda5838df97",
-            "url": "https://github.com/RavenIntegrationTests/Demo-3/tree/main/.github/workflows/demo-workflow.yml",
-            "labels": [
-                "Step"
-            ]
         }
     ],
     "relationships": [
@@ -443,6 +455,11 @@
             "start_node": "d35e7df441120da9624b8c11e36151be",
             "type": "COMPOSITE_ACTION_INPUT",
             "end_node": "ec56ff9d7ca004ba974a2fca1b01f2c5"
+        },
+        {
+            "start_node": "d35e7df441120da9624b8c11e36151be",
+            "type": "COMPOSITE_ACTION_INPUT",
+            "end_node": "c647109fbdf1f6f88205b9d01b7e84cb"
         },
         {
             "start_node": "d35e7df441120da9624b8c11e36151be",
@@ -530,6 +547,26 @@
             "end_node": "77ef9503ba52c912546d499c4e05f557"
         },
         {
+            "start_node": "77508179e2034107334d369fef96c1dc",
+            "type": "ACTION",
+            "end_node": "d35e7df441120da9624b8c11e36151be"
+        },
+        {
+            "start_node": "672e94911c5b6ad0af76aa61413d236c",
+            "type": "STEPS",
+            "end_node": "77508179e2034107334d369fef96c1dc"
+        },
+        {
+            "start_node": "672e94911c5b6ad0af76aa61413d236c",
+            "type": "STEPS",
+            "end_node": "7a09d64801de95b2f329cdda5838df97"
+        },
+        {
+            "start_node": "b195de8206ae6d901a448576cdba759f",
+            "type": "JOBS",
+            "end_node": "672e94911c5b6ad0af76aa61413d236c"
+        },
+        {
             "start_node": "c1306c77e3af9cdedcedee69c59c96c1",
             "type": "ACTION",
             "end_node": "d35e7df441120da9624b8c11e36151be"
@@ -568,26 +605,6 @@
             "start_node": "c79850ebc886b835b32def127e189b8a",
             "type": "JOBS",
             "end_node": "fecf155691da067f7da9db40a66bcb5b"
-        },
-        {
-            "start_node": "77508179e2034107334d369fef96c1dc",
-            "type": "ACTION",
-            "end_node": "d35e7df441120da9624b8c11e36151be"
-        },
-        {
-            "start_node": "672e94911c5b6ad0af76aa61413d236c",
-            "type": "STEPS",
-            "end_node": "77508179e2034107334d369fef96c1dc"
-        },
-        {
-            "start_node": "672e94911c5b6ad0af76aa61413d236c",
-            "type": "STEPS",
-            "end_node": "7a09d64801de95b2f329cdda5838df97"
-        },
-        {
-            "start_node": "b195de8206ae6d901a448576cdba759f",
-            "type": "JOBS",
-            "end_node": "672e94911c5b6ad0af76aa61413d236c"
         }
     ]
 }

@@ -4,10 +4,10 @@
             "path": "RavenIntegrationTests/ReusableWorkflows-Mock/.github/workflows/reuse_workflow.yml",
             "is_public": true,
             "name": "reusable_workflow",
-            "_id": "ff1b0c2b61a25d227707be99c3901303",
             "trigger": [
                 "workflow_call"
             ],
+            "_id": "ff1b0c2b61a25d227707be99c3901303",
             "url": "https://github.com/RavenIntegrationTests/ReusableWorkflows-Mock/tree/main/.github/workflows/reuse_workflow.yml",
             "labels": [
                 "Workflow"
