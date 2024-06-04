@@ -1,11 +1,13 @@
 from src.storage.neo4j_graph import GraphDb
+from pathlib import Path
+import src
 
 # Default Values
 DEBUG_DEFAULT = False
 MIN_STARS_DEFAULT = 1000
 REDIS_CLEAN_DEFAULT = False
 NEO4J_CLEAN_DEFAULT = False
-QUERIES_PATH_DEFAULT = "library"
+QUERIES_PATH_DEFAULT = Path(src.__file__).resolve().parent / "library"
 REPORT_RAW_FORMAT = "raw"
 REPORT_JSON_FORMAT = "json"
 SLACK_REPORTER = "slack"

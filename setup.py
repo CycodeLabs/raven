@@ -45,4 +45,5 @@ setup(
     install_requires=REQUIRMENTS,
     packages=find_packages(exclude=("tests", "tests.*")),
     entry_points={"console_scripts": ["raven = src.cmdline:execute"]},
+    include_package_data=True,
 )
