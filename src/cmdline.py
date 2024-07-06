@@ -32,6 +32,7 @@ from src.config.config import (
     QUERIES_PATH_DEFAULT,
     REPORT_RAW_FORMAT,
     REPORT_JSON_FORMAT,
+    REPORT_SARIF_FORMAT,
     SEVERITY_LEVELS,
     QUERY_TAGS,
     QUERY_IDS,
@@ -247,7 +248,7 @@ def raven() -> None:
         "--format",
         "-f",
         default=REPORT_RAW_FORMAT,
-        choices=[REPORT_RAW_FORMAT, REPORT_JSON_FORMAT],
+        choices=[REPORT_RAW_FORMAT, REPORT_JSON_FORMAT, REPORT_SARIF_FORMAT],
         help="Report format (default: raw)",
     )
 

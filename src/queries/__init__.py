@@ -12,6 +12,7 @@ class Query(object):
         id: str,
         name: str,
         description: str,
+        full_description: str,
         tags: list,
         severity: str,
         query: list,
@@ -19,6 +20,7 @@ class Query(object):
         self.id = id
         self.name = name
         self.description = description
+        self.full_description = full_description
         self.tags = tags
         self.severity = severity
         self.query = query
@@ -81,7 +83,9 @@ class Query(object):
         report += f"{Fore.CYAN}Severity:{Style.RESET_ALL} {self.severity}\n"
 
         wrapped_description = textwrap.fill(self.description, width=description_length)
+        wrapped_full_description = textwrap.fill(self.full_description, width=description_length)
         report += f"{Fore.CYAN}Description:{Style.RESET_ALL} {wrapped_description}\n"
+        report += f"{Fore.CYAN}Full Description:{Style.RESET_ALL} {wrapped_full_description}\n"
         report += f"{Fore.CYAN}Tags:{Style.RESET_ALL} {self.tags}\n"
 
         report += f"{Fore.CYAN}Workflow URLS:{Style.RESET_ALL}\n"
@@ -98,6 +102,7 @@ class Query(object):
             "id": self.id,
             "name": self.name,
             "description": self.description,
+            "full_description": self.full_description,
             "tags": self.tags,
             "severity": self.severity,
             "result": self.result,
