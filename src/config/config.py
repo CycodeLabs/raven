@@ -75,6 +75,7 @@ def load_downloader_config(args) -> None:
     Config.max_stars = args.get("max_stars")
     Config.account_name = args.get("account_name")
     Config.repo_name = args.get("repo_name")
+    Config.workflow = args.get("workflow")
     Config.personal = args.get("personal")
     Config.clean_redis = args.get("clean_redis", REDIS_CLEAN_DEFAULT)
 
@@ -149,6 +150,7 @@ class Config:
     max_stars: int = None
     account_name: list[str] = []
     repo_name: list[str] = []
+    workflow: list[str] = []
     personal: bool = None
 
     # Indexer Configs

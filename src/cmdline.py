@@ -184,6 +184,14 @@ def raven() -> None:
         help="Repository to download"
     )
 
+    repo_download_parser.add_argument(
+        "--workflow",
+        required=False,
+        action="append",
+        type=str,
+        help="Workflow to download"
+    )
+
     crawl_download_parser.add_argument(
         "--max-stars", type=int, help="Maximum number of stars for a repository"
     )

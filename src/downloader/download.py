@@ -77,12 +77,14 @@ def download_all_workflows_and_actions() -> None:
         download_workflows_and_actions(repo)
 
 
-def download_workflows_and_actions(repo: str) -> None:
+def download_workflows_and_actions(repo: str, only_workflows: list = []) -> None:
     """The flow is the following:
 
     - First we enumerate .github/workflows directory for workflows
     - For each such workflow we download it
     - If that workflow contains uses:..., we analyze the string, and download the action or the reusable workflow.
+
+    We can also filter specific workflows if we only want to test a specific one.
     """
     with RedisConnection(Config.redis_objects_ops_db) as ops_db:
         if ops_db.exists_in_set(Config.workflow_download_history_set, repo):
@@ -94,6 +96,10 @@ def download_workflows_and_actions(repo: str) -> None:
 
         log.debug(f"[+] Found {len(workflows)} workflows for {repo}")
         for name, url in workflows.items():
+            if len(only_workflows) > 0 and name.lower() not in only_workflows:
+                log.debug(f"[+] Skipping {name}")
+                continue
+
             if is_url_contains_a_token(url):
                 """
                 If the URL contains a token, it means it is a private repository.
@@ -245,10 +251,15 @@ def download_repo_workflows_and_actions() -> None:
     """
     log.info(f"[+] Scanning single repository")
 
+    only_workflows = []
+    if Config.workflow is not None and len(Config.workflow) > 0:
+        only_workflows = list(map(str.lower, Config.workflow))
+        log.info(f"[+] Will only download the following workflows: {', '.join(only_workflows)}")
+
     for repo in Config.repo_name:
         # Ensure it's of the "org/repo" format.
         if repo.count("/") != 1:
             log.error(f"[-] Repository '{repo}' is not a repository")
             log.fail_exit()
             continue
-        download_workflows_and_actions(repo)
+        download_workflows_and_actions(repo, only_workflows=only_workflows)
