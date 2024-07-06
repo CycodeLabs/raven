@@ -33,6 +33,7 @@ from src.config.config import (
     REPORT_RAW_FORMAT,
     REPORT_JSON_FORMAT,
     REPORT_SARIF_FORMAT,
+    REPORT_OUTPUT,
     SEVERITY_LEVELS,
     QUERY_TAGS,
     QUERY_IDS,
@@ -251,6 +252,12 @@ def raven() -> None:
         choices=[REPORT_RAW_FORMAT, REPORT_JSON_FORMAT, REPORT_SARIF_FORMAT],
         help="Report format (default: raw)",
     )
+    report_parser.add_argument(
+        "--output",
+        "-o",
+        default="",
+        help="Location to save report output"
+    )
 
     format_sub_parser = report_parser.add_subparsers(
         dest="report_command",
@@ -289,5 +296,7 @@ def raven() -> None:
         elif args.command == REPORT_COMMAND:
             load_reporter_config(vars(args))
             COMMAND_FUNCTIONS[args.command]()
+            # Moved this function outside of report.py, otherwise pytest was failing
+            log.success_exit()
     else:
         parser.print_help()

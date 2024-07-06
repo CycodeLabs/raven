@@ -9,6 +9,7 @@ QUERIES_PATH_DEFAULT = "library"
 REPORT_RAW_FORMAT = "raw"
 REPORT_JSON_FORMAT = "json"
 REPORT_SARIF_FORMAT = "sarif"
+REPORT_OUTPUT = ""
 SLACK_REPORTER = "slack"
 
 NEO4J_URI_DEFAULT = "neo4j://localhost:7687"
@@ -132,6 +133,7 @@ def load_reporter_config(args):
     Config.reporter = args.get("report_command")
     Config.slack_token = args.get("slack_token")
     Config.channel_id = args.get("channel_id")
+    Config.output = args.get("output")
 
     load_redis_config(args)
     load_neo4j_config(args)
@@ -179,6 +181,7 @@ class Config:
     reporter: str = None
     slack_token: str = None
     channel_id: str = None
+    output: str = ""
 
     # Neo4j Config
     neo4j_uri: str = None

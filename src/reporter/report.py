@@ -83,9 +83,11 @@ def generate() -> None:
             )
 
     else:
-        print(report)
-
-    success_exit()
+        if len(Config.output) > 0:
+            with open(Config.output, "w") as output_file:
+                output_file.write(report)
+        else:
+            print(report)
 
 
 def convert_json_to_sarif(findings: dict) -> dict:
