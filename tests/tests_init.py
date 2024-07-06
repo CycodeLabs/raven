@@ -1,6 +1,6 @@
 from os import getenv
 from src.config.config import load_downloader_config, load_indexer_config
-from src.downloader.download import download_account_workflows_and_actions
+from src.downloader.download import download_account_workflows_and_actions, download_repo_workflows_and_actions
 from src.indexer.index import index_downloaded_workflows_and_actions
 
 
@@ -10,12 +10,19 @@ def init_integration_env():
     index_downloaded_workflows_and_actions()
 
 
+def init_integration_single_env():
+    load_integration_tests_config()
+    download_repo_workflows_and_actions()
+    index_downloaded_workflows_and_actions()
+
+
 def load_integration_tests_config() -> None:
     load_downloader_config(
         {
             "debug": False,
             "token": getenv("GITHUB_TOKEN"),
             "account_name": ["RavenIntegrationTests"],
+            "repo_name": ["RavenIntegrationTests/Demo-1"],
             "redis_host": "raven-redis-test",
             "redis_port": 6379,
             "clean_redis": True,

@@ -229,3 +229,26 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             )
             # In the future, ref will be with commit sha
             add_ref_pointer_to_redis(full_path, full_path)
+
+
+def download_repo_workflows_and_actions() -> None:
+    """Download single repository
+
+    We are enumerating the .github/workflows directory, and downloading all the workflows.
+    In addition if the repository contains action.yml file, it means it is a composite action,
+    so we download it as well.
+
+    For each such workflow we also scan if it uses additional external actions.
+    If so, we download these as well.
+
+    We are trying to cache the downloads as much as we can to reduce redundant download attempts.
+    """
+    log.info(f"[+] Scanning single repository")
+
+    for repo in Config.repo_name:
+        # Ensure it's of the "org/repo" format.
+        if repo.count("/") != 1:
+            log.error(f"[-] Repository '{repo}' is not a repository")
+            log.fail_exit()
+            continue
+        download_workflows_and_actions(repo)
