@@ -27,39 +27,6 @@ jobs:
       - name: Black
         run: python -m black --diff --check .
 
-  convention_check:
-    name: Convention check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: cycodelabs/cimon-action@v0
-        with:
-          prevent: true
-          fail-on-error: true
-      
-      - name: Check branch name
-        env:
-          BRANCH_NAME: ${{ github.head_ref }}
-        run: |
-          branch_prefix="^(feat|fix|refactor|chore|docs|test|library)\/[a-z0-9._-]+$"
-
-          if [[ ! $BRANCH_NAME =~ $branch_prefix ]]
-          then
-              exit 1
-          fi
-          exit 0
-
-      - name: Check PR title
-        env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-        run: |
-          title_prefix="^(feat|fix|refactor|chore|docs|test|library)(\([^ ]*\))?: [a-zA-Z0-9._ ]*$"
-
-          if [[ ! $PR_TITLE =~ $title_prefix ]]
-          then
-              exit 1
-          fi
-          exit 0
-
   # A job that runs integration tests in an isolated environment against
   # a predefined organization: RavenIntegrationTests
   test_raven:
