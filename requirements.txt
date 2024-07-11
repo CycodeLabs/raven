@@ -1,4 +1,4 @@
-certifi==2024.6.2
+certifi==2024.07.04
 charset-normalizer==3.3.2
 colorama==0.4.6
 idna==3.7
@@ -20,4 +20,4 @@ requests==2.32.3
 six==1.16.0
 slack_sdk==3.29.0
 tqdm==4.66.4
-urllib3==2.2.1
+urllib3==2.2.2
