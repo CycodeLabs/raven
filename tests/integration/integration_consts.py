@@ -65,4 +65,19 @@ TESTS_CONFIGS = [
             },
         },
     },
+    {
+        "test_name": "test_demo_index_single_repo",
+        "json_path": "tests/integration/structures_json/demo-1-index.json",
+        "description": "Tests Demo-1's graph structures combined. It has a workflow that uses the checkout action.",
+        "queries": {
+            "nodes_query": GET_NODES_BY_PATH_QUERY,
+            "relationships_query": GET_RELATIONSHIPS_BY_PATH_QUERY,
+            "to_format": {
+                "paths_list": [
+                    "RavenIntegrationTests/Demo-1/.github/workflows/demo-workflow.yml",
+                    "actions/checkout",
+                ]
+            },
+        },
+    }
 ]

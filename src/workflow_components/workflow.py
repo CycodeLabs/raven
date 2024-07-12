@@ -207,7 +207,9 @@ class Workflow(GraphObject):
         # When we meet it, we want to create a special relation to inputs of the reusable workflow.
         # We continue to treat the workflow as a regular workflow, and not as a reusable workflow.
         # But the difference is that we connected the different inputs to the workflow.
-        if "workflow_call" in w.trigger:
+        # However, a workflow_call can be empty like in:
+        # https://github.com/python/cpython/blob/68e279b37aae3019979a05ca55f462b11aac14be/.github/workflows/reusable-docs.yml#L4
+        if "workflow_call" in w.trigger and obj_dict["on"]["workflow_call"] is not None:
             wokrflow_call = obj_dict["on"]["workflow_call"]
             inputs = wokrflow_call["inputs"]
             for input_name, input in inputs.items():

@@ -266,8 +266,15 @@ def get_repository_workflows(repo: str) -> Dict[str, str]:
 
     headers["Authorization"] = f"Token {Config.github_token}"
 
+    repo_name = repo
+    params = {}
+    if '@' in repo:
+        # The repo has the format of "org/repo@branch".
+        repo_name, repo_branch = repo.split('@')
+        params['ref'] = repo_branch
+
     file_path = ".github/workflows"
-    r = get(CONTENTS_URL.format(repo_path=repo, file_path=file_path), headers=headers)
+    r = get(CONTENTS_URL.format(repo_path=repo_name, file_path=file_path), headers=headers, params=params)
     if r.status_code == 404:
         return {}
     if r.status_code == 403 and int(r.headers["X-RateLimit-Remaining"]) == 0:
