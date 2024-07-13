@@ -77,7 +77,7 @@ def download_all_workflows_and_actions() -> None:
         download_workflows_and_actions(repo)
 
 
-def download_workflows_and_actions(repo: str, only_workflows: list = []) -> None:
+def download_workflows_and_actions(repo: str, only_workflows: list = [], branch: str = '') -> None:
     """The flow is the following:
 
     - First we enumerate .github/workflows directory for workflows
@@ -91,7 +91,7 @@ def download_workflows_and_actions(repo: str, only_workflows: list = []) -> None
             log.debug(f"[!] Repo {repo} already scanned, skipping.")
             return
 
-        workflows = get_repository_workflows(repo)
+        workflows = get_repository_workflows(repo, branch=branch)
         is_public = 1
 
         log.debug(f"[+] Found {len(workflows)} workflows for {repo}")
@@ -118,7 +118,7 @@ def download_workflows_and_actions(repo: str, only_workflows: list = []) -> None
             # We look for dependant external actions.
             uses_strings = find_uses_strings(resp.text)
             for uses_string in uses_strings:
-                download_action_or_reusable_workflow(uses_string=uses_string, repo=repo)
+                download_action_or_reusable_workflow(uses_string=uses_string, repo=repo, branch=branch)
 
             # Save workflow to redis
             workflow_unix_path = convert_workflow_to_unix_path(repo, name)
@@ -137,7 +137,7 @@ def download_workflows_and_actions(repo: str, only_workflows: list = []) -> None
         ops_db.insert_to_set(Config.workflow_download_history_set, repo)
 
 
-def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
+def download_action_or_reusable_workflow(uses_string: str, repo: str, branch: str = '') -> None:
     """Whenever we find that workflow is using a "uses:" string,
     it means we are referencing a composite action or reusable workflow, we try to fetch it.
 
@@ -162,9 +162,9 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 return
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-            url = get_repository_reusable_workflow(full_path)
+            url = get_repository_reusable_workflow(full_path, branch=branch, is_local=uses_string.startswith('./'))
         elif uses_string_obj.type == UsesStringType.ACTION:
-            url = get_repository_composite_action(full_path)
+            url = get_repository_composite_action(full_path, branch=branch, is_local=uses_string.startswith('./'))
         else:
             # Can happen with docker references.
             return
@@ -258,5 +258,9 @@ def download_repo_workflows_and_actions() -> None:
         if repo.count("/") != 1:
             log.error(f"[-] Repository '{repo}' is not a repository")
             log.fail_exit()
-            continue
-        download_workflows_and_actions(repo, only_workflows=only_workflows)
+
+        branch = ''
+        if '@' in repo:
+            repo, branch = repo.split('@')
+
+        download_workflows_and_actions(repo, only_workflows=only_workflows, branch=branch)
