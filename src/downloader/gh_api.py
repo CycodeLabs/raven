@@ -299,7 +299,7 @@ def get_repository_workflows(repo: str, branch: str = '') -> Dict[str, str]:
     return workflows
 
 
-def get_repository_composite_action(path: str, branch: str = '', is_local: bool = False) -> str:
+def get_repository_composite_action(path: str, branch: str = '', same_repo: bool = False) -> str:
     """Returns downloadble URL for a composite action in the specific path.
 
     receives 'path_in_repo' relative path to the repository root to where search the action.yml.
@@ -312,7 +312,7 @@ def get_repository_composite_action(path: str, branch: str = '', is_local: bool 
     relative_path = "/".join(path_splitted[2:])
 
     headers["Authorization"] = f"Token {Config.github_token}"
-    params = {'ref': branch} if len(branch) > 0 and is_local else {}
+    params = {'ref': branch} if len(branch) > 0 and same_repo else {}
 
     for suffix in ["action.yml", "action.yaml"]:
         file_path = os.path.join(relative_path, suffix)
@@ -332,7 +332,7 @@ def get_repository_composite_action(path: str, branch: str = '', is_local: bool 
         return r.json()["download_url"]
 
 
-def get_repository_reusable_workflow(path: str, branch: str = '', is_local: bool = False) -> str:
+def get_repository_reusable_workflow(path: str, branch: str = '', same_repo: bool = False) -> str:
     """Returns downlodable URL for a reusable workflows in the specific path.
 
     Raises exception if network error occured.
@@ -342,7 +342,7 @@ def get_repository_reusable_workflow(path: str, branch: str = '', is_local: bool
     relative_path = "/".join(path_splitted[2:])
 
     headers["Authorization"] = f"Token {Config.github_token}"
-    params = {'ref': branch} if len(branch) > 0 and is_local else {}
+    params = {'ref': branch} if len(branch) > 0 and same_repo else {}
 
     r = get(
         CONTENTS_URL.format(repo_path=repo, file_path=relative_path),

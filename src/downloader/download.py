@@ -162,9 +162,9 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str, branch: st
                 return
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-            url = get_repository_reusable_workflow(full_path, branch=branch, is_local=uses_string.startswith('./'))
+            url = get_repository_reusable_workflow(full_path, branch=branch, same_repo=uses_string.startswith('./'))
         elif uses_string_obj.type == UsesStringType.ACTION:
-            url = get_repository_composite_action(full_path, branch=branch, is_local=uses_string.startswith('./'))
+            url = get_repository_composite_action(full_path, branch=branch, same_repo=uses_string.startswith('./'))
         else:
             # Can happen with docker references.
             return
