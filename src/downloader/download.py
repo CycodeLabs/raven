@@ -77,23 +77,29 @@ def download_all_workflows_and_actions() -> None:
         download_workflows_and_actions(repo)
 
 
-def download_workflows_and_actions(repo: str) -> None:
+def download_workflows_and_actions(repo: str, only_workflows: list = [], branch: str = '') -> None:
     """The flow is the following:
 
     - First we enumerate .github/workflows directory for workflows
     - For each such workflow we download it
     - If that workflow contains uses:..., we analyze the string, and download the action or the reusable workflow.
+
+    We can also filter specific workflows if we only want to test a specific one.
     """
     with RedisConnection(Config.redis_objects_ops_db) as ops_db:
         if ops_db.exists_in_set(Config.workflow_download_history_set, repo):
             log.debug(f"[!] Repo {repo} already scanned, skipping.")
             return
 
-        workflows = get_repository_workflows(repo)
+        workflows = get_repository_workflows(repo, branch=branch)
         is_public = 1
 
         log.debug(f"[+] Found {len(workflows)} workflows for {repo}")
         for name, url in workflows.items():
+            if len(only_workflows) > 0 and name.lower() not in only_workflows:
+                log.debug(f"[+] Skipping {name}")
+                continue
+
             if is_url_contains_a_token(url):
                 """
                 If the URL contains a token, it means it is a private repository.
@@ -112,7 +118,7 @@ def download_workflows_and_actions(repo: str) -> None:
             # We look for dependant external actions.
             uses_strings = find_uses_strings(resp.text)
             for uses_string in uses_strings:
-                download_action_or_reusable_workflow(uses_string=uses_string, repo=repo)
+                download_action_or_reusable_workflow(uses_string=uses_string, repo=repo, branch=branch)
 
             # Save workflow to redis
             workflow_unix_path = convert_workflow_to_unix_path(repo, name)
@@ -131,7 +137,7 @@ def download_workflows_and_actions(repo: str) -> None:
         ops_db.insert_to_set(Config.workflow_download_history_set, repo)
 
 
-def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
+def download_action_or_reusable_workflow(uses_string: str, repo: str, branch: str = '') -> None:
     """Whenever we find that workflow is using a "uses:" string,
     it means we are referencing a composite action or reusable workflow, we try to fetch it.
 
@@ -156,9 +162,9 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
                 return
 
         if uses_string_obj.type == UsesStringType.REUSABLE_WORKFLOW:
-            url = get_repository_reusable_workflow(full_path)
+            url = get_repository_reusable_workflow(full_path, branch=branch, same_repo=uses_string.startswith('./'))
         elif uses_string_obj.type == UsesStringType.ACTION:
-            url = get_repository_composite_action(full_path)
+            url = get_repository_composite_action(full_path, branch=branch, same_repo=uses_string.startswith('./'))
         else:
             # Can happen with docker references.
             return
@@ -229,3 +235,32 @@ def download_action_or_reusable_workflow(uses_string: str, repo: str) -> None:
             )
             # In the future, ref will be with commit sha
             add_ref_pointer_to_redis(full_path, full_path)
+
+
+def download_repo_workflows_and_actions() -> None:
+    """Download single repository
+    We are enumerating the .github/workflows directory, and downloading all the workflows.
+    In addition if the repository contains action.yml file, it means it is a composite action,
+    so we download it as well.
+    For each such workflow we also scan if it uses additional external actions.
+    If so, we download these as well.
+    We are trying to cache the downloads as much as we can to reduce redundant download attempts.
+    """
+    log.info(f"[+] Scanning single repository")
+
+    only_workflows = []
+    if Config.workflow is not None and len(Config.workflow) > 0:
+        only_workflows = list(map(str.lower, Config.workflow))
+        log.info(f"[+] Will only download the following workflows: {', '.join(only_workflows)}")
+
+    for repo in Config.repo_name:
+        # Ensure it's of the "org/repo" format.
+        if repo.count("/") != 1:
+            log.error(f"[-] Repository '{repo}' is not a repository")
+            log.fail_exit()
+
+        branch = ''
+        if '@' in repo:
+            repo, branch = repo.split('@')
+
+        download_workflows_and_actions(repo, only_workflows=only_workflows, branch=branch)
