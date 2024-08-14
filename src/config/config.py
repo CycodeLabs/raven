@@ -58,7 +58,7 @@ QUERY_TAGS = [
     "endoflife",
     "reconnaissance",
 ]
-LAST_QUERY_ID = 16
+LAST_QUERY_ID = 17
 QUERY_IDS = [f"RQ-{num}" for num in range(1, LAST_QUERY_ID + 1)]
 
 

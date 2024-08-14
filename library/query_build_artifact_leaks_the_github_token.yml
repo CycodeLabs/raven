@@ -1,0 +1,30 @@
+id: RQ-17
+
+info:
+  name: Build Artifact Leaks the GitHub Token
+  severity: critical
+  description: Including `actions/checkout` and `actions/upload-artifact` in a workflow can expose the `GITHUB_TOKEN` in the build artifact if the root directory is uploaded.
+  full-description: |
+    When you use the `actions/checkout` action, the `GITHUB_TOKEN` is automatically added to the 
+    `.git/config` file. If you subsequently use the `actions/upload-artifact` action with the path
+    set to the root directory, the `.git/config` file will be included in the build artifact.
+    This can expose the `GITHUB_TOKEN` within the artifact.
+  references:
+    - https://unit42.paloaltonetworks.com/github-repo-artifacts-leak-tokens/
+  tags:
+    - unauthenticated
+
+query: |
+  MATCH (w:Workflow)-[*]->(j:Job)
+  WHERE
+      EXISTS {
+          MATCH (j)-->(s:Step)-->(ca:CompositeAction)
+          WHERE ca.path = "actions/checkout"
+      } 
+      AND
+      EXISTS {
+          MATCH (j)-->(s:Step)-->(ca:CompositeAction)
+          WHERE ca.path = "actions/upload-artifact" 
+          AND "path:." IN s.with
+      }
+  RETURN DISTINCT w.url AS url;
