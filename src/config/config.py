@@ -38,6 +38,7 @@ REDIS_ACTIONS_DB = 2
 # CLI commands
 DOWNLOAD_COMMAND = "download"
 DOWNLOAD_ACCOUNT_COMMAND = "account"
+DOWNLOAD_REPO_COMMAND = "repo"
 DOWNLOAD_CRAWL_COMMAND = "crawl"
 INDEX_COMMAND = "index"
 REPORT_COMMAND = "report"
@@ -71,6 +72,8 @@ def load_downloader_config(args) -> None:
     Config.min_stars = args.get("min_stars", MIN_STARS_DEFAULT)
     Config.max_stars = args.get("max_stars")
     Config.account_name = args.get("account_name")
+    Config.repo_name = args.get("repo_name")
+    Config.workflow = args.get("workflow")
     Config.personal = args.get("personal")
     Config.clean_redis = args.get("clean_redis", REDIS_CLEAN_DEFAULT)
 
@@ -143,6 +146,8 @@ class Config:
     min_stars: int = None
     max_stars: int = None
     account_name: list[str] = []
+    repo_name: list[str] = []
+    workflow: list[str] = []
     personal: bool = None
 
     # Indexer Configs

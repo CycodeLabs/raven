@@ -255,7 +255,7 @@ def get_repository_search(query: str, page: int = 1) -> Dict[str, Any]:
     return r.json()["items"]
 
 
-def get_repository_workflows(repo: str) -> Dict[str, str]:
+def get_repository_workflows(repo: str, branch: str = '') -> Dict[str, str]:
     """Returns list of workflows for the specified repository.
     Returns a dictionary that maps workflow file name, to its donwloadable URL.
 
@@ -265,9 +265,10 @@ def get_repository_workflows(repo: str) -> Dict[str, str]:
     """
 
     headers["Authorization"] = f"Token {Config.github_token}"
+    params = {} if len(branch) == 0 else {'ref': branch}
 
     file_path = ".github/workflows"
-    r = get(CONTENTS_URL.format(repo_path=repo, file_path=file_path), headers=headers)
+    r = get(CONTENTS_URL.format(repo_path=repo, file_path=file_path), headers=headers, params=params)
     if r.status_code == 404:
         return {}
     if r.status_code == 403 and int(r.headers["X-RateLimit-Remaining"]) == 0:
@@ -278,7 +279,7 @@ def get_repository_workflows(repo: str) -> Dict[str, str]:
             f"[*] Ratelimit for for contents API depleted. Sleeping {time_to_sleep} seconds"
         )
         time.sleep(time_to_sleep)
-        return get_repository_workflows(repo)
+        return get_repository_workflows(repo, branch=branch)
     if r.status_code != 200:
         log.error(f"status code: {r.status_code}. Response: {r.text}")
         return {}
@@ -298,7 +299,7 @@ def get_repository_workflows(repo: str) -> Dict[str, str]:
     return workflows
 
 
-def get_repository_composite_action(path: str) -> str:
+def get_repository_composite_action(path: str, branch: str = '', same_repo: bool = False) -> str:
     """Returns downloadble URL for a composite action in the specific path.
 
     receives 'path_in_repo' relative path to the repository root to where search the action.yml.
@@ -311,12 +312,14 @@ def get_repository_composite_action(path: str) -> str:
     relative_path = "/".join(path_splitted[2:])
 
     headers["Authorization"] = f"Token {Config.github_token}"
+    params = {'ref': branch} if len(branch) > 0 and same_repo else {}
 
     for suffix in ["action.yml", "action.yaml"]:
         file_path = os.path.join(relative_path, suffix)
         r = get(
             CONTENTS_URL.format(repo_path=repo, file_path=file_path),
             headers=headers,
+            params=params
         )
         if r.status_code == 404:
             # can be both yml and yaml
@@ -329,7 +332,7 @@ def get_repository_composite_action(path: str) -> str:
         return r.json()["download_url"]
 
 
-def get_repository_reusable_workflow(path: str) -> str:
+def get_repository_reusable_workflow(path: str, branch: str = '', same_repo: bool = False) -> str:
     """Returns downlodable URL for a reusable workflows in the specific path.
 
     Raises exception if network error occured.
@@ -339,10 +342,12 @@ def get_repository_reusable_workflow(path: str) -> str:
     relative_path = "/".join(path_splitted[2:])
 
     headers["Authorization"] = f"Token {Config.github_token}"
+    params = {'ref': branch} if len(branch) > 0 and same_repo else {}
 
     r = get(
         CONTENTS_URL.format(repo_path=repo, file_path=relative_path),
         headers=headers,
+        params=params
     )
     if r.status_code == 404:
         return
