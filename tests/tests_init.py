@@ -1,7 +1,7 @@
 from os import getenv
-from src.config.config import load_downloader_config, load_indexer_config
-from src.downloader.download import download_account_workflows_and_actions
-from src.indexer.index import index_downloaded_workflows_and_actions
+from raven_cycode.config.config import load_downloader_config, load_indexer_config
+from raven_cycode.downloader.download import download_account_workflows_and_actions
+from raven_cycode.indexer.index import index_downloaded_workflows_and_actions
 
 
 def init_integration_env():

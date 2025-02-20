@@ -1,16 +1,16 @@
-from src.config.config import (
+from raven_cycode.config.config import (
     Config,
     REPORT_RAW_FORMAT,
     REPORT_JSON_FORMAT,
     SLACK_REPORTER,
 )
-from src.reporter import slack_reporter
-from src.logger.log import success_exit
+from raven_cycode.reporter import slack_reporter
+from raven_cycode.logger.log import success_exit
 from os import listdir
 from os.path import join
 import yaml
 import json
-from src.queries import Query
+from raven_cycode.queries import Query
 from typing import List
 
 

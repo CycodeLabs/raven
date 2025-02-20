@@ -3,8 +3,8 @@ import urllib
 from requests import get
 from typing import Dict, Any, Optional, Iterator, Optional
 from http import HTTPStatus
-from src.config.config import Config
-import src.logger.log as log
+from raven_cycode.config.config import Config
+import raven_cycode.logger.log as log
 
 """
 Current rate limiting:

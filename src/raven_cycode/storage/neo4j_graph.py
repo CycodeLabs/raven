@@ -2,7 +2,7 @@ from py2neo import Graph
 from py2neo.ogm import GraphObject
 from py2neo.data import Node
 from typing import List, Tuple, Optional
-import src.logger.log as log
+import raven_cycode.logger.log as log
 
 
 class GraphDb(object):

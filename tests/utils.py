@@ -1,11 +1,11 @@
 from py2neo.ogm import GraphObject
 import json
-from src.config.config import Config
-from src.workflow_components.composite_action import CompositeAction
-from src.workflow_components.workflow import Workflow
+from raven_cycode.config.config import Config
+from raven_cycode.workflow_components.composite_action import CompositeAction
+from raven_cycode.workflow_components.workflow import Workflow
 from typing import Tuple, List, Dict, Optional
 from tests.integration.integration_consts import START_NODE_INDEX, DEST_NODE_INDEX
-from src.common.utils import raw_str_to_bool
+from raven_cycode.common.utils import raw_str_to_bool
 from hashlib import md5
 
 

@@ -1,4 +1,4 @@
-import src.workflow_components.composite_action as composite_action
+import raven_cycode.workflow_components.composite_action as composite_action
 from tests.utils import load_test_config, assert_action_inputs
 
 load_test_config()

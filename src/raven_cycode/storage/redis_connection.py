@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import redis
-from src.config.config import Config
-import src.logger.log as log
+from raven_cycode.config.config import Config
+import raven_cycode.logger.log as log
 
 
 class RedisConnection:

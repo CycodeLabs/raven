@@ -1,5 +1,5 @@
-from src.storage.redis_connection import RedisConnection
-from src.config.config import Config
+from raven_cycode.storage.redis_connection import RedisConnection
+from raven_cycode.config.config import Config
 
 
 def clean_redis_db() -> None:

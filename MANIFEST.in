@@ -1,4 +1,4 @@
-include README.md LICENSE requirements.txt main.py
-recursive-include src/library *.yml
+include README.md LICENSE requirements.txt
+recursive-include src/raven_cycode/library *.yml
 recursive-include tests *.py
-recursive-include src *
+recursive-include src/raven_cycode *

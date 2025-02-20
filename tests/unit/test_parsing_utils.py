@@ -1,4 +1,4 @@
-from src.workflow_components.parsing_utils import (
+from raven_cycode.workflow_components.parsing_utils import (
     parse_workflow_trigger,
     parse_job_machine,
 )

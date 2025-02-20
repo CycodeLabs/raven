@@ -3,13 +3,13 @@ import io
 import yaml
 from yaml.constructor import Constructor
 
-from src.storage.redis_connection import RedisConnection
-from src.config.config import Config
-from src.workflow_components.workflow import Workflow
-from src.workflow_components.composite_action import CompositeAction
+from raven_cycode.storage.redis_connection import RedisConnection
+from raven_cycode.config.config import Config
+from raven_cycode.workflow_components.workflow import Workflow
+from raven_cycode.workflow_components.composite_action import CompositeAction
 from tqdm import tqdm
-import src.logger.log as log
-from src.common.utils import str_to_bool
+import raven_cycode.logger.log as log
+from raven_cycode.common.utils import str_to_bool
 
 
 # A hack to deny PyYAML to convert "on" tags into Python boolean values.

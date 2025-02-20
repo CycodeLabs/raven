@@ -3,14 +3,14 @@ from hashlib import md5
 
 from py2neo.ogm import GraphObject, RelatedTo, Property
 
-import src.workflow_components.workflow as workflow
-from src.config.config import Config
-from src.common.utils import (
+import raven_cycode.workflow_components.workflow as workflow
+from raven_cycode.config.config import Config
+from raven_cycode.common.utils import (
     get_dependencies_in_code,
     convert_dict_to_list,
     raw_str_to_bool,
 )
-from src.workflow_components.dependency import UsesString, UsesStringType
+from raven_cycode.workflow_components.dependency import UsesString, UsesStringType
 
 
 def get_or_create_composite_action(path: str) -> "CompositeAction":

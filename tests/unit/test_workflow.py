@@ -1,4 +1,4 @@
-import src.workflow_components.workflow as workflow
+import raven_cycode.workflow_components.workflow as workflow
 from tests.utils import load_test_config, assert_reusable_workflow_inputs
 
 load_test_config()

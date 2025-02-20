@@ -1,13 +1,13 @@
-from src.storage.neo4j_graph import GraphDb
+from raven_cycode.storage.neo4j_graph import GraphDb
 from pathlib import Path
-import src
+import raven_cycode
 
 # Default Values
 DEBUG_DEFAULT = False
 MIN_STARS_DEFAULT = 1000
 REDIS_CLEAN_DEFAULT = False
 NEO4J_CLEAN_DEFAULT = False
-QUERIES_PATH_DEFAULT = Path(src.__file__).resolve().parent / "library"
+QUERIES_PATH_DEFAULT = Path(raven_cycode.__file__).resolve().parent / "library"
 REPORT_RAW_FORMAT = "raw"
 REPORT_JSON_FORMAT = "json"
 SLACK_REPORTER = "slack"
@@ -79,7 +79,7 @@ def load_downloader_config(args) -> None:
     load_redis_config(args)
 
     if Config.clean_redis:
-        from src.storage.redis_utils import clean_redis_db
+        from raven_cycode.storage.redis_utils import clean_redis_db
 
         clean_redis_db()
 
@@ -97,8 +97,8 @@ def load_indexer_config(args) -> None:
     load_reporter_config(args)
 
     if Config.clean_neo4j or Config.graph.is_graph_empty():
-        from src.storage.redis_utils import clean_index
-        from src.storage.neo4j_utils import clean_graph
+        from raven_cycode.storage.redis_utils import clean_index
+        from raven_cycode.storage.neo4j_utils import clean_graph
 
         clean_graph()
         clean_index()

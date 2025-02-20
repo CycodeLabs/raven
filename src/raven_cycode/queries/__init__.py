@@ -1,4 +1,4 @@
-from src.config.config import Config, SEVERITY_LEVELS
+from raven_cycode.config.config import Config, SEVERITY_LEVELS
 import json
 from colorama import Fore, Style, init
 import textwrap
