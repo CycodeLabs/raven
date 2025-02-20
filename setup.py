@@ -43,6 +43,8 @@ setup(
         "Topic :: Security",
     ],
     install_requires=REQUIRMENTS,
-    packages=find_packages(exclude=("tests", "tests.*")),
-    entry_points={"console_scripts": ["raven = src.cmdline:execute"]},
+    packages=find_packages(where="src", exclude=("tests", "tests.*")),
+    package_dir={"": "src"},
+    entry_points={"console_scripts": ["raven = raven_cycode.cmdline:execute"]},
+    include_package_data=True,
 )

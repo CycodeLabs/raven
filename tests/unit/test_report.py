@@ -1,5 +1,5 @@
 from pathlib import Path
-from src.config.config import LAST_QUERY_ID, QUERIES_PATH_DEFAULT
+from raven_cycode.config.config import LAST_QUERY_ID, QUERIES_PATH_DEFAULT
 from yaml import safe_load
 
 query_dir = Path(__file__).parent.parent.parent / QUERIES_PATH_DEFAULT

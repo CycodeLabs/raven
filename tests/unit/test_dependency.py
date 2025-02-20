@@ -1,5 +1,5 @@
 from tests.utils import load_test_config
-import src.workflow_components.dependency as dependency
+import raven_cycode.workflow_components.dependency as dependency
 
 load_test_config()
 

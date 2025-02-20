@@ -2,20 +2,20 @@ from typing import Optional, Dict, Any
 from hashlib import md5
 
 from py2neo.ogm import GraphObject, RelatedTo, RelatedFrom, Property
-from src.config.config import Config
-from src.common.utils import (
+from raven_cycode.config.config import Config
+from raven_cycode.common.utils import (
     get_dependencies_in_code,
     get_repo_name_from_path,
     convert_dict_to_list,
     find_workflow_by_name,
     raw_str_to_bool,
 )
-from src.workflow_components.parsing_utils import (
+from raven_cycode.workflow_components.parsing_utils import (
     parse_workflow_trigger,
     parse_job_machine,
 )
-from src.workflow_components.dependency import UsesString, UsesStringType
-import src.logger.log as log
+from raven_cycode.workflow_components.dependency import UsesString, UsesStringType
+import raven_cycode.logger.log as log
 
 
 def get_or_create_workflow(path: str) -> "Workflow":
@@ -59,7 +59,7 @@ class Step(GraphObject):
     with_prop = Property("with")
     url = Property()
 
-    action = RelatedTo("src.workflow_components.composite_action.CompositeAction")
+    action = RelatedTo("raven_cycode.workflow_components.composite_action.CompositeAction")
     reusable_workflow = RelatedTo("Workflow")
     using_param = RelatedTo("StepCodeDependency")
 
@@ -87,7 +87,7 @@ class Step(GraphObject):
             uses_string_obj = UsesString.analyze(uses_string=s.uses)
             if uses_string_obj.type == UsesStringType.ACTION:
                 # Avoiding circular imports.
-                import src.workflow_components.composite_action as composite_action
+                import raven_cycode.workflow_components.composite_action as composite_action
 
                 obj = composite_action.get_or_create_composite_action(
                     uses_string_obj.get_full_path(s.path)

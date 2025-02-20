@@ -6,9 +6,9 @@ from typing import List, Dict, Union, Optional
 import yaml
 from py2neo.data import Node
 
-from src.storage.redis_connection import RedisConnection
-from src.config.config import Config, QUERY_IDS
-import src.logger.log as log
+from raven_cycode.storage.redis_connection import RedisConnection
+from raven_cycode.config.config import Config, QUERY_IDS
+import raven_cycode.logger.log as log
 from urllib.parse import urlparse, parse_qs
 
 

@@ -1,18 +1,18 @@
 import argparse
-import src.logger.log as log
-from src.common.utils import validate_query_ids
-from src.downloader.download import (
+import raven_cycode.logger.log as log
+from raven_cycode.common.utils import validate_query_ids
+from raven_cycode.downloader.download import (
     download_all_workflows_and_actions,
     download_account_workflows_and_actions,
 )
-from src.indexer.index import index_downloaded_workflows_and_actions
-from src.reporter.report import generate
-from src.config.config import (
+from raven_cycode.indexer.index import index_downloaded_workflows_and_actions
+from raven_cycode.reporter.report import generate
+from raven_cycode.config.config import (
     load_downloader_config,
     load_indexer_config,
     load_reporter_config,
 )
-from src.config.config import (
+from raven_cycode.config.config import (
     DEBUG_DEFAULT,
     MIN_STARS_DEFAULT,
     NEO4J_CLEAN_DEFAULT,

@@ -1,12 +1,12 @@
 from requests import get
 
-from src.config.config import Config
-from src.storage.redis_connection import RedisConnection
-from src.downloader.utils import (
+from raven_cycode.config.config import Config
+from raven_cycode.storage.redis_connection import RedisConnection
+from raven_cycode.downloader.utils import (
     insert_workflow_or_action_to_redis,
     add_ref_pointer_to_redis,
 )
-from src.downloader.gh_api import (
+from raven_cycode.downloader.gh_api import (
     get_account_generator,
     get_personal_account_generator,
     get_repository_generator,
@@ -14,15 +14,15 @@ from src.downloader.gh_api import (
     get_repository_composite_action,
     get_repository_reusable_workflow,
 )
-from src.common.utils import (
+from raven_cycode.common.utils import (
     find_uses_strings,
     convert_workflow_to_unix_path,
     get_repo_name_from_path,
     convert_raw_github_url_to_github_com_url,
     is_url_contains_a_token,
 )
-from src.workflow_components.dependency import UsesString, UsesStringType
-import src.logger.log as log
+from raven_cycode.workflow_components.dependency import UsesString, UsesStringType
+import raven_cycode.logger.log as log
 
 
 def download_account_workflows_and_actions() -> None:

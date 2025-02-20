@@ -1,5 +1,5 @@
-from src.config.config import Config
-from src.storage.redis_connection import RedisConnection
+from raven_cycode.config.config import Config
+from raven_cycode.storage.redis_connection import RedisConnection
 
 
 def insert_workflow_or_action_to_redis(

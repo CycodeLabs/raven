@@ -1,5 +1,5 @@
 from tests.utils import load_test_config
-import src.common.utils as utils
+import raven_cycode.common.utils as utils
 
 load_test_config()
 

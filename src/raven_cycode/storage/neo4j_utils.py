@@ -1,4 +1,4 @@
-from src.config.config import Config
+from raven_cycode.config.config import Config
 
 
 def clean_graph():

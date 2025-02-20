@@ -1,7 +1,7 @@
 import os
 from enum import Enum
 
-from src.common.utils import get_repo_name_from_path
+from raven_cycode.common.utils import get_repo_name_from_path
 
 
 class UsesStringType(Enum):
