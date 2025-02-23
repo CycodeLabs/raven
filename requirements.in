@@ -1,0 +1,8 @@
+colorama
+loguru
+py2neo
+PyYAML
+redis
+requests
+slack_sdk
+tqdm

@@ -15,6 +15,8 @@ jobs:
       with:
         # Turn prevent once policy is verified
         # prevent: true
+        client-id: ${{ secrets.CIMON_CLIENT_ID }}
+        secret: ${{ secrets.CIMON_SECRET }}
         fail-on-error: true
 
     - name: Checkout
@@ -38,6 +40,8 @@ jobs:
         with:
           # Turn prevent once policy is verified
           # prevent: true
+          client-id: ${{ secrets.CIMON_CLIENT_ID }}
+          secret: ${{ secrets.CIMON_SECRET }}
           fail-on-error: true
 
       - name: Checkout

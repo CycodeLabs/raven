@@ -2,7 +2,7 @@ version: "3"
 
 services:
   neo4j-test:
-    image: neo4j:5.12
+    image: neo4j:5.26.2
     container_name: raven-neo4j-test
     environment:
       NEO4J_AUTH: neo4j/123456789 # Change 'password' to your desired Neo4j password
@@ -16,7 +16,7 @@ services:
       retries: 3
 
   redis-test:
-    image: redis:7.2.1
+    image: redis:7.4.2
     container_name: raven-redis-test
     ports:
       - "6379:6379"

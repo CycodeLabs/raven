@@ -2,7 +2,7 @@ from typing import Dict, Any, List, Union, Optional
 
 
 def parse_workflow_trigger(
-    trigger_obj: Union[str, List[str], Dict[str, Any]]
+    trigger_obj: Union[str, List[str], Dict[str, Any]],
 ) -> List[str]:
     """Parse and normalize the trigger field of a workflow.
     Returns list of triggers.
@@ -37,7 +37,7 @@ def parse_workflow_trigger(
 
 
 def parse_job_machine(
-    runs_on_obj: Optional[Union[str, List[str], Dict[str, Any]]]
+    runs_on_obj: Optional[Union[str, List[str], Dict[str, Any]]],
 ) -> Optional[List[str]]:
     """Parse runs-on field of a job.
     Examples for input and output:
