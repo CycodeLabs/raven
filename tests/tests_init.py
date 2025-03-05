@@ -1,12 +1,20 @@
 from os import getenv
 from src.config.config import load_downloader_config, load_indexer_config
-from src.downloader.download import download_account_workflows_and_actions
+from src.downloader.download import download_account_workflows_and_actions, download_repo_workflows_and_actions
 from src.indexer.index import index_downloaded_workflows_and_actions
+from src.config.config import LAST_QUERY_ID, QUERIES_PATH_DEFAULT, Config
 
 
 def init_integration_env():
     load_integration_tests_config()
     download_account_workflows_and_actions()
+    index_downloaded_workflows_and_actions()
+
+
+def init_integration_single_env(only_workflows: list = []):
+    load_integration_tests_config()
+    Config.workflow = only_workflows
+    download_repo_workflows_and_actions()
     index_downloaded_workflows_and_actions()
 
 
@@ -16,6 +24,7 @@ def load_integration_tests_config() -> None:
             "debug": False,
             "token": getenv("GITHUB_TOKEN"),
             "account_name": ["RavenIntegrationTests"],
+            "repo_name": ["RavenIntegrationTests/Demo-1"],
             "redis_host": "raven-redis-test",
             "redis_port": 6379,
             "clean_redis": True,

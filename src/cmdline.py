@@ -4,6 +4,7 @@ from src.common.utils import validate_query_ids
 from src.downloader.download import (
     download_all_workflows_and_actions,
     download_account_workflows_and_actions,
+    download_repo_workflows_and_actions,
 )
 from src.indexer.index import index_downloaded_workflows_and_actions
 from src.reporter.report import generate
@@ -24,6 +25,7 @@ from src.config.config import (
     REDIS_CLEAN_DEFAULT,
     DOWNLOAD_COMMAND,
     DOWNLOAD_ACCOUNT_COMMAND,
+    DOWNLOAD_REPO_COMMAND,
     DOWNLOAD_CRAWL_COMMAND,
     INDEX_COMMAND,
     REPORT_COMMAND,
@@ -39,6 +41,7 @@ COMMAND_FUNCTIONS = {
     DOWNLOAD_COMMAND: {
         DOWNLOAD_CRAWL_COMMAND: download_all_workflows_and_actions,
         DOWNLOAD_ACCOUNT_COMMAND: download_account_workflows_and_actions,
+        DOWNLOAD_REPO_COMMAND: download_repo_workflows_and_actions,
     },
     INDEX_COMMAND: index_downloaded_workflows_and_actions,
     REPORT_COMMAND: generate,
@@ -163,6 +166,28 @@ def raven() -> None:
         action="store_const",
         const=True,
         help="Download repositories owned by the authenticated user",
+    )
+
+    repo_download_parser = download_sub_parser.add_parser(
+        "repo",
+        help="Download specific repository",
+        parents=[download_parser_options, redis_parser],
+    )
+
+    repo_download_parser.add_argument(
+        "--repo-name",
+        required=True,
+        action="append",
+        type=str,
+        help="Repository to download"
+    )
+
+    repo_download_parser.add_argument(
+        "--workflow",
+        required=False,
+        action="append",
+        type=str,
+        help="Workflow to download"
     )
 
     crawl_download_parser.add_argument(

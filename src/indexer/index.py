@@ -150,6 +150,11 @@ def index_workflow_file(workflow: str) -> None:
             obj["url"] = url
             obj["is_public"] = is_public
 
+            if 'on' not in obj:
+                # Could be some invalid/config file like:
+                # https://github.com/spotify/druid/blob/master/.github/workflows/codeql-config.yml
+                return
+
             Config.graph.push_object(Workflow.from_dict(obj))
             ops_db.insert_to_set(Config.workflow_index_history_set, workflow_full_name)
 
