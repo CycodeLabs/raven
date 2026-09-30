@@ -46,7 +46,7 @@ slack-sdk==3.34.0
     # via -r requirements.in
 tqdm==4.67.1
     # via -r requirements.in
-urllib3==2.3.0
+urllib3==2.8.0
     # via
     #   py2neo
     #   requests
