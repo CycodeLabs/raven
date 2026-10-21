@@ -24,7 +24,7 @@ packaging==24.2
     # via py2neo
 pansi==2024.11.0
     # via py2neo
-pillow==11.1.0
+pillow==13.0.0
     # via pansi
 py2neo==2021.2.4
     # via -r requirements.in
